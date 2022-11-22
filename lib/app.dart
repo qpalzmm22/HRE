@@ -18,7 +18,6 @@ class HreApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/' : (BuildContext context) => const LoginPage(),
-        '/profile': (BuildContext context) => const Profile(),
         // '/add_product': (BuildContext context) => const AddProduct(),
         // '/product_detail': (BuildContext context) => const ProductDetail(),
         '/home': (BuildContext context) => const HomePage(),

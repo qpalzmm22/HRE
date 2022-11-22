@@ -40,25 +40,25 @@ class House {
 class AppState extends ChangeNotifier{
 
   late User user;
-  final List<House> _houses = [];
-  List<House> get houses => _houses;
+  final List<House> _bookmarked = [];
+  List<House> get bookmarked => _bookmarked;
 
   House? _curHouse;
   House? get curHouse => _curHouse;
 
 
   void add(House house) {
-    _houses.add(house);
+    _bookmarked.add(house);
     notifyListeners();
   }
 
   void remove(House product){
-    _houses.remove(product);
+    _bookmarked.remove(product);
     notifyListeners();
   }
 
   void removeAll() {
-    _houses.clear();
+    _bookmarked.clear();
     notifyListeners();
   }
 

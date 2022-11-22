@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -9,7 +8,6 @@ import 'package:provider/provider.dart';
 import 'appState.dart';
 import 'firebase_options.dart';
 import 'dbutility.dart';
-// import 'home.dart';
 
 
 class LoginPage extends StatefulWidget {
@@ -20,8 +18,6 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-
-  //late StreamSubscription<QuerySnapshot>? querySnapShot;
 
   Future<User?> signInWithGoogle({required BuildContext context}) async {
     FirebaseAuth firebaseAuth = FirebaseAuth.instance;
@@ -64,7 +60,7 @@ class _LoginPageState extends State<LoginPage> {
                   // TODO : Need to check if the user exist in DB before adding a new one
                   if( !isUserExist(user) ) addGoogleUser(user);
                   cart.user = user!;
-                  Navigator.pushNamed(context, '/home');
+                  Navigator.pushReplacementNamed(context, '/home');
                 }
               },
               child: const Text('Google'),
@@ -79,7 +75,7 @@ class _LoginPageState extends State<LoginPage> {
                 cart.user = user!;
 
                 addAnonymousUser(user);
-                Navigator.pushNamed(context, '/home');
+                Navigator.pushReplacementNamed(context, '/home');
               },
               child: const Text('Anonymous Login'),
             ),

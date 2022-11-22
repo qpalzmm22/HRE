@@ -16,7 +16,7 @@ import 'appState.dart';
 Widget iconLocation(String str){
   return Row(
     children: [
-      Icon(Icons.location_on),
+      const Icon(Icons.location_on),
       Text(str),
     ],
   );
@@ -34,6 +34,7 @@ class DetailPage extends StatefulWidget {
 class _DetailPageState extends State<DetailPage> {
 
   int _selectedIndex = 0;
+
 
   List<Icon> optionIconList = [
     Icon(Icons.wifi), Icon(Icons.wifi), Icon(Icons.bed), Icon(Icons.wifi),
@@ -53,6 +54,11 @@ class _DetailPageState extends State<DetailPage> {
   Widget build(BuildContext context) {
     House house = ModalRoute.of(context)!.settings.arguments as House;
 
+    var isBookmarked = context.select<AppState, bool>(
+          (cart) => cart.bookmarked
+          .where((element) => element.documentId == house.documentId)
+          .isNotEmpty,
+    );
     for(int i = 0; i < house.optionList.length; i++){
       if(house.optionList[i]) availableOptionIcons.add(optionIconList[i]);
     }
@@ -63,8 +69,22 @@ class _DetailPageState extends State<DetailPage> {
         title: Text(house.name), // TODO
         actions: [
           IconButton(
-            onPressed: (){},
-            icon: Icon(Icons.bookmark_add_outlined) // : Icon(Icons.bookmark),  // TODO : if bookmarked make it
+            onPressed: isBookmarked
+            ? null
+            : () {
+              var cart = context.read<AppState>();
+              cart.add(house);
+              //TODO Add the database
+            },
+            icon: isBookmarked
+            ? const Icon(
+              Icons.check_circle_rounded,
+              color: Colors.yellow,
+            )
+            : const Icon(
+                Icons.bookmark_add_outlined,
+              color: Colors.yellow,
+            ) // : Icon(Icons.bookmark),  // TODO : if bookmarked make it
           ),
         ],
       ),
@@ -90,7 +110,7 @@ class _DetailPageState extends State<DetailPage> {
               Column(
                 children: [
                   Row(
-                    children: [
+                    children: const [
                       Icon(
                         Icons.star,
                         color: Colors.yellow,
@@ -100,13 +120,13 @@ class _DetailPageState extends State<DetailPage> {
                   ),
                   TextButton(
                     onPressed: (){},
-                    child : Text("all reviews"),
+                    child : const Text("all reviews"),
                   ),
                 ],
               ),
             ],
           ),
-          Padding(
+          const Padding(
             padding: EdgeInsets.only(left:30, right:30),
             child: Text(house.description),
           ),
@@ -136,26 +156,6 @@ class _DetailPageState extends State<DetailPage> {
                   );
                 }
             )
-            // child: ListView(
-            //   // shrinkWrap: true,
-            //   scrollDirection: Axis.horizontal,
-            //   padding: EdgeInsets.all(8),
-            //   children: [ // TODO
-            //     Container(
-            //       width: 100,
-            //       child : Card(
-            //         child: Column(
-            //           mainAxisAlignment: MainAxisAlignment.spaceAround,
-            //           children: [
-            //             Icon(Icons.wifi),
-            //             Text("WiFi"),
-            //             //Sized
-            //           ],
-            //         ),
-            //       )
-            //     ),
-            //   ],
-            // ),
           ),
         ],
       ),
