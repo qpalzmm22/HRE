@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'appState.dart';
+import 'package:intl/intl.dart';
 
 class Bookmark{
 
@@ -24,6 +25,8 @@ class _BookmarkedList extends StatelessWidget{
 
   @override
   Widget build(BuildContext context) {
+
+    final NumberFormat numberFormat = NumberFormat.simpleCurrency(locale: "ko_KR");
 
     var itemNameStyle = Theme.of(context).textTheme.titleLarge;
     var cart = context.watch<AppState>();
@@ -69,7 +72,7 @@ class _BookmarkedList extends StatelessWidget{
                     style: theme.textTheme.subtitle2,
                   ),
                   Text(
-                    house.monthlyPay.toString()
+                    "${numberFormat.format(house.monthlyPay)} / 월",//document['monthlyPay']),
                   ),
                 ],
               ),

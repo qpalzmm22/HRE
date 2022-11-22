@@ -5,15 +5,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:handong_real_estate/bookmark.dart';
 import 'package:handong_real_estate/profile.dart';
 import 'package:intl/intl.dart';
 import 'package:anim_search_bar/anim_search_bar.dart';
 import 'package:scroll_snap_list/scroll_snap_list.dart';
-
 import 'package:provider/provider.dart';
-
 import 'appState.dart';
 
 

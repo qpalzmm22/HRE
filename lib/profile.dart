@@ -57,6 +57,24 @@ class Profile {
     );
   }
 
+  Text _getUserName(User? user){
+    String userName;
+    if (user?.email == null) {
+      userName = "anonymous";
+    } else {
+      userName = user?.displayName as String;
+    }
+    return Text(
+      userName,
+      style: const TextStyle(
+        fontSize: 20,
+        fontWeight: FontWeight.bold,
+        color: Colors.blueGrey,
+      ),
+      maxLines: 1,
+      textAlign: TextAlign.center,
+    );
+  }
   Widget getProfile(User user) {
     return SafeArea(
       child: Container(
@@ -71,15 +89,7 @@ class Profile {
             const SizedBox(
               height: 20,
             ),
-            Text(
-              user?.displayName as String,
-              style: const TextStyle(
-                fontSize: 25,
-                fontWeight: FontWeight.bold,
-              ),
-              maxLines: 1,
-              textAlign: TextAlign.center,
-            ),
+            _getUserName(user),
             _getEmail(user),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
