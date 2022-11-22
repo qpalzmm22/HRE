@@ -10,6 +10,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
+import 'appState.dart';
+
 void addGoogleUser(User? user){
 
   if(user != null) {
@@ -55,22 +57,34 @@ bool isUserExist(User? user){
   return false;
 }
 
-void addHouse(String name, int monthlyPay, String description, String thumbnail, List<String> imageLinks){
+void addHouse(
+    String name,
+    int deposit,
+    int monthlyPay,
+    String description,
+    String thumbnail,
+    List<String> imageLinks,
+    List<bool> options){
+
   User? user = FirebaseAuth.instance.currentUser;
   if(user != null){
     FirebaseFirestore.instance
         .collection('houses')
         .add(<String, dynamic>{
       'name': name,
+      'deposit': deposit,
       'monthlyPay': monthlyPay,
       'description' : description,
+      'houseSize' : 0, // TODO
+      'location' : "장성로 128번길 24-5", // TODO Geometry? string
       'userId': user.uid,
       'created': FieldValue.serverTimestamp(),
       'modified': FieldValue.serverTimestamp(),
-      'likers' : <String>[], // initial likes = 0
-      // 'bookmarkers' : <String>[],
+      // TODO 'roomInfo' :  RoomInfo(room_type : "hello",  num_of_bedrooms : 2, num_of_bathrooms : 1), // TODO
+      //'likers' : <String>[], // initial likes = 0
       'thumbnail': thumbnail,
       'imagelinks' : imageLinks,
+      'options' : options,
     });
   }
 }

@@ -71,7 +71,6 @@ class _HomePageState extends State<HomePage> {
           //   ],
           // ),
         ],
-
       );
     }
 
@@ -219,12 +218,13 @@ class _HomePageState extends State<HomePage> {
       House house = House(
         imageUrl : document['thumbnail'],
         name : document['name'],
-        location : "", // TODO //houseDocument['location'],
+        location : document['location'],
         documentId : document.id,
-        ownerId : "",//houseDocument[''],
+        ownerId : document['userId'],
         description: document['description'],
         monthlyPay : document['monthlyPay'],
-        deposit : 0,//document['th'],
+        deposit : document['deposit'],
+        optionList : List<bool>.from(document['options']),
       );
 
       var isInCart = context.select<AppState, bool>(

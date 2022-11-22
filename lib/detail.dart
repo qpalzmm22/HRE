@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:getwidget/getwidget.dart';
 import 'package:horizontal_card_pager/card_item.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -35,6 +36,20 @@ class _DetailPageState extends State<DetailPage> {
   int _selectedIndex = 0;
 
 
+  List<Icon> optionIconList = [
+    Icon(Icons.wifi), Icon(Icons.wifi), Icon(Icons.bed), Icon(Icons.wifi),
+    Icon(Icons.kitchen), Icon(Icons.wifi), Icon(Icons.wifi), Icon(Icons.wifi),
+    Icon(Icons.chair), Icon(Icons.wifi), Icon(Icons.wifi),
+  ];
+
+  static List<String> _options = [
+    "sink", "wifi", "bed", "gas_stove",
+    "refrigerator", "airconditioner", "closet", "washing_machine",
+    "chair", "shoe_closet", "veranda"
+  ];
+
+  List<Icon> availableOptionIcons = [];
+
   @override
   Widget build(BuildContext context) {
     House house = ModalRoute.of(context)!.settings.arguments as House;
@@ -44,6 +59,10 @@ class _DetailPageState extends State<DetailPage> {
           .where((element) => element.documentId == house.documentId)
           .isNotEmpty,
     );
+    for(int i = 0; i < house.optionList.length; i++){
+      if(house.optionList[i]) availableOptionIcons.add(optionIconList[i]);
+    }
+    //bool isBookMarked = passedProduct.;
 
     return Scaffold(
       appBar: AppBar(
@@ -75,7 +94,7 @@ class _DetailPageState extends State<DetailPage> {
           AspectRatio(
             aspectRatio: 16/11,
             child : Image.network(
-              "https://handong.edu/site/handong/res/img/logo.png",
+              house.imageUrl,
               fit: BoxFit.fitHeight,
             ),
           ),
@@ -109,63 +128,34 @@ class _DetailPageState extends State<DetailPage> {
           ),
           const Padding(
             padding: EdgeInsets.only(left:30, right:30),
+            child: Text(house.description),
+          ),
+          Padding(
+            padding: EdgeInsets.only(left:30, right:30),
             child: Text("Available Options"),
           ),
           SizedBox(
             height: 100,
-            child: ListView(
-              // shrinkWrap: true,
-              scrollDirection: Axis.horizontal,
-              padding: EdgeInsets.all(8),
-              children: [ // TODO
-                SizedBox(
-                  width: 100,
-                  child : Card(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: const [
-                        Icon(Icons.wifi),
-                        Text("WiFi"),
-                        //Sized
-                      ],
-                    ),
-                  )
-                ),
-                SizedBox(
+            child : ListView.builder(
+                scrollDirection: Axis.horizontal,
+                padding: EdgeInsets.all(8),
+                itemCount: availableOptionIcons.length,
+                itemBuilder: (context, idx ){
+                  return Container(
                     width: 100,
                     child : Card(
                       child: Column(
-                        children: const [
-                          Icon(Icons.wifi),
-                          Text("WiFi"),
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          availableOptionIcons[idx],//Icon(Icons.wifi),
+                          Text(_options[idx]),
+                          //Sized
                         ],
                       ),
                     )
-                ),
-                SizedBox(
-                  width: 100,
-                  child : Card(
-                    child: Column(
-                      children: const [
-                        Icon(Icons.wifi),
-                        Text("WiFi"),
-                      ],
-                    ),
-                  )
-                ),
-                SizedBox(
-                  width: 100,
-                  child : Card(
-                    child: Column(
-                      children: const [
-                        Icon(Icons.wifi),
-                        Text("WiFi"),
-                      ],
-                    ),
-                  )
-                ),
-              ],
-            ),
+                  );
+                }
+            )
           ),
         ],
       ),
