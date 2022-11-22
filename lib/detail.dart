@@ -126,7 +126,7 @@ class _DetailPageState extends State<DetailPage> {
               ),
             ],
           ),
-          const Padding(
+          Padding(
             padding: EdgeInsets.only(left:30, right:30),
             child: Text(house.description),
           ),

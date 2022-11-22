@@ -221,8 +221,8 @@ class _HomePageState extends State<HomePage> {
         location : document['location'],
         documentId : document.id,
         ownerId : document['userId'],
-        description: document['description'],
-        monthlyPay : document['monthlyPay'],
+        description: document['description'] as String,
+        monthlyPay : document['monthlyPay'] as int ,
         deposit : document['deposit'],
         optionList : List<bool>.from(document['options']),
       );
