@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 import 'firebase_options.dart';
+import 'dbutility.dart';
 // import 'home.dart';
 
 
@@ -40,6 +41,7 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       body: SafeArea(
         child: ListView(
@@ -57,16 +59,8 @@ class _LoginPageState extends State<LoginPage> {
               onPressed: () async{
                 User? user = await signInWithGoogle(context: context);
                 if(user != null){
-                  FirebaseFirestore.instance
-                      .collection('user')
-                      .doc(user.uid)
-                      .set({
-                    'email': user.email.toString(),
-                    'name': user.displayName.toString(),
-                    'status_message': 'I promise to take the test honestly before GOD',
-                    'uid': user.uid,
-                  });
-                  //addUserInfo(user);
+                  // TODO : Need to check if the user exist in DB before adding a new one
+                  if( !isUserExist(user) ) addGoogleUser(user);
                   Navigator.pushNamed(context, '/home');
                 }
               },
@@ -80,18 +74,8 @@ class _LoginPageState extends State<LoginPage> {
 
                 User? user = userCredential.user;
 
-                if(user != null){
-                  user.updateDisplayName("anonymous user");
-                  //user.updateEmail("anonymous");
-                  FirebaseFirestore.instance
-                      .collection('user')
-                      .doc(user.uid)
-                      .set({
-                    'status_message': 'I promise to take the test honestly before GOD',
-                    'uid': user.uid,
-                  });
-                  Navigator.pushNamed(context, '/home');
-                }
+                addAnonymousUser(user);
+                Navigator.pushNamed(context, '/home');
               },
               child: const Text('Anonymous Login'),
             ),
