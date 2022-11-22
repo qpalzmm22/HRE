@@ -17,6 +17,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  int _selectedIndex = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +31,35 @@ class _HomePageState extends State<HomePage> {
             children: const [
               Text("Do this"),
             ]
-        )
+        ),
+        bottomNavigationBar : BottomNavigationBar(
+          items: const <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              label: 'home',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.bookmark),
+              label: 'bookmark',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.message),
+              label: 'message',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.account_circle),
+              label: 'profile',
+            ),
+          ],
+          currentIndex: _selectedIndex,
+//          selectedItemColor: Colors.amber[800],
+
+          onTap: (ind){
+            setState(() {
+              _selectedIndex = ind;
+            });
+          },
+        ),
     );
   }
 }
