@@ -34,7 +34,13 @@ class _HomePageState extends State<HomePage> {
                 onPressed: (){
                   Navigator.pushNamed(context, '/detail');
                 },
-                child: Text("Detail")
+                child: Text("자세히")
+              ),
+              TextButton(
+                onPressed: (){
+                  Navigator.pushNamed(context, '/addHouse');
+                },
+                child: Text("매물 등록")
               ),
             ]
         ),

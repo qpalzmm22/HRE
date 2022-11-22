@@ -4,8 +4,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:horizontal_card_pager/card_item.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:horizontal_card_pager/horizontal_card_pager.dart';
 
 Widget IconLocation(String str){
   return Row(
@@ -40,7 +42,8 @@ class _DetailPageState extends State<DetailPage> {
           ),
         ],
       ),
-      body : ListView(
+      body : Column(
+        crossAxisAlignment : CrossAxisAlignment.start,
         children : [
           AspectRatio(
             aspectRatio: 16/11,
@@ -77,10 +80,68 @@ class _DetailPageState extends State<DetailPage> {
               ),
             ],
           ),
-          Row(
-          )
-        ]
-      )
+          Padding(
+            padding: EdgeInsets.only(left:30, right:30),
+            child: Text("Available Options"),
+          ),
+          SizedBox(
+            height: 100,
+            child: ListView(
+              // shrinkWrap: true,
+              scrollDirection: Axis.horizontal,
+              padding: EdgeInsets.all(8),
+              children: [ // TODO
+                Container(
+                  width: 100,
+                  child : Card(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        Icon(Icons.wifi),
+                        Text("WiFi"),
+                        //Sized
+                      ],
+                    ),
+                  )
+                ),
+                Container(
+                    width: 100,
+                    child : Card(
+                      child: Column(
+                        children: [
+                          Icon(Icons.wifi),
+                          Text("WiFi"),
+                        ],
+                      ),
+                    )
+                ),
+                Container(
+                  width: 100,
+                  child : Card(
+                    child: Column(
+                      children: [
+                        Icon(Icons.wifi),
+                        Text("WiFi"),
+                      ],
+                    ),
+                  )
+                ),
+                Container(
+                  width: 100,
+                  child : Card(
+                    child: Column(
+                      children: [
+                        Icon(Icons.wifi),
+                        Text("WiFi"),
+                      ],
+                    ),
+                  )
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
