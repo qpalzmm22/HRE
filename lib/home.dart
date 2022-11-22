@@ -28,8 +28,20 @@ class _HomePageState extends State<HomePage> {
           title: const Text("Main"),
         ),
         body: Column(
-            children: const [
+            children: [
               Text("Do this"),
+              TextButton(
+                onPressed: (){
+                  Navigator.pushNamed(context, '/detail');
+                },
+                child: Text("자세히")
+              ),
+              TextButton(
+                onPressed: (){
+                  Navigator.pushNamed(context, '/addHouse');
+                },
+                child: Text("매물 등록")
+              ),
             ]
         ),
         bottomNavigationBar : BottomNavigationBar(
