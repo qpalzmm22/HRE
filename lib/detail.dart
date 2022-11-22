@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -9,7 +10,9 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:horizontal_card_pager/horizontal_card_pager.dart';
 
-Widget IconLocation(String str){
+import 'appState.dart';
+
+Widget iconLocation(String str){
   return Row(
     children: [
       Icon(Icons.location_on),
@@ -28,13 +31,21 @@ class DetailPage extends StatefulWidget {
 }
 
 class _DetailPageState extends State<DetailPage> {
+
+
+
+
   int _selectedIndex = 0;
+
 
   @override
   Widget build(BuildContext context) {
+    House house = ModalRoute.of(context)!.settings.arguments as House;
+    //bool isBookMarked = passedProduct.;
+
     return Scaffold(
       appBar: AppBar(
-        title: Text("NAme of the building"), // TODO
+        title: Text(house.name), // TODO
         actions: [
           IconButton(
             onPressed: (){},
@@ -50,15 +61,15 @@ class _DetailPageState extends State<DetailPage> {
             child : Image.network(
               "https://handong.edu/site/handong/res/img/logo.png",
               fit: BoxFit.fitHeight,
-            ), // TODO : from data
+            ),
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               Column(
                 children: [
-                  Text("100만원 | 30만원"),
-                  IconLocation("장량로 128번길 24-5"),
+                  Text("${house.deposit}만원 | ${house.monthlyPay}원"),
+                  iconLocation("장량로 128번길 24-5"), // TODO
                 ],
               ),
               Column(

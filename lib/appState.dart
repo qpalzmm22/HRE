@@ -6,7 +6,8 @@ class House {
   final String name;
   final String location;
   final String documentId;
-  final User owner;
+  final String ownerId;
+  final String description;
   final int monthlyPay;
   final int deposit;
   House(
@@ -15,7 +16,8 @@ class House {
       required this.monthlyPay,
       required this.deposit,
       required this.location,
-      required this.owner,
+      required this.description,
+      required this.ownerId,
       required this.documentId});
 }
 
@@ -24,8 +26,11 @@ class AppState extends ChangeNotifier{
 
   late User user;
   final List<House> _houses = [];
-
   List<House> get houses => _houses;
+
+  House? _curHouse;
+  House? get curHouse => _curHouse;
+
 
   void add(House house) {
     _houses.add(house);
@@ -41,6 +46,8 @@ class AppState extends ChangeNotifier{
     _houses.clear();
     notifyListeners();
   }
+
+
 
 
 }
