@@ -49,6 +49,8 @@ dependencies:
   scroll_snap_list: ^0.9.1
   horizontal_card_pager: ^1.1.1
   image_picker: ^0.8.6
+  getwidget: ^3.0.1
+  fluttericon: ^2.0.0
 
 dev_dependencies:
   flutter_test:

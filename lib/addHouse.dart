@@ -8,6 +8,8 @@ import 'package:horizontal_card_pager/card_item.dart';
 import 'package:horizontal_card_pager/horizontal_card_pager.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
+
+import 'package:getwidget/getwidget.dart';
 import 'dbutility.dart';
 
 
@@ -21,7 +23,6 @@ Widget IconLocation(String str){
 }
 
 
-
 class AddHousePage extends StatefulWidget {
   const AddHousePage({Key? key}) : super(key: key);
 
@@ -30,15 +31,28 @@ class AddHousePage extends StatefulWidget {
 }
 
 class _AddHousePageState extends State<AddHousePage> {
-  //PickedFile? _image;
   List<XFile> _images = [XFile("https://firebasestorage.googleapis.com/v0/b/handong-real-estate.appspot.com/o/addPhoto.png?alt=media&token=90bcd02f-91d3-4dd6-adb0-43317ad3cda8")];
   bool isFileUploaded = false;
   final _houseNameController = TextEditingController();
+  final _houseDepositController = TextEditingController();
   final _houseMonthlyController = TextEditingController();
   final _houseDescriptionController = TextEditingController();
 
+  static List<String> _options = [
+    "sink", "wifi", "bed", "gas_stove",
+    "refrigerator", "airconditioner", "closet", "washing_machine",
+    "chair", "shoe_closet", "veranda"
+  ];
+
+  //List<String> get options => _options;
+
+  List<bool> options_value = List.generate(_options.length, (index) => false);
+
   @override
   Widget build(BuildContext context) {
+    // default : false
+    //List<bool> options_value = List.generate(_options.length, (index) => false);
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -49,7 +63,6 @@ class _AddHousePageState extends State<AddHousePage> {
             onPressed: () async {
               String thumbnail = '';
               List<String> uploadedImageUrls = [];
-
               if(isFileUploaded){
                 for(int i = 0; i < _images.length; i++){
                   String imageUrl = await uploadFile(File(_images[i].path));
@@ -59,10 +72,12 @@ class _AddHousePageState extends State<AddHousePage> {
               }
               addHouse(
                   _houseNameController.text,
+                  int.parse(_houseDepositController.text),
                   int.parse(_houseMonthlyController.text),
                   _houseDescriptionController.text,
                   thumbnail,
-                  uploadedImageUrls
+                  uploadedImageUrls,
+                  options_value,
               );
               Navigator.pushNamed(context, '/home');
             },
@@ -74,7 +89,7 @@ class _AddHousePageState extends State<AddHousePage> {
         ],
       ),
       body: SafeArea(
-        child: Column(
+        child: ListView(
           children: [
             HorizontalCardPager(
               initialPage : 2, // default value is 2
@@ -88,32 +103,6 @@ class _AddHousePageState extends State<AddHousePage> {
                   );
               }),
             ),
-
-
-            // Container(
-            //   height: 100,
-            //   width: 100,
-            //   child: ListView.builder(
-            //     scrollDirection: Axis.horizontal,
-            //     itemBuilder: (context, ind){
-            //       return
-            //     },
-            //   )
-            // ),
-            // SizedBox(
-            //   width: double.infinity,
-            //   height: 300,
-            //   child:
-            //   _image
-            //       ? Image.network(
-            //     "http://handong.edu/site/handong/res/img/logo.png",
-            //     fit: BoxFit.cover,
-            //   )
-            //       : Image.file(
-            //       File(_image!.path),
-            //       fit: BoxFit.cover
-            //   ),
-            // ),
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
@@ -146,7 +135,15 @@ class _AddHousePageState extends State<AddHousePage> {
                     controller: _houseNameController,
                     decoration: const InputDecoration(
                         filled: false,
-                        labelText: 'Product Name'
+                        labelText: 'House Name'
+                    ),
+                  ),
+                  const SizedBox(height: 10,),
+                  TextField(
+                    controller: _houseDepositController,
+                    decoration: const InputDecoration(
+                        filled: false,
+                        labelText: 'Deposit'
                     ),
                   ),
                   const SizedBox(height: 10,),
@@ -154,7 +151,7 @@ class _AddHousePageState extends State<AddHousePage> {
                     controller: _houseMonthlyController,
                     decoration: const InputDecoration(
                         filled: false,
-                        labelText: 'Price'
+                        labelText: 'Monthly Pay'
                     ),
                   ),
                   const SizedBox(height: 10,),
@@ -163,6 +160,39 @@ class _AddHousePageState extends State<AddHousePage> {
                     decoration: const InputDecoration(
                         filled: false,
                         labelText: 'Description'
+                    ),
+                  ),
+                  const SizedBox(height: 10,),
+                  Container(
+                    width : 400,
+                    height : 700,
+                    child : GridView.count(
+                      shrinkWrap: true,
+                      crossAxisCount: 3,
+                      //padding: const EdgeInsets.all(4.0),
+                      //childAspectRatio: 16.0 / 19.0,
+                      children: List.generate(
+                          _options.length, (idx) {
+                        return Card(
+                          child: Column(
+                            children: [
+                              Text(
+                                _options[idx],
+                                //style: TextStyle(fontSize: 10),
+                              ),
+                              GFCheckbox(
+                                size : GFSize.SMALL,
+                                onChanged: (value){
+                                  setState((){
+                                    options_value[idx] = value;
+                                  });
+                                },
+                                value: options_value[idx],
+                              ),
+                            ],
+                          ),
+                        );
+                      }),
                     ),
                   ),
                 ],

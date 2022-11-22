@@ -26,7 +26,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
   TextEditingController searchBarController = TextEditingController();
-  CollectionReference products = FirebaseFirestore.instance.collection('houses');
+  CollectionReference houseCollectionReference = FirebaseFirestore.instance.collection('houses');
 
   @override
   Widget build(BuildContext context) {
@@ -59,18 +59,11 @@ class _HomePageState extends State<HomePage> {
             buildHouseCard(),
             TextButton(
               onPressed: (){
-                Navigator.pushNamed(context, '/detail');
-              },
-              child: Text("자세히")
-            ),
-            TextButton(
-              onPressed: (){
                 Navigator.pushNamed(context, '/addHouse');
               },
               child: Text("매물 등록")
             ),
           ],
-              
         ),
         bottomNavigationBar : BottomNavigationBar(
           items: const <BottomNavigationBarItem>[
@@ -192,11 +185,26 @@ class _HomePageState extends State<HomePage> {
     final NumberFormat numberFormat = NumberFormat.simpleCurrency(locale: "ko_KR");
 
     return snapshot.data!.docs.map((DocumentSnapshot document) {
+
+      House house = House(
+        imageUrl : document['thumbnail'],
+        name : document['name'],
+        location : document['location'],
+        documentId : document.id,
+        ownerId : document['userId'],
+        description: document['description'],
+        monthlyPay : document['monthlyPay'],
+        deposit : document['deposit'],
+        optionList : List<bool>.from(document['options']),
+      );
+
       var isInCart = context.select<AppState, bool>(
             (cart) => cart.houses
             .where((element) => element.documentId == document.id)
             .isNotEmpty,
       );
+
+
       return Card(
         child: Column(
           //crossAxisAlignment: CrossAxisAlignment.start,
@@ -207,7 +215,7 @@ class _HomePageState extends State<HomePage> {
                   ? Stack(
                 children: [
                   Image.network(
-                    document['thumbnail'],
+                    house.imageUrl,
                     fit: BoxFit.cover,
                   ),
                   const Positioned(
@@ -220,7 +228,7 @@ class _HomePageState extends State<HomePage> {
                 ],
               )
                   : Image.network(
-                document['thumbnail'],
+                house.imageUrl,
                 fit: BoxFit.cover,
               ),
             ),
@@ -237,7 +245,7 @@ class _HomePageState extends State<HomePage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
                           Text(
-                            document['name'],
+                            house.name,//document['name'],
                             style: const TextStyle(
                               fontSize: 13,
                               fontWeight: FontWeight.bold,
@@ -246,12 +254,18 @@ class _HomePageState extends State<HomePage> {
                           ),
                           Expanded(
                             child: Text(
-                              numberFormat.format(document['monthlyPay']),
+                              numberFormat.format(house.monthlyPay),//document['monthlyPay']),
                               style: const TextStyle(
                                 fontSize: 11,
                               ),
                               maxLines: 2,
                             ),
+                          ),
+                          TextButton(
+                              onPressed: (){
+                                Navigator.pushNamed(context, '/detail', arguments: house);
+                              },
+                              child: Text("자세히")
                           ),
                           // Row(
                           //     mainAxisAlignment: MainAxisAlignment.end,
@@ -307,7 +321,7 @@ class _HomePageState extends State<HomePage> {
     return
       Expanded(
       child: StreamBuilder<QuerySnapshot>(
-        stream: products.orderBy('monthlyPay', descending: true).snapshots(),
+        stream: houseCollectionReference.orderBy('monthlyPay', descending: true).snapshots(),
         builder: (BuildContext context,
             AsyncSnapshot<QuerySnapshot> snapshot) {
           if(snapshot.connectionState == ConnectionState.waiting){
