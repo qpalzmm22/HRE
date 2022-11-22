@@ -1,6 +1,18 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+class RoomInfo{
+  final String room_type;
+  final int num_of_bedrooms;
+  final int num_of_bathrooms;
+
+  RoomInfo({
+    required this.room_type,
+    required this.num_of_bedrooms,
+    required this.num_of_bathrooms,
+  });
+}
+
 class House {
   final String imageUrl;
   final String name;
@@ -10,15 +22,18 @@ class House {
   final String description;
   final int monthlyPay;
   final int deposit;
-  House(
-      {required this.imageUrl,
+  final List<bool> optionList;
+  House({
+      required this.imageUrl,
       required this.name,
       required this.monthlyPay,
       required this.deposit,
       required this.location,
       required this.description,
       required this.ownerId,
-      required this.documentId});
+      required this.documentId,
+      required this.optionList,
+  });
 }
 
 
