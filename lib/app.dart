@@ -25,7 +25,7 @@ class HreApp extends StatelessWidget {
       theme: ThemeData(
         // Define the default brightness and colors.
         //brightness: Brightness.dark,
-        primaryColor: Color(0xff268C9F),
+        primaryColor: const Color(0xff268C9F),
         //bottomAppBarColor: Color(0xff7E6078),
         bottomNavigationBarTheme: const BottomNavigationBarThemeData(
           backgroundColor : Colors.deepPurpleAccent,//Color(0xff7E6078),
