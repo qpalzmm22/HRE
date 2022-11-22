@@ -1,8 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'appState.dart';
 
 
 class ProfileMessage{
@@ -14,17 +12,7 @@ class ProfileMessage{
   final String uid;
 }
 
-class Profile extends StatefulWidget{
-
-  const Profile({Key? key}) : super(key: key);
-
-  @override
-  State<StatefulWidget> createState() => _ProfileState();
-
-}
-
-class _ProfileState extends State<Profile>
-{
+class Profile {
   CollectionReference users = FirebaseFirestore.instance.collection('user');
 
   SizedBox _getProfilePhoto(User? user){
@@ -62,38 +50,11 @@ class _ProfileState extends State<Profile>
       textAlign: TextAlign.center,
     );
   }
-  @override
-  Widget build(BuildContext context) {
 
-    var cart = context.read<AppState>();
-    final User user = cart.user;
-    return Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.black,
-          leading: IconButton(
-            onPressed: (){
-              Navigator.pop(context);
-            },
-            icon: const Icon(
-              Icons.arrow_back,
-              color: Colors.white,
-            ),
-          ),
-          actions: [
-            IconButton(
-              onPressed: () async {
-                cart.removeAll();
-                await FirebaseAuth.instance.signOut();
-                Navigator.pop(context);
-                Navigator.pop(context);
-              }, icon: const Icon(
-              Icons.exit_to_app,
-              color: Colors.white,
-            ),
-            )
-          ],
-        ),
-        body: Container(
+  Widget getProfile(User user) {
+
+
+    return Container(
           alignment: Alignment.center,
           padding: const EdgeInsets.symmetric(horizontal: 70.0),
           color: Colors.black,
@@ -147,8 +108,8 @@ class _ProfileState extends State<Profile>
               )
             ],
           ),
-        )
+        );
 
-    );
+
   }
 }

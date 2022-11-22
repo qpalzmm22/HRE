@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:handong_real_estate/profile.dart';
 import 'package:intl/intl.dart';
 import 'package:anim_search_bar/anim_search_bar.dart';
 import 'package:scroll_snap_list/scroll_snap_list.dart';
@@ -26,52 +27,66 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
   TextEditingController searchBarController = TextEditingController();
-  CollectionReference products = FirebaseFirestore.instance.collection('houses');
+  CollectionReference houseCollectionReference = FirebaseFirestore.instance.collection('houses');
 
   @override
   Widget build(BuildContext context) {
 
     var cart = context.watch<AppState>();
+    Profile profilePage = Profile();
+    Widget homeScreen(){
 
-    final ThemeData theme = Theme.of(context);
-    return Scaffold(
-        // appBar: AppBar(
-        //   title:
-        //   cart.user.displayName == null
-        //   ? Text("환영합니다.")
-        //   : Text("${cart.user.displayName.toString()}님, 반갑습니다."),
-        // ),
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            buildAnimSearchBar(),
-            locationSection(),
-            const SizedBox(height: 10,),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 25,),
-              child: Text("새로운 매물",
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          buildAnimSearchBar(),
+          locationSection(),
+          const SizedBox(height: 10,),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 25,),
+            child: Text("새로운 매물",
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
               ),
             ),
-            buildHouseCard(),
-            TextButton(
-              onPressed: (){
-                Navigator.pushNamed(context, '/detail');
-              },
-              child: Text("자세히")
-            ),
-            TextButton(
-              onPressed: (){
-                Navigator.pushNamed(context, '/addHouse');
-              },
-              child: Text("매물 등록")
-            ),
-          ],
-              
+          ),
+          buildHouseCard(),
+          // Row(
+          //   children: [
+          //     TextButton(
+          //         onPressed: (){
+          //           Navigator.pushNamed(context, '/detail');
+          //         },
+          //         child: Text("자세히")
+          //     ),
+          //     TextButton(
+          //         onPressed: (){
+          //           Navigator.pushNamed(context, '/addHouse');
+          //         },
+          //         child: Text("매물 등록")
+          //     ),
+          //   ],
+          // ),
+        ],
+
+      );
+    }
+
+    Widget buildBody(){
+      if(_selectedIndex == 0){
+        return homeScreen();
+      } else{
+        return profilePage.getProfile(cart.user);
+      }
+
+    }
+
+    return Scaffold(
+        appBar: AppBar(
+
         ),
+        body: buildBody(),
         bottomNavigationBar : BottomNavigationBar(
           items: const <BottomNavigationBarItem>[
             BottomNavigationBarItem(
@@ -197,107 +212,113 @@ class _HomePageState extends State<HomePage> {
             .where((element) => element.documentId == document.id)
             .isNotEmpty,
       );
+
       return Card(
-        child: Column(
-          //crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            AspectRatio(
-              aspectRatio: 16 / 11,
-              child: isInCart
-                  ? Stack(
-                children: [
-                  Image.network(
-                    document['thumbnail'],
-                    fit: BoxFit.cover,
-                  ),
-                  const Positioned(
-                    top: 10,
-                    right: 10,
-                    child: Icon(
-                      Icons.check_circle,
-                      color: Colors.blue,
-                    ),),
-                ],
-              )
-                  : Image.network(
-                document['thumbnail'],
-                fit: BoxFit.cover,
-              ),
-            ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
-                child: Row(
+        child:InkWell(
+          onTap: (){
+
+          },
+          child: Column(
+            //crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              AspectRatio(
+                aspectRatio: 16 / 11,
+                child: isInCart
+                    ? Stack(
                   children: [
-                    const SizedBox(
-                      width: 7,
+                    Image.network(
+                      document['thumbnail'],
+                      fit: BoxFit.cover,
                     ),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Text(
-                            document['name'],
-                            style: const TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            maxLines: 1,
-                          ),
-                          Expanded(
-                            child: Text(
-                              numberFormat.format(document['monthlyPay']),
-                              style: const TextStyle(
-                                fontSize: 11,
-                              ),
-                              maxLines: 2,
-                            ),
-                          ),
-                          // Row(
-                          //     mainAxisAlignment: MainAxisAlignment.end,
-                          //     children: [
-                          //       SizedBox(
-                          //         width: 50,
-                          //         height: 30,
-                          //         child: TextButton(
-                          //           onPressed: () async {
-                          //             House info = House(
-                          //               owner: user,
-                          //               documentId: document.id,
-                          //               name: document['productName'],
-                          //               //description: document['description'],
-                          //               imageUrl: document['imageUrl'],
-                          //               price: document['price'],
-                          //             );
-                          //             Navigator.pushNamed(context, '/product_detail', arguments: info).then((value){
-                          //               if(value == true){
-                          //                 Future.delayed(const Duration(milliseconds: 500), (){
-                          //                   products.doc(document.id).delete();
-                          //                   FirebaseStorage.instance
-                          //                       .refFromURL(document['imageUrl'])
-                          //                       .delete();
-                          //                 });
-                          //               }
-                          //             });
-                          //           },
-                          //           child: const Text(
-                          //             "more",
-                          //             textAlign: TextAlign.right,
-                          //             style: TextStyle(
-                          //               fontSize: 11,
-                          //             ),
-                          //           ),
-                          //         ),
-                          //       ),
-                          //     ]),
-                        ],
-                      ),
-                    ),
+                    const Positioned(
+                      top: 10,
+                      right: 10,
+                      child: Icon(
+                        Icons.check_circle,
+                        color: Colors.blue,
+                      ),),
                   ],
+                )
+                    : Image.network(
+                  document['thumbnail'],
+                  fit: BoxFit.cover,
                 ),
               ),
-            ),
-          ],
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+                  child: Row(
+                    children: [
+                      const SizedBox(
+                        width: 7,
+                      ),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Text(
+                              document['name'],
+                              style: const TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              maxLines: 1,
+                            ),
+                            Expanded(
+                              child: Text(
+                                numberFormat.format(document['monthlyPay']),
+                                style: const TextStyle(
+                                  fontSize: 11,
+                                ),
+                                maxLines: 2,
+                              ),
+                            ),
+                            // Row(
+                            //     mainAxisAlignment: MainAxisAlignment.end,
+                            //     children: [
+                            //       SizedBox(
+                            //         width: 50,
+                            //         height: 30,
+                            //         child: TextButton(
+                            //           onPressed: () async {
+                            //             House info = House(
+                            //               owner: user,
+                            //               documentId: document.id,
+                            //               name: document['productName'],
+                            //               //description: document['description'],
+                            //               imageUrl: document['imageUrl'],
+                            //               price: document['price'],
+                            //             );
+                            //             Navigator.pushNamed(context, '/product_detail', arguments: info).then((value){
+                            //               if(value == true){
+                            //                 Future.delayed(const Duration(milliseconds: 500), (){
+                            //                   products.doc(document.id).delete();
+                            //                   FirebaseStorage.instance
+                            //                       .refFromURL(document['imageUrl'])
+                            //                       .delete();
+                            //                 });
+                            //               }
+                            //             });
+                            //           },
+                            //           child: const Text(
+                            //             "more",
+                            //             textAlign: TextAlign.right,
+                            //             style: TextStyle(
+                            //               fontSize: 11,
+                            //             ),
+                            //           ),
+                            //         ),
+                            //       ),
+                            //     ]),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ) ,
         ),
       );
     }).toList();
@@ -307,7 +328,7 @@ class _HomePageState extends State<HomePage> {
     return
       Expanded(
       child: StreamBuilder<QuerySnapshot>(
-        stream: products.orderBy('monthlyPay', descending: true).snapshots(),
+        stream: houseCollectionReference.orderBy('monthlyPay', descending: true).snapshots(),
         builder: (BuildContext context,
             AsyncSnapshot<QuerySnapshot> snapshot) {
           if(snapshot.connectionState == ConnectionState.waiting){
