@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 // import 'home.dart';
 import 'login.dart';
 import 'home.dart';
+import 'detail.dart';
 
 class HreApp extends StatelessWidget {
   const HreApp({Key? key}) : super(key: key);
@@ -19,6 +20,7 @@ class HreApp extends StatelessWidget {
         // '/add_product': (BuildContext context) => const AddProduct(),
         // '/product_detail': (BuildContext context) => const ProductDetail(),
         '/home': (BuildContext context) => const HomePage(),
+        '/detail': (BuildContext context) => const DetailPage(),
         // '/edit': (BuildContext context) => const UpdateProduct(),
         // '/wishlist': (BuildContext context) => const Wishlist(),
       },

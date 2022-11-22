@@ -28,8 +28,14 @@ class _HomePageState extends State<HomePage> {
           title: const Text("Main"),
         ),
         body: Column(
-            children: const [
+            children: [
               Text("Do this"),
+              TextButton(
+                onPressed: (){
+                  Navigator.pushNamed(context, '/detail');
+                },
+                child: Text("Detail")
+              ),
             ]
         ),
         bottomNavigationBar : BottomNavigationBar(
