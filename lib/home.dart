@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:handong_real_estate/bookmark.dart';
 import 'package:handong_real_estate/profile.dart';
 import 'package:intl/intl.dart';
 import 'package:anim_search_bar/anim_search_bar.dart';
@@ -33,7 +34,11 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
 
     var cart = context.watch<AppState>();
+    final ThemeData theme = Theme.of(context);
+
     Profile profilePage = Profile();
+    Bookmark bookmarkPage = Bookmark();
+
     Widget homeScreen(){
 
       return Column(
@@ -76,44 +81,49 @@ class _HomePageState extends State<HomePage> {
     Widget buildBody(){
       if(_selectedIndex == 0){
         return homeScreen();
-      } else{
+      } else if(_selectedIndex == 1){
+        return bookmarkPage.getBookmarkPage(context);
+      }
+      else{
         return profilePage.getProfile(cart.user);
       }
 
     }
-
     return Scaffold(
-        appBar: AppBar(
+      body: buildBody(),
+      bottomNavigationBar : BottomNavigationBar(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.bookmark),
+            label: 'bookmark',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.message),
+            label: 'message',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.account_circle),
+            label: 'profile',
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        onTap: (ind){
+          setState(() {
+            _selectedIndex = ind;
+          });
+        },
+      ),
+      floatingActionButton: IconButton(
+        icon: const Icon(Icons.add),
+        onPressed: () {
+          Navigator.pushNamed(context, '/addHouse');
+        },
 
-        ),
-        body: buildBody(),
-        bottomNavigationBar : BottomNavigationBar(
-          items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-              label: 'home',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.bookmark),
-              label: 'bookmark',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.message),
-              label: 'message',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.account_circle),
-              label: 'profile',
-            ),
-          ],
-          currentIndex: _selectedIndex,
-
-          onTap: (ind){
-            setState(() {
-              _selectedIndex = ind;
-            });
-          },
-        ),
+      ),
     );
   }
 
@@ -139,6 +149,7 @@ class _HomePageState extends State<HomePage> {
       child: Card(
           child:InkWell(
             onTap: (){
+
             },
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -173,16 +184,16 @@ class _HomePageState extends State<HomePage> {
                   ),),
               ) ,
               TextButton(
-                  onPressed: (){
+                onPressed: (){
 
-                  },
-                  child: const Text(
-                    "View ALL",
-                    style: TextStyle(
-                        color: Colors.grey,
-                        fontSize: 17
-                    ),
+                },
+                child: const Text(
+                  "View ALL",
+                  style: TextStyle(
+                      color: Colors.grey,
+                      fontSize: 17
                   ),
+                ),
               ),
             ],
           ),
@@ -207,16 +218,28 @@ class _HomePageState extends State<HomePage> {
     final NumberFormat numberFormat = NumberFormat.simpleCurrency(locale: "ko_KR");
 
     return snapshot.data!.docs.map((DocumentSnapshot document) {
+
+      House house = House(
+        imageUrl : document['thumbnail'],
+        name : document['name'],
+        location : "", // TODO //houseDocument['location'],
+        documentId : document.id,
+        ownerId : "",//houseDocument[''],
+        description: document['description'],
+        monthlyPay : document['monthlyPay'],
+        deposit : 0,//document['th'],
+      );
+
       var isInCart = context.select<AppState, bool>(
-            (cart) => cart.houses
+            (cart) => cart.bookmarked
             .where((element) => element.documentId == document.id)
             .isNotEmpty,
       );
 
       return Card(
-        child:InkWell(
+        child: InkWell(
           onTap: (){
-
+            Navigator.pushNamed(context, '/detail', arguments: house);
           },
           child: Column(
             //crossAxisAlignment: CrossAxisAlignment.start,
@@ -227,7 +250,7 @@ class _HomePageState extends State<HomePage> {
                     ? Stack(
                   children: [
                     Image.network(
-                      document['thumbnail'],
+                      house.imageUrl,
                       fit: BoxFit.cover,
                     ),
                     const Positioned(
@@ -240,7 +263,7 @@ class _HomePageState extends State<HomePage> {
                   ],
                 )
                     : Image.network(
-                  document['thumbnail'],
+                  house.imageUrl,
                   fit: BoxFit.cover,
                 ),
               ),
@@ -257,7 +280,7 @@ class _HomePageState extends State<HomePage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
                             Text(
-                              document['name'],
+                              house.name,//document['name'],
                               style: const TextStyle(
                                 fontSize: 13,
                                 fontWeight: FontWeight.bold,
@@ -266,7 +289,7 @@ class _HomePageState extends State<HomePage> {
                             ),
                             Expanded(
                               child: Text(
-                                numberFormat.format(document['monthlyPay']),
+                                numberFormat.format(house.monthlyPay),//document['monthlyPay']),
                                 style: const TextStyle(
                                   fontSize: 11,
                                 ),
@@ -318,8 +341,9 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
             ],
-          ) ,
-        ),
+          ),
+        )
+
       );
     }).toList();
   }
@@ -327,29 +351,29 @@ class _HomePageState extends State<HomePage> {
   Widget buildHouseCard(){
     return
       Expanded(
-      child: StreamBuilder<QuerySnapshot>(
-        stream: houseCollectionReference.orderBy('monthlyPay', descending: true).snapshots(),
-        builder: (BuildContext context,
-            AsyncSnapshot<QuerySnapshot> snapshot) {
-          if(snapshot.connectionState == ConnectionState.waiting){
-            return const Center(
-                child: Center(child: CircularProgressIndicator()));
-          }
-          else{
-            return OrientationBuilder(
-              builder: (context, orientation) {
-                return GridView.count(
-                  scrollDirection: Axis.horizontal,
-                  crossAxisCount: 1,
-                  padding: const EdgeInsets.all(16.0),
-                  childAspectRatio: 16.0 / 12.0,
-                  children: _buildHouseCards(context, snapshot),
-                );
-              },
-            );
-          }
-        },
-      ),
-    );
+        child: StreamBuilder<QuerySnapshot>(
+          stream: houseCollectionReference.orderBy('monthlyPay', descending: true).snapshots(),
+          builder: (BuildContext context,
+              AsyncSnapshot<QuerySnapshot> snapshot) {
+            if(snapshot.connectionState == ConnectionState.waiting){
+              return const Center(
+                  child: Center(child: CircularProgressIndicator()));
+            }
+            else{
+              return OrientationBuilder(
+                builder: (context, orientation) {
+                  return GridView.count(
+                    scrollDirection: Axis.horizontal,
+                    crossAxisCount: 1,
+                    padding: const EdgeInsets.all(16.0),
+                    childAspectRatio: 16.0 / 12.0,
+                    children: _buildHouseCards(context, snapshot),
+                  );
+                },
+              );
+            }
+          },
+        ),
+      );
   }
 }

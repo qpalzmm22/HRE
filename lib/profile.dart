@@ -2,9 +2,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-
-class ProfileMessage{
-  ProfileMessage({required this.email, required this.name, required this.statusMessage, required this.uid});
+class ProfileMessage {
+  ProfileMessage(
+      {required this.email,
+      required this.name,
+      required this.statusMessage,
+      required this.uid});
 
   final String email;
   final String name;
@@ -15,36 +18,39 @@ class ProfileMessage{
 class Profile {
   CollectionReference users = FirebaseFirestore.instance.collection('user');
 
-  SizedBox _getProfilePhoto(User? user){
+  SizedBox _getProfilePhoto(User? user) {
     String photoUrl;
-    if(user?.photoURL == null){
+    if (user?.photoURL == null) {
       photoUrl = "https://handong.edu/site/handong/res/img/logo.png";
-    } else{
+    } else {
       photoUrl = user?.photoURL as String;
     }
     return SizedBox(
-        height: 200,
-        width: 200,
+      height: 130,
+      width: 130,
+      child: ClipOval(
+        clipper: MyClipper(),
         child: Image.network(
           photoUrl,
           fit: BoxFit.fitHeight,
-        ));
+        ),
+      ),
+    );
   }
 
-  Text _getEmail(User? user){
+  Text _getEmail(User? user) {
     String email;
-    if(user?.email == null){
+    if (user?.email == null) {
       email = "anonymous";
-    }else{
+    } else {
       email = user?.email as String;
     }
-
     return Text(
       email,
       style: const TextStyle(
-        color: Colors.white,
         fontSize: 13,
         fontWeight: FontWeight.bold,
+        color: Colors.blueGrey,
       ),
       maxLines: 1,
       textAlign: TextAlign.center,
@@ -52,64 +58,55 @@ class Profile {
   }
 
   Widget getProfile(User user) {
-
-
-    return Container(
-          alignment: Alignment.center,
-          padding: const EdgeInsets.symmetric(horizontal: 70.0),
-          color: Colors.black,
-          child: Column(
-            children: [
-              _getProfilePhoto(user),
-              const SizedBox(height: 20,),
-              Text(
-                user?.uid as String,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 30,
-                  fontWeight: FontWeight.bold,
-                ),
-                maxLines: 1,
-                textAlign: TextAlign.center,
+    return SafeArea(
+      child: Container(
+        alignment: Alignment.center,
+        padding: const EdgeInsets.symmetric(horizontal: 30.0),
+        child: Column(
+          children: [
+            const SizedBox(
+              height: 20,
+            ),
+            _getProfilePhoto(user),
+            const SizedBox(
+              height: 20,
+            ),
+            Text(
+              user?.displayName as String,
+              style: const TextStyle(
+                fontSize: 25,
+                fontWeight: FontWeight.bold,
               ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(
-                    height: 50,
-                    width: double.infinity,
-                    child: Divider(
-                        color: Colors.white,
-                        thickness: 1.5),
-                  ),
-                  const SizedBox(height: 10,),
-                  _getEmail(user),
-                  const SizedBox(height: 50,),
-                  const Text(
-                    "Kim Gibeom",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 13,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    maxLines: 1,
-                    textAlign: TextAlign.center,
-                  ),
-                  const Text(
-                    "I promise to take the test honestly before GOD.",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 13,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    textAlign: TextAlign.left,
-                  ),
-                ],
-              )
-            ],
-          ),
-        );
+              maxLines: 1,
+              textAlign: TextAlign.center,
+            ),
+            _getEmail(user),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: const [
+                SizedBox(
+                  height: 50,
+                  width: double.infinity,
+                  child: Divider(color: Colors.black, thickness: 1.5),
+                ),
+              ],
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}
 
+class MyClipper extends CustomClipper<Rect> {
+  @override
+  getClip(Size size) {
+    // TODO: implement getClip
+    return Rect.fromLTWH(0, 0, size.width, size.height);
+  }
 
+  @override
+  bool shouldReclip(covariant CustomClipper oldClipper) {
+    return false;
   }
 }

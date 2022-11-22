@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -9,10 +10,12 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:horizontal_card_pager/horizontal_card_pager.dart';
 
-Widget IconLocation(String str){
+import 'appState.dart';
+
+Widget iconLocation(String str){
   return Row(
     children: [
-      Icon(Icons.location_on),
+      const Icon(Icons.location_on),
       Text(str),
     ],
   );
@@ -28,17 +31,41 @@ class DetailPage extends StatefulWidget {
 }
 
 class _DetailPageState extends State<DetailPage> {
+
   int _selectedIndex = 0;
+
 
   @override
   Widget build(BuildContext context) {
+    House house = ModalRoute.of(context)!.settings.arguments as House;
+
+    var isBookmarked = context.select<AppState, bool>(
+          (cart) => cart.bookmarked
+          .where((element) => element.documentId == house.documentId)
+          .isNotEmpty,
+    );
+
     return Scaffold(
       appBar: AppBar(
-        title: Text("NAme of the building"), // TODO
+        title: Text(house.name), // TODO
         actions: [
           IconButton(
-            onPressed: (){},
-            icon: Icon(Icons.bookmark_add_outlined) // : Icon(Icons.bookmark),  // TODO : if bookmarked make it
+            onPressed: isBookmarked
+            ? null
+            : () {
+              var cart = context.read<AppState>();
+              cart.add(house);
+              //TODO Add the database
+            },
+            icon: isBookmarked
+            ? const Icon(
+              Icons.check_circle_rounded,
+              color: Colors.yellow,
+            )
+            : const Icon(
+                Icons.bookmark_add_outlined,
+              color: Colors.yellow,
+            ) // : Icon(Icons.bookmark),  // TODO : if bookmarked make it
           ),
         ],
       ),
@@ -50,21 +77,21 @@ class _DetailPageState extends State<DetailPage> {
             child : Image.network(
               "https://handong.edu/site/handong/res/img/logo.png",
               fit: BoxFit.fitHeight,
-            ), // TODO : from data
+            ),
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               Column(
                 children: [
-                  Text("100만원 | 30만원"),
-                  IconLocation("장량로 128번길 24-5"),
+                  Text("${house.deposit}만원 | ${house.monthlyPay}원"),
+                  iconLocation("장량로 128번길 24-5"), // TODO
                 ],
               ),
               Column(
                 children: [
                   Row(
-                    children: [
+                    children: const [
                       Icon(
                         Icons.star,
                         color: Colors.yellow,
@@ -74,13 +101,13 @@ class _DetailPageState extends State<DetailPage> {
                   ),
                   TextButton(
                     onPressed: (){},
-                    child : Text("all reviews"),
+                    child : const Text("all reviews"),
                   ),
                 ],
               ),
             ],
           ),
-          Padding(
+          const Padding(
             padding: EdgeInsets.only(left:30, right:30),
             child: Text("Available Options"),
           ),
@@ -91,12 +118,12 @@ class _DetailPageState extends State<DetailPage> {
               scrollDirection: Axis.horizontal,
               padding: EdgeInsets.all(8),
               children: [ // TODO
-                Container(
+                SizedBox(
                   width: 100,
                   child : Card(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
+                      children: const [
                         Icon(Icons.wifi),
                         Text("WiFi"),
                         //Sized
@@ -104,33 +131,33 @@ class _DetailPageState extends State<DetailPage> {
                     ),
                   )
                 ),
-                Container(
+                SizedBox(
                     width: 100,
                     child : Card(
                       child: Column(
-                        children: [
+                        children: const [
                           Icon(Icons.wifi),
                           Text("WiFi"),
                         ],
                       ),
                     )
                 ),
-                Container(
+                SizedBox(
                   width: 100,
                   child : Card(
                     child: Column(
-                      children: [
+                      children: const [
                         Icon(Icons.wifi),
                         Text("WiFi"),
                       ],
                     ),
                   )
                 ),
-                Container(
+                SizedBox(
                   width: 100,
                   child : Card(
                     child: Column(
-                      children: [
+                      children: const [
                         Icon(Icons.wifi),
                         Text("WiFi"),
                       ],
