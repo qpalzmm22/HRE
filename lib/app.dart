@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:handong_real_estate/profile.dart';
 
 // import 'home.dart';
 import 'login.dart';
@@ -15,7 +16,7 @@ class HreApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/' : (BuildContext context) => const LoginPage(),
-        // '/profile': (BuildContext context) => const Profile(),
+        '/profile': (BuildContext context) => const Profile(),
         // '/add_product': (BuildContext context) => const AddProduct(),
         // '/product_detail': (BuildContext context) => const ProductDetail(),
         '/home': (BuildContext context) => const HomePage(),
