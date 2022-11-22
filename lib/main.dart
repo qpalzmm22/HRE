@@ -13,6 +13,7 @@
 // limitations under the License.
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:material_floating_search_bar/material_floating_search_bar.dart';
 import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 
@@ -32,4 +33,6 @@ void main() async{
     ),
   );
   //runApp(const ShrineApp());
+
+
 }

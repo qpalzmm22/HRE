@@ -4,7 +4,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:provider/provider.dart';
 
+import 'appState.dart';
 import 'firebase_options.dart';
 import 'dbutility.dart';
 // import 'home.dart';
@@ -41,7 +43,7 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-
+  var cart = context.watch<AppState>();
     return Scaffold(
       body: SafeArea(
         child: ListView(
@@ -49,9 +51,9 @@ class _LoginPageState extends State<LoginPage> {
           children: <Widget>[
             const SizedBox(height: 80.0),
             Column(
-              children: <Widget>[
-                const SizedBox(height: 16.0),
-                const Text('SHRINE'),
+              children: const <Widget>[
+                SizedBox(height: 16.0),
+                Text('SHRINE'),
               ],
             ),
             const SizedBox(height: 120.0),
@@ -61,6 +63,7 @@ class _LoginPageState extends State<LoginPage> {
                 if(user != null){
                   // TODO : Need to check if the user exist in DB before adding a new one
                   if( !isUserExist(user) ) addGoogleUser(user);
+                  cart.user = user!;
                   Navigator.pushNamed(context, '/home');
                 }
               },
@@ -73,6 +76,7 @@ class _LoginPageState extends State<LoginPage> {
                 final userCredential = await FirebaseAuth.instance.signInAnonymously();
 
                 User? user = userCredential.user;
+                cart.user = user!;
 
                 addAnonymousUser(user);
                 Navigator.pushNamed(context, '/home');
