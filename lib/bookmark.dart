@@ -67,12 +67,18 @@ class _BookmarkedList extends StatelessWidget{
                     maxLines: 1,
                   ),
                   const SizedBox(height: 8.0),
-                  Text(
-                    house.location,
-                    style: theme.textTheme.subtitle2,
+                  Row(
+                    children: [
+                      const Icon(Icons.location_on),
+                      Text(
+                        house.location,
+                        style: theme.textTheme.subtitle2,
+                      ),
+                    ],
                   ),
+
                   Text(
-                    "${numberFormat.format(house.monthlyPay)} / 월",//document['monthlyPay']),
+                    "보증금 ${numberFormat.format(house.deposit)} / 월 ${numberFormat.format(house.monthlyPay)} ",//document['monthlyPay']),
                   ),
                 ],
               ),

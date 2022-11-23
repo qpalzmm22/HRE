@@ -284,52 +284,21 @@ class _HomePageState extends State<HomePage> {
                               ),
                               maxLines: 1,
                             ),
+                            Row(
+                              children: [
+                                Icon(Icons.location_on),
+                                Text("${house.location}"),
+                              ],
+                            ),
                             Expanded(
                               child: Text(
-                                numberFormat.format(house.monthlyPay),//document['monthlyPay']),
+                                "보증금 ${numberFormat.format(house.deposit)} / 월 ${numberFormat.format(house.monthlyPay)}",//document['monthlyPay']),
                                 style: const TextStyle(
                                   fontSize: 11,
                                 ),
                                 maxLines: 2,
                               ),
                             ),
-                            // Row(
-                            //     mainAxisAlignment: MainAxisAlignment.end,
-                            //     children: [
-                            //       SizedBox(
-                            //         width: 50,
-                            //         height: 30,
-                            //         child: TextButton(
-                            //           onPressed: () async {
-                            //             House info = House(
-                            //               owner: user,
-                            //               documentId: document.id,
-                            //               name: document['productName'],
-                            //               //description: document['description'],
-                            //               imageUrl: document['imageUrl'],
-                            //               price: document['price'],
-                            //             );
-                            //             Navigator.pushNamed(context, '/product_detail', arguments: info).then((value){
-                            //               if(value == true){
-                            //                 Future.delayed(const Duration(milliseconds: 500), (){
-                            //                   products.doc(document.id).delete();
-                            //                   FirebaseStorage.instance
-                            //                       .refFromURL(document['imageUrl'])
-                            //                       .delete();
-                            //                 });
-                            //               }
-                            //             });
-                            //           },
-                            //           child: const Text(
-                            //             "more",
-                            //             textAlign: TextAlign.right,
-                            //             style: TextStyle(
-                            //               fontSize: 11,
-                            //             ),
-                            //           ),
-                            //         ),
-                            //       ),
-                            //     ]),
                           ],
                         ),
                       ),
