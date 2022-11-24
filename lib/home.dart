@@ -54,22 +54,6 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
           buildHouseCard(),
-          // Row(
-          //   children: [
-          //     TextButton(
-          //         onPressed: (){
-          //           Navigator.pushNamed(context, '/detail');
-          //         },
-          //         child: Text("자세히")
-          //     ),
-          //     TextButton(
-          //         onPressed: (){
-          //           Navigator.pushNamed(context, '/addHouse');
-          //         },
-          //         child: Text("매물 등록")
-          //     ),
-          //   ],
-          // ),
         ],
       );
     }
@@ -84,6 +68,21 @@ class _HomePageState extends State<HomePage> {
         return profilePage.getProfile(cart.user);
       }
 
+    }
+
+    Widget buildFloatActionButton(){
+
+      if(_selectedIndex == 0){
+        return IconButton(
+          icon: const Icon(Icons.add),
+          onPressed: () {
+            Navigator.pushNamed(context, '/addHouse');
+          },
+        );
+      }
+      else {
+        return Text("");
+      }
     }
     return Scaffold(
       body: buildBody(),
@@ -113,13 +112,7 @@ class _HomePageState extends State<HomePage> {
           });
         },
       ),
-      floatingActionButton: IconButton(
-        icon: const Icon(Icons.add),
-        onPressed: () {
-          Navigator.pushNamed(context, '/addHouse');
-        },
-
-      ),
+      floatingActionButton: buildFloatActionButton(),
     );
   }
 
