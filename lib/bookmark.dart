@@ -44,40 +44,46 @@ class _BookmarkedList extends StatelessWidget{
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
             ),
-            child: ListTile(
-              leading: SizedBox(
-                height: 110.0,
-                width: 90.0,
-                child: Image(
-                    image: NetworkImage(
-                      house.imageUrl,
-                  ),
-                      fit: BoxFit.fitHeight),
-              ),
-              title: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Text(
-                    house.name,
-                    style: theme.textTheme.headline6,
-                    maxLines: 1,
-                  ),
-                  const SizedBox(height: 8.0),
-                  Row(
-                    children: [
-                      const Icon(Icons.location_on),
-                      Text(
-                        house.location,
-                        style: theme.textTheme.subtitle2,
+            child: InkWell(
+              onTap: (){
+                Navigator.pushNamed(context, "/detail", arguments: house);
+              },
+              child: ListTile(
+                leading: SizedBox(
+                  height: 110.0,
+                  width: 90.0,
+                  child: Image(
+                      image: NetworkImage(
+                        house.imageUrl,
                       ),
-                    ],
-                  ),
-                  Text(
-                    "보증금 ${numberFormat.format(house.deposit)} / 월 ${numberFormat.format(house.monthlyPay)} ",//document['monthlyPay']),
-                  ),
-                ],
+                      fit: BoxFit.cover),
+                ),
+                title: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(
+                      house.name,
+                      style: theme.textTheme.headline6,
+                      maxLines: 1,
+                    ),
+                    const SizedBox(height: 8.0),
+                    Row(
+                      children: [
+                        const Icon(Icons.location_on),
+                        Text(
+                          house.location,
+                          style: theme.textTheme.subtitle2,
+                        ),
+                      ],
+                    ),
+                    Text(
+                      "보증금 ${numberFormat.format(house.deposit)} / 월 ${numberFormat.format(house.monthlyPay)} ",//document['monthlyPay']),
+                    ),
+                  ],
+                ),
               ),
             ),
+
           ),
         );
     }

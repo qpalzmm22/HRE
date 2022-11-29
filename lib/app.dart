@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutterfire_ui/auth.dart';
+import 'package:flutterfire_ui/i10n.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:handong_real_estate/profile.dart';
 
@@ -8,12 +10,34 @@ import 'home.dart';
 import 'detail.dart';
 import 'addHouse.dart';
 
+class LabelOverrides extends DefaultLocalizations {
+  const LabelOverrides();
+
+  @override
+  String get emailInputLabel => '이메일';
+
+  @override
+  String get passwordInputLabel => '비밀번호';
+
+}
+
+
 class HreApp extends StatelessWidget {
   const HreApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      localizationsDelegates: [
+        FlutterFireUILocalizations.withDefaultOverrides(const LabelOverrides()),
+
+        // Delegates below take care of built-in flutter widgets
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+
+        // This delegate is required to provide the labels that are not overridden by LabelOverrides
+        FlutterFireUILocalizations.delegate,
+      ],
       title: 'Shrine',
       initialRoute: '/',
       routes: {
@@ -24,9 +48,35 @@ class HreApp extends StatelessWidget {
         '/detail': (BuildContext context) => const DetailPage(),
         '/addHouse' : (BuildContext context) => const AddHousePage(),
         // '/edit': (BuildContext context) => const UpdateProduct(),
-        // '/wishlist': (BuildContext context) => const Wishlist(),
+        '/profile': (context) {
+          return Scaffold(
+            appBar: AppBar(
+              title: const Text("계정 관리"),
+            ),
+            body: ProfileScreen(
+              // no providerConfigs property here as well
+              actions: [
+                SignedOutAction((context) {
+                  Navigator.pushReplacementNamed(context, '/');
+                }),
+              ],
+            ),
+          );
+        },
       },
       theme: ThemeData(
+        scaffoldBackgroundColor: Colors.purple[50],
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Color(0xFFFAF7FF),
+          titleTextStyle: TextStyle(
+            color: Colors.black,
+            fontSize: 20,
+          ),
+          iconTheme: IconThemeData(
+            color: Colors.black,
+            size: 20,
+          ),
+        ),
         // Define the default brightness and colors.
         //brightness: Brightness.dark,
         primaryColor: const Color(0xff268C9F),

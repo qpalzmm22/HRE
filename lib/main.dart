@@ -13,6 +13,7 @@
 // limitations under the License.
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutterfire_ui/auth.dart';
 import 'package:material_floating_search_bar/material_floating_search_bar.dart';
 import 'package:provider/provider.dart';
 import 'firebase_options.dart';
@@ -23,9 +24,12 @@ import 'app.dart';
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  if(Firebase.apps.isEmpty){
-    await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  }
+
+
+  FlutterFireUIAuth.configureProviders([
+    const EmailProviderConfiguration(),
+    GoogleProviderConfiguration(clientId: DefaultFirebaseOptions.currentPlatform.iosClientId.toString()),
+  ]);
   runApp(
     ChangeNotifierProvider(
       create: (context) => AppState(),

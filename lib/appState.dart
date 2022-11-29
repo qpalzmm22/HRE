@@ -39,9 +39,12 @@ class House {
 
 class AppState extends ChangeNotifier{
 
-  late User user;
   final List<House> _bookmarked = [];
+  final List<House> _recentlyView =[];
+
+
   List<House> get bookmarked => _bookmarked;
+  List<House> get recentlyView => _recentlyView;
 
   House? _curHouse;
   House? get curHouse => _curHouse;
@@ -52,13 +55,18 @@ class AppState extends ChangeNotifier{
     notifyListeners();
   }
 
-  void remove(House product){
-    _bookmarked.remove(product);
+  void remove(House house){
+    _bookmarked.remove(house);
     notifyListeners();
   }
 
   void removeAll() {
     _bookmarked.clear();
+    notifyListeners();
+  }
+
+  void addRecentlyView(House house){
+    _recentlyView.add(house);
     notifyListeners();
   }
 
