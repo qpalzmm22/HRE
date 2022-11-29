@@ -21,6 +21,7 @@ class Bookmark{
 
 }
 
+
 class _BookmarkedList extends StatelessWidget{
 
   @override
@@ -28,20 +29,15 @@ class _BookmarkedList extends StatelessWidget{
 
     final NumberFormat numberFormat = NumberFormat.simpleCurrency(locale: "ko_KR");
 
-    var itemNameStyle = Theme.of(context).textTheme.titleLarge;
     var cart = context.watch<AppState>();
 
-    List<Widget> _buildListCards(BuildContext context) {
+    Widget buildListCards(House house) {
       // List<Product> products = ProductsRepository.loadProducts(Category.all);
 
-      if (cart.bookmarked.isEmpty) {
-        return const <Container>[];
-      }
 
       final ThemeData theme = Theme.of(context);
 
-      return cart.bookmarked.map((house) {
-        return SizedBox(
+      return  SizedBox(
           height: 130,
           child: Card(
             // elevation: 5,
@@ -67,24 +63,45 @@ class _BookmarkedList extends StatelessWidget{
                     maxLines: 1,
                   ),
                   const SizedBox(height: 8.0),
-                  Text(
-                    house.location,
-                    style: theme.textTheme.subtitle2,
+                  Row(
+                    children: [
+                      const Icon(Icons.location_on),
+                      Text(
+                        house.location,
+                        style: theme.textTheme.subtitle2,
+                      ),
+                    ],
                   ),
                   Text(
-                    "${numberFormat.format(house.monthlyPay)} / 월",//document['monthlyPay']),
+                    "보증금 ${numberFormat.format(house.deposit)} / 월 ${numberFormat.format(house.monthlyPay)} ",//document['monthlyPay']),
                   ),
                 ],
               ),
             ),
           ),
         );
-      }).toList();
     }
     
-    return ListView(
-      children: _buildListCards(context),
-    );  
+    return ListView.builder(
+      itemCount: cart.bookmarked.length,
+      itemBuilder: (BuildContext context, int index) {
+        final house = cart.bookmarked[index];
+        return Dismissible(
+          background: Container(
+            padding: const EdgeInsets.only(right: 20),
+            alignment: Alignment.centerRight,
+            color: Colors.red,
+            child: const Icon(Icons.delete),
+          ),
+            key: Key(house.name),
+            child: buildListCards(house),
+            onDismissed: (direction){
+                cart.bookmarked.remove(house);
+            },
+        );
+      },
+
+    );
   
   
   }

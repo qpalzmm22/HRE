@@ -59,22 +59,6 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
           buildHouseCard(),
-          // Row(
-          //   children: [
-          //     TextButton(
-          //         onPressed: (){
-          //           Navigator.pushNamed(context, '/detail');
-          //         },
-          //         child: Text("자세히")
-          //     ),
-          //     TextButton(
-          //         onPressed: (){
-          //           Navigator.pushNamed(context, '/addHouse');
-          //         },
-          //         child: Text("매물 등록")
-          //     ),
-          //   ],
-          // ),
         ],
       );
     }
@@ -89,6 +73,21 @@ class _HomePageState extends State<HomePage> {
       }
       else{
         return profilePage.getProfile(cart.user);
+      }
+    }
+
+    Widget buildFloatActionButton(){
+
+      if(_selectedIndex == 0){
+        return IconButton(
+          icon: const Icon(Icons.add),
+          onPressed: () {
+            Navigator.pushNamed(context, '/addHouse');
+          },
+        );
+      }
+      else {
+        return Text("");
       }
     }
     return Scaffold(
@@ -119,12 +118,7 @@ class _HomePageState extends State<HomePage> {
           });
         },
       ),
-      floatingActionButton: IconButton(
-        icon: const Icon(Icons.add),
-        onPressed: () {
-          Navigator.pushNamed(context, '/addHouse');
-        },
-      ),
+      floatingActionButton: buildFloatActionButton(),
     );
   }
 
@@ -289,15 +283,22 @@ class _HomePageState extends State<HomePage> {
                               ),
                               maxLines: 1,
                             ),
+                            Row(
+                              children: [
+                                Icon(Icons.location_on),
+                                Text("${house.location}"),
+                              ],
+                            ),
                             Expanded(
                               child: Text(
-                                numberFormat.format(house.monthlyPay),//document['monthlyPay']),
+                                "보증금 ${numberFormat.format(house.deposit)} / 월 ${numberFormat.format(house.monthlyPay)}",//document['monthlyPay']),
                                 style: const TextStyle(
                                   fontSize: 11,
                                 ),
                                 maxLines: 2,
                               ),
                             ),
+
                             TextButton(
                               child: Text("Send Message"),
                               onPressed: () async {
