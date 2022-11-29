@@ -74,7 +74,6 @@ class _DetailPageState extends State<DetailPage> {
         ));
       }
     }
-    //bool isBookMarked = passedProduct.;
 
     return Scaffold(
       appBar: AppBar(
@@ -82,7 +81,10 @@ class _DetailPageState extends State<DetailPage> {
         actions: [
           IconButton(
             onPressed: isBookmarked
-            ? null
+            ? (){
+              var cart = context.read<AppState>();
+              cart.remove(house);
+            }
             : () {
               var cart = context.read<AppState>();
               cart.add(house);
@@ -105,9 +107,22 @@ class _DetailPageState extends State<DetailPage> {
         children : [
           AspectRatio(
             aspectRatio: 16/11,
-            child : Image.network(
-              house.imageUrl,
-              fit: BoxFit.fitHeight,
+            child :
+            InkWell(
+              onDoubleTap: (){
+                setState(() {
+                  var cart = context.read<AppState>();
+                  if(isBookmarked){
+                    cart.remove(house);
+                  } else{
+                    cart.add(house);
+                  }
+                });
+              },
+              child: Image.network(
+                house.imageUrl,
+                fit: BoxFit.fitHeight,
+              ) ,
             ),
           ),
           Row(
@@ -142,10 +157,6 @@ class _DetailPageState extends State<DetailPage> {
           ),
           Padding(
             padding: EdgeInsets.only(left:30, right:30),
-            child: Text(house.description),
-          ),
-          Padding(
-            padding: EdgeInsets.only(left:30, right:30),
             child: Text("Available Options"),
           ),
           SizedBox(
@@ -161,6 +172,10 @@ class _DetailPageState extends State<DetailPage> {
                 );
               }
             )
+          ),
+          Padding(
+            padding: EdgeInsets.only(left:30, right:30),
+            child: Text(house.description),
           ),
         ],
       ),

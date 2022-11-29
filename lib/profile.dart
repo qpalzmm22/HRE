@@ -59,7 +59,7 @@ class Profile {
 
   Text _getUserName(User? user){
     String userName;
-    if (user?.email == null) {
+    if (user?.displayName == null) {
       userName = "anonymous";
     } else {
       userName = user?.displayName as String;
@@ -100,7 +100,8 @@ class Profile {
                   child: Divider(color: Colors.black, thickness: 1.5),
                 ),
               ],
-            )
+            ),
+
           ],
         ),
       ),

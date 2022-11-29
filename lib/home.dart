@@ -1,9 +1,6 @@
-import 'dart:async';
-import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:handong_real_estate/bookmark.dart';
 import 'package:handong_real_estate/dbutility.dart';
@@ -11,7 +8,6 @@ import 'package:handong_real_estate/profile.dart';
 import 'package:handong_real_estate/messageSession.dart';
 import 'package:intl/intl.dart';
 import 'package:anim_search_bar/anim_search_bar.dart';
-import 'package:scroll_snap_list/scroll_snap_list.dart';
 import 'package:provider/provider.dart';
 import 'appState.dart';
 
@@ -72,7 +68,52 @@ class _HomePageState extends State<HomePage> {
         return messageSessionPage.getMessageSession();
       }
       else{
-        return profilePage.getProfile(cart.user);
+        return profilePage.getProfile(FirebaseAuth.instance.currentUser as User);
+
+      }
+    }
+
+    AppBar? buildAppBar(){
+      if(_selectedIndex == 0){
+        return AppBar(
+          leading: null,
+          title: const Text("Home"),
+          actions: [
+
+          ],
+        );
+      }
+      if(_selectedIndex == 1){
+        return AppBar(
+          leading: null,
+          title: const Text("Bookmarked"),
+          actions: [
+
+          ],
+        );
+      }
+      if(_selectedIndex == 2){
+        return AppBar(
+          leading: null,
+          title: const Text("Message"),
+          actions: [
+
+          ],
+        );
+      }
+      if(_selectedIndex == 3){
+        return AppBar(
+          leading: null,
+          title: const Text("Profile"),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.edit),
+              onPressed: () async {
+                Navigator.pushNamed(context, '/profile');
+              },
+            ),
+          ],
+        );
       }
     }
 
@@ -91,7 +132,10 @@ class _HomePageState extends State<HomePage> {
       }
     }
     return Scaffold(
-      body: buildBody(),
+      appBar: buildAppBar(),
+      body: SafeArea(
+        child: buildBody(),
+      ),
       bottomNavigationBar : BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
@@ -142,6 +186,9 @@ class _HomePageState extends State<HomePage> {
   SizedBox _locationCard(String where, Icon icon){
     return  SizedBox(
       child: Card(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(5),
+          ),
           child:InkWell(
             onTap: (){
 
@@ -234,6 +281,7 @@ class _HomePageState extends State<HomePage> {
 
       return Card(
         child: InkWell(
+          borderRadius: BorderRadius.circular(50),
           onTap: (){
             Navigator.pushNamed(context, '/detail', arguments: house);
           },
