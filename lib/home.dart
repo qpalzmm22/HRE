@@ -6,12 +6,15 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:handong_real_estate/bookmark.dart';
+import 'package:handong_real_estate/dbutility.dart';
 import 'package:handong_real_estate/profile.dart';
+import 'package:handong_real_estate/messageSession.dart';
 import 'package:intl/intl.dart';
 import 'package:anim_search_bar/anim_search_bar.dart';
 import 'package:scroll_snap_list/scroll_snap_list.dart';
 import 'package:provider/provider.dart';
 import 'appState.dart';
+
 
 
 class HomePage extends StatefulWidget {
@@ -35,6 +38,8 @@ class _HomePageState extends State<HomePage> {
 
     Profile profilePage = Profile();
     Bookmark bookmarkPage = Bookmark();
+    MessageSessionPage messageSessionPage = MessageSessionPage();
+
 
     Widget homeScreen(){
 
@@ -63,11 +68,12 @@ class _HomePageState extends State<HomePage> {
         return homeScreen();
       } else if(_selectedIndex == 1){
         return bookmarkPage.getBookmarkPage(context);
+      } else if(_selectedIndex == 2){
+        return messageSessionPage.getMessageSession();
       }
       else{
         return profilePage.getProfile(cart.user);
       }
-
     }
 
     Widget buildFloatActionButton(){
@@ -292,9 +298,31 @@ class _HomePageState extends State<HomePage> {
                                 maxLines: 2,
                               ),
                             ),
+
+                            TextButton(
+                              child: Text("Send Message"),
+                              onPressed: () async {
+                                //Navigator.pushNamed(context, '/detail', arguments: house);
+                                User? user = FirebaseAuth.instance.currentUser;
+
+                                if(user != null){
+                                  List<String> participants = [house.ownerId, user.uid];
+
+                                  String msid = "";
+                                  isMessageSessionExist(participants)?
+                                    msid = getMessageSessionIDbyuids(participants) :
+                                    msid = makeMessageSession(participants);
+
+                                  MessageSession messageSession = await getMessageSession(msid);
+                                  Navigator.pushNamed(context, '/messagePage', arguments: messageSession);
+                                }
+                              },
+                            )
                           ],
                         ),
                       ),
+
+                      //sendMessage();
                     ],
                   ),
                 ),

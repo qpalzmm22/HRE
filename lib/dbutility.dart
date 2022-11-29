@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:handong_real_estate/messageSession.dart';
 import 'package:path/path.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -57,6 +58,9 @@ bool isUserExist(User? user){
   return false;
 }
 
+
+
+
 void addHouse(
     String name,
     int deposit,
@@ -107,4 +111,153 @@ Future<String> uploadFile (File? file) async {
     print("no file");
   }
   return filelink;
+}
+
+class Message{
+  Message(
+      {required this.timestamp,
+        required this.senderId,
+        required this.message,
+      });
+  final Timestamp timestamp;
+  final String senderId;
+  final String message;
+}
+
+class MessageSession {
+  MessageSession(
+      {required this.users,
+        required this.recentMessage,
+        // required this.messagesRef,
+        required this.messages,
+        required this.msid,
+        required this.profileImage,
+        required this.timestamp,
+        required this.sessionName,
+      });
+
+  final List<String> users;
+  final String recentMessage;
+  //final CollectionReference messagesRef;
+  final List<Message> messages;
+  final String profileImage;
+  final String msid;
+  final String sessionName;
+  final Timestamp timestamp;
+}
+
+
+bool isMessageSessionExist(List<String> uids){
+  uids.sort();
+
+  bool ret = false;
+  FirebaseFirestore.instance
+      .collection('messageSessions')
+      .where('users', arrayContains: uids) // TODO : need to check if this works
+      .get().then((value) {
+    ret =  (value.size > 0);
+  });
+  return ret;
+}
+
+String getMessageSessionIDbyuids(List<String> uids){
+  uids.sort();
+
+  String msid = "";
+  FirebaseFirestore.instance
+      .collection('messageSessions')
+      .where('users', arrayContains: uids)
+      .get()
+      .then((value) =>  msid = value.docs.elementAt(0).id
+  );
+  return msid;
+}
+
+
+Future<MessageSession> getMessageSession(String msid){
+
+  return FirebaseFirestore.instance
+    .collection('messageSessions')
+    .doc(msid)
+    .get()
+    .then((doc) => MessageSession(
+      users: List<String>.from(doc['users']),
+      recentMessage: doc['recentMessage'],
+      messages : getMessages(msid),
+      msid: msid,
+      profileImage: doc['profileImage'],
+      timestamp: doc['timestamp'] as Timestamp,
+      sessionName: doc['sessionName']
+    ));
+  //return messageSession;
+}
+
+// Returns msid
+String makeMessageSession(List<String> uids){
+  uids.sort();
+
+  String msid = FirebaseFirestore.instance
+      .collection('messageSessions').doc().id;
+
+  FirebaseFirestore.instance
+      .collection('messageSessions').doc(msid)
+      .set(<String, dynamic>{
+    'msid': msid,
+    'users': uids,
+    'recentMessage': "",
+    'profileImage' : "",// TODO : get it from firebase storage?
+    'timestamp': FieldValue.serverTimestamp(),
+    'sessionName': "Message Session" // TODO : Fix this
+//    'messages' : ,
+  });
+  return msid;
+}
+
+String getUid(){
+  User? user = FirebaseAuth.instance.currentUser;
+  if(user != null) return user.uid;
+  return "";
+}
+
+Future<Message> addMessage(String msid, String senderid, String message) {
+
+  Future<DocumentReference> messageRef =  FirebaseFirestore.instance
+      .collection('messageSessions')
+      .doc(msid)
+      .collection('messages')
+      .add(<String, dynamic>{
+    'timestamp': FieldValue.serverTimestamp(),
+    'senderId': senderid,
+    'message': message,
+  });
+
+  return messageRef.then((docRef) {
+    return docRef.get().then((doc) => Message(
+        timestamp: doc['timestamp'],
+        senderId: doc['senderId'],
+        message: doc['message'],
+    ));
+  });
+
+  //return outMessage;
+}
+
+List<Message> getMessages(String msid){
+  List<Message> messages = [];
+
+  FirebaseFirestore.instance
+      .collection('messageSessions')
+      .doc(msid)
+      .collection('messages')
+      .orderBy('timestamp')
+      .get().then((value) {
+        value.docs.map((doc) => messages.add(Message(
+          timestamp: doc['timestamp'],
+          senderId: doc['senderId'],
+          message : doc['message'],
+        ))
+      );
+  });
+  return messages;
+
 }

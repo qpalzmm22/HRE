@@ -7,6 +7,8 @@ import 'login.dart';
 import 'home.dart';
 import 'detail.dart';
 import 'addHouse.dart';
+import 'map.dart';
+import 'messagePage.dart';
 
 class HreApp extends StatelessWidget {
   const HreApp({Key? key}) : super(key: key);
@@ -23,7 +25,9 @@ class HreApp extends StatelessWidget {
         '/home': (BuildContext context) => const HomePage(),
         '/detail': (BuildContext context) => const DetailPage(),
         '/addHouse' : (BuildContext context) => const AddHousePage(),
-        // '/edit': (BuildContext context) => const UpdateProduct(),
+        '/map': (BuildContext context) => MyMap(),
+        '/messagePage': (BuildContext context) => const MessagePage(),
+        //'/messageSessions'
         // '/wishlist': (BuildContext context) => const Wishlist(),
       },
       theme: ThemeData(
