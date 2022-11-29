@@ -6,12 +6,15 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:handong_real_estate/bookmark.dart';
+import 'package:handong_real_estate/dbutility.dart';
 import 'package:handong_real_estate/profile.dart';
+import 'package:handong_real_estate/messageSession.dart';
 import 'package:intl/intl.dart';
 import 'package:anim_search_bar/anim_search_bar.dart';
 import 'package:scroll_snap_list/scroll_snap_list.dart';
 import 'package:provider/provider.dart';
 import 'appState.dart';
+
 
 
 class HomePage extends StatefulWidget {
@@ -35,6 +38,8 @@ class _HomePageState extends State<HomePage> {
 
     Profile profilePage = Profile();
     Bookmark bookmarkPage = Bookmark();
+    MessageSessionPage messageSessionPage = MessageSessionPage();
+
 
     Widget homeScreen(){
 
@@ -79,11 +84,12 @@ class _HomePageState extends State<HomePage> {
         return homeScreen();
       } else if(_selectedIndex == 1){
         return bookmarkPage.getBookmarkPage(context);
+      } else if(_selectedIndex == 2){
+        return messageSessionPage.getMessageSession();
       }
       else{
         return profilePage.getProfile(cart.user);
       }
-
     }
     return Scaffold(
       body: buildBody(),
@@ -118,7 +124,6 @@ class _HomePageState extends State<HomePage> {
         onPressed: () {
           Navigator.pushNamed(context, '/addHouse');
         },
-
       ),
     );
   }
@@ -293,46 +298,30 @@ class _HomePageState extends State<HomePage> {
                                 maxLines: 2,
                               ),
                             ),
-                            // Row(
-                            //     mainAxisAlignment: MainAxisAlignment.end,
-                            //     children: [
-                            //       SizedBox(
-                            //         width: 50,
-                            //         height: 30,
-                            //         child: TextButton(
-                            //           onPressed: () async {
-                            //             House info = House(
-                            //               owner: user,
-                            //               documentId: document.id,
-                            //               name: document['productName'],
-                            //               //description: document['description'],
-                            //               imageUrl: document['imageUrl'],
-                            //               price: document['price'],
-                            //             );
-                            //             Navigator.pushNamed(context, '/product_detail', arguments: info).then((value){
-                            //               if(value == true){
-                            //                 Future.delayed(const Duration(milliseconds: 500), (){
-                            //                   products.doc(document.id).delete();
-                            //                   FirebaseStorage.instance
-                            //                       .refFromURL(document['imageUrl'])
-                            //                       .delete();
-                            //                 });
-                            //               }
-                            //             });
-                            //           },
-                            //           child: const Text(
-                            //             "more",
-                            //             textAlign: TextAlign.right,
-                            //             style: TextStyle(
-                            //               fontSize: 11,
-                            //             ),
-                            //           ),
-                            //         ),
-                            //       ),
-                            //     ]),
+                            TextButton(
+                              child: Text("Send Message"),
+                              onPressed: () async {
+                                //Navigator.pushNamed(context, '/detail', arguments: house);
+                                User? user = FirebaseAuth.instance.currentUser;
+
+                                if(user != null){
+                                  List<String> participants = [house.ownerId, user.uid];
+
+                                  String msid = "";
+                                  isMessageSessionExist(participants)?
+                                    msid = getMessageSessionIDbyuids(participants) :
+                                    msid = makeMessageSession(participants);
+
+                                  MessageSession messageSession = await getMessageSession(msid);
+                                  Navigator.pushNamed(context, '/messagePage', arguments: messageSession);
+                                }
+                              },
+                            )
                           ],
                         ),
                       ),
+
+                      //sendMessage();
                     ],
                   ),
                 ),

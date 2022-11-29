@@ -61,8 +61,4 @@ class AppState extends ChangeNotifier{
     _bookmarked.clear();
     notifyListeners();
   }
-
-
-
-
 }
