@@ -23,6 +23,8 @@ Widget iconLocation(String str){
 }
 
 
+
+
 class DetailPage extends StatefulWidget {
 
   const DetailPage({Key? key}) : super(key: key);
@@ -48,7 +50,7 @@ class _DetailPageState extends State<DetailPage> {
     "chair", "shoe_closet", "veranda"
   ];
 
-  List<Icon> availableOptionIcons = [];
+  List<Card> availableOptionCards = [];
 
   @override
   Widget build(BuildContext context) {
@@ -60,7 +62,17 @@ class _DetailPageState extends State<DetailPage> {
           .isNotEmpty,
     );
     for(int i = 0; i < house.optionList.length; i++){
-      if(house.optionList[i]) availableOptionIcons.add(optionIconList[i]);
+      if(house.optionList[i]) {
+        availableOptionCards.add(Card(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              optionIconList[i],//Icon(Icons.wifi),
+              Text(_options[i]),
+            ],
+          ),
+        ));
+      }
     }
 
     return Scaffold(
@@ -80,7 +92,7 @@ class _DetailPageState extends State<DetailPage> {
             },
             icon: isBookmarked
             ? const Icon(
-              Icons.check_circle_rounded,
+              Icons.bookmark_added,
               color: Colors.yellow,
             )
             : const Icon(
@@ -123,7 +135,9 @@ class _DetailPageState extends State<DetailPage> {
                 ],
               ),
               Column(
+                //mainAxisAlignment: MainAxisAlignment.center ,
                 children: [
+                  SizedBox(height: 16),
                   Row(
                     children: const [
                       Icon(
@@ -150,22 +164,13 @@ class _DetailPageState extends State<DetailPage> {
             child : ListView.builder(
                 scrollDirection: Axis.horizontal,
                 padding: EdgeInsets.all(8),
-                itemCount: availableOptionIcons.length,
+                itemCount: availableOptionCards.length,
                 itemBuilder: (context, idx ){
                   return Container(
                     width: 100,
-                    child : Card(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          availableOptionIcons[idx],//Icon(Icons.wifi),
-                          Text(_options[idx]),
-                          //Sized
-                        ],
-                      ),
-                    )
-                  );
-                }
+                    child : availableOptionCards[idx]
+                );
+              }
             )
           ),
           Padding(

@@ -9,6 +9,8 @@ import 'login.dart';
 import 'home.dart';
 import 'detail.dart';
 import 'addHouse.dart';
+import 'map.dart';
+import 'messagePage.dart';
 
 class LabelOverrides extends DefaultLocalizations {
   const LabelOverrides();
@@ -63,6 +65,10 @@ class HreApp extends StatelessWidget {
             ),
           );
         },
+        '/map': (BuildContext context) => MyMap(),
+        '/messagePage': (BuildContext context) => const MessagePage(),
+        //'/messageSessions'
+        // '/wishlist': (BuildContext context) => const Wishlist(),
       },
       theme: ThemeData(
         scaffoldBackgroundColor: Colors.purple[50],
