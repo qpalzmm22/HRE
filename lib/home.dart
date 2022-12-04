@@ -2,12 +2,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:handong_real_estate/bookmark.dart';
 import 'package:handong_real_estate/dbutility.dart';
 import 'package:handong_real_estate/profile.dart';
 import 'package:handong_real_estate/messageSession.dart';
 import 'package:intl/intl.dart';
-import 'package:anim_search_bar/anim_search_bar.dart';
+// import 'package:anim_search_bar/anim_search_bar.dart';
 import 'package:provider/provider.dart';
 import 'appState.dart';
 
@@ -42,7 +43,8 @@ class _HomePageState extends State<HomePage> {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          buildAnimSearchBar(),
+          const SizedBox(height: 10,),
+          //buildAnimSearchBar(),
           locationSection(),
           const SizedBox(height: 10,),
           const Padding(
@@ -83,7 +85,7 @@ class _HomePageState extends State<HomePage> {
                 onPressed: (){
                   Navigator.pushNamed(context, '/map');
                 },
-                icon: Icon(Icons.map))
+                icon: const Icon(Icons.search))
           ],
         );
       }
@@ -119,6 +121,7 @@ class _HomePageState extends State<HomePage> {
           ],
         );
       }
+      return null;
     }
 
     Widget buildFloatActionButton(){
@@ -170,24 +173,24 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget buildAnimSearchBar(){
+  // Widget buildAnimSearchBar(){
+  //
+  //   return Padding(
+  //     padding:  const EdgeInsets.symmetric(vertical: 0, horizontal: 25),
+  //     child: AnimSearchBar(
+  //       autoFocus: true
+  //       width: 400,
+  //       textController: searchBarController,
+  //       onSuffixTap: (){
+  //         setState(() {
+  //           searchBarController.clear();
+  //         });
+  //       },
+  //     ),
+  //   );
+  // }
 
-    return Padding(
-      padding:  const EdgeInsets.symmetric(vertical: 0, horizontal: 25),
-      child: AnimSearchBar(
-        autoFocus: true,
-        width: 400,
-        textController: searchBarController,
-        onSuffixTap: (){
-          setState(() {
-            searchBarController.clear();
-          });
-        },
-      ),
-    );
-  }
-
-  SizedBox _locationCard(String where, Icon icon){
+  SizedBox _locationCard(Icon icon, Location location){
     return  SizedBox(
       child: Card(
           shape: RoundedRectangleBorder(
@@ -195,7 +198,7 @@ class _HomePageState extends State<HomePage> {
           ),
           child:InkWell(
             onTap: (){
-
+              Navigator.pushNamed(context, '/map', arguments: location);
             },
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -204,7 +207,7 @@ class _HomePageState extends State<HomePage> {
                 children: [
                   icon,
                   const SizedBox(width: 5,),
-                  Text(where),
+                  Text(location.name),
                 ],
               ),
             ) ,
@@ -248,10 +251,10 @@ class _HomePageState extends State<HomePage> {
             child: ListView(
               scrollDirection: Axis.horizontal,
               children: [
-                _locationCard("그할마", const Icon(Icons.home_filled)),
-                _locationCard("다이소(양덕)", const Icon(Icons.shopping_cart)),
-                _locationCard("법원", const Icon(Icons.house_outlined)),
-                _locationCard("커피유야", const Icon(Icons.coffee)),
+                _locationCard(const Icon(Icons.home_filled), Location(name: "그할마", center: const LatLng(36.079753, 129.394197))),
+                _locationCard(const Icon(Icons.shopping_cart), Location(name: "다이소(양덕)", center: const LatLng(36.084206, 129.396543))),
+                _locationCard(const Icon(Icons.house_outlined), Location(name: "법원", center: const LatLng(36.08925, 129.387588))),
+                _locationCard(const Icon(Icons.coffee), Location(name: "커피유야",  center: const LatLng(36.080508, 129.399658))),
               ],
             ),
           ),
@@ -415,4 +418,13 @@ class _HomePageState extends State<HomePage> {
         ),
       );
   }
+}
+
+class Location{
+  final String name;
+  final LatLng center;
+
+  Location({required this.name, required this.center});
+
+
 }
