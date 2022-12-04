@@ -64,6 +64,7 @@ dependencies:
   location: ^4.4.0
   geolocator: ^9.0.2
   filter_list: ^1.0.2
+  flutter_google_places: ^0.3.0
 
 dev_dependencies:
   flutter_test:

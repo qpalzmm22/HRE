@@ -37,11 +37,8 @@ class _Map extends State<Map> {
 
   Future<void> getAddress(LatLng location) async{
     String url = 'https://maps.googleapis.com/maps/api/geocode/json?latlng=${location.latitude},${location.longitude}&key=AIzaSyBCizThefGgFPIwkUjYe2JiZkzdMQyJiRs';
-    final Uri uri = Uri(
-      scheme: url
-    );
-    final response = await http.get(uri);
-    print(jsonDecode(response.toString()));
+    final response = await http.get(Uri.parse(url));
+    print(jsonDecode(response.body)['results'][0]['formatted_address']);
   }
 
   @override
