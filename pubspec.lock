@@ -354,6 +354,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_naver_map:
+    dependency: "direct main"
+    description:
+      name: flutter_naver_map
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.10.5"
   flutter_plugin_android_lifecycle:
     dependency: transitive
     description:

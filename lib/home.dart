@@ -79,7 +79,11 @@ class _HomePageState extends State<HomePage> {
           leading: null,
           title: const Text("Home"),
           actions: [
-
+            IconButton(
+                onPressed: (){
+                  Navigator.pushNamed(context, '/map');
+                },
+                icon: Icon(Icons.map))
           ],
         );
       }
