@@ -125,7 +125,6 @@ class _HomePageState extends State<HomePage> {
     }
 
     Widget buildFloatActionButton(){
-
       if(_selectedIndex == 0){
         return IconButton(
           icon: const Icon(Icons.add),
@@ -190,7 +189,7 @@ class _HomePageState extends State<HomePage> {
   //   );
   // }
 
-  SizedBox _locationCard(Icon icon, Location location){
+  SizedBox _locationCard(Icon icon, MapPoint location){
     return  SizedBox(
       child: Card(
           shape: RoundedRectangleBorder(
@@ -251,10 +250,10 @@ class _HomePageState extends State<HomePage> {
             child: ListView(
               scrollDirection: Axis.horizontal,
               children: [
-                _locationCard(const Icon(Icons.home_filled), Location(name: "그할마", center: const LatLng(36.079753, 129.394197))),
-                _locationCard(const Icon(Icons.shopping_cart), Location(name: "다이소(양덕)", center: const LatLng(36.084206, 129.396543))),
-                _locationCard(const Icon(Icons.house_outlined), Location(name: "법원", center: const LatLng(36.08925, 129.387588))),
-                _locationCard(const Icon(Icons.coffee), Location(name: "커피유야",  center: const LatLng(36.080508, 129.399658))),
+                _locationCard(const Icon(Icons.home_filled), MapPoint(name: "그할마", center: const LatLng(36.079753, 129.394197))),
+                _locationCard(const Icon(Icons.shopping_cart), MapPoint(name: "다이소(양덕)", center: const LatLng(36.084206, 129.396543))),
+                _locationCard(const Icon(Icons.house_outlined), MapPoint(name: "법원", center: const LatLng(36.08925, 129.387588))),
+                _locationCard(const Icon(Icons.coffee), MapPoint(name: "커피유야",  center: const LatLng(36.080508, 129.399658))),
               ],
             ),
           ),
@@ -419,11 +418,11 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-class Location{
+class MapPoint{
   final String name;
   final LatLng center;
 
-  Location({required this.name, required this.center});
+  MapPoint({required this.name, required this.center});
 
 
 }
