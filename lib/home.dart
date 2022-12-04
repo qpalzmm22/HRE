@@ -24,6 +24,8 @@ class _HomePageState extends State<HomePage> {
   CollectionReference houseCollectionReference =
       FirebaseFirestore.instance.collection('houses');
 
+  List<House> houseList = [];
+
   @override
   Widget build(BuildContext context) {
     var cart = context.watch<AppState>();
@@ -32,6 +34,17 @@ class _HomePageState extends State<HomePage> {
     Profile profilePage = Profile();
     Bookmark bookmarkPage = Bookmark();
     MessageSessionPage messageSessionPage = MessageSessionPage();
+
+    for(House house in houseList){
+      Marker marker = Marker(
+          markerId: MarkerId(house.name),
+        position: house.location,
+        onTap: (){
+            Navigator.pushNamed(context, '/detail', arguments: house);
+        }
+      );
+      cart.addMarker(marker);
+    }
 
     Widget homeScreen() {
       return Column(
@@ -277,6 +290,7 @@ class _HomePageState extends State<HomePage> {
 
     return snapshot.data!.docs.map((DocumentSnapshot document) {
       GeoPoint gps = document['location'];
+
       House house = House(
         thumbnail: document['thumbnail'],
         name: document['name'],
@@ -291,11 +305,14 @@ class _HomePageState extends State<HomePage> {
         imageLinks: List.from(document['imagelinks']),
       );
 
+      houseList.add(house);
+
       var isInCart = context.select<AppState, bool>(
         (cart) => cart.bookmarked
             .where((element) => element.documentId == document.id)
             .isNotEmpty,
       );
+
 
       return Card(
           child: InkWell(
@@ -401,9 +418,11 @@ class _HomePageState extends State<HomePage> {
         ),
       ));
     }).toList();
+
   }
 
   Widget buildHouseCard() {
+
     return Expanded(
       child: StreamBuilder<QuerySnapshot>(
         stream: houseCollectionReference

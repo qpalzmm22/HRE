@@ -6,8 +6,10 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:material_floating_search_bar/material_floating_search_bar.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
 
+import 'appState.dart';
 import 'home.dart';
 
 class Map extends StatefulWidget {
@@ -22,7 +24,6 @@ class _Map extends State<Map> {
   Completer<GoogleMapController> mapController = Completer();
 
   get Geolocator => null;
-
   void _onMapCreated(GoogleMapController controller) {
     mapController = mapController;
   }
@@ -37,8 +38,10 @@ class _Map extends State<Map> {
   Widget build(BuildContext context) {
     MapPoint location = ModalRoute.of(context)!.settings.arguments as MapPoint;
 
+    var cart = context.read<AppState>();
 
     Widget buildMap(){
+
       return GoogleMap(
         onMapCreated: _onMapCreated,
         initialCameraPosition: CameraPosition(
@@ -47,12 +50,13 @@ class _Map extends State<Map> {
         ),
         myLocationEnabled: false,
         myLocationButtonEnabled: false,
+        markers: Set.from(cart.markers),
       );
     }
 
     return Scaffold(
         appBar: AppBar(
-          title: Text('${location.name}'),
+          title: Text(location.name),
           backgroundColor: Colors.green[700],
         ),
         body: buildMap(),
