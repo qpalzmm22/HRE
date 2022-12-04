@@ -63,6 +63,7 @@ dependencies:
   flutter_naver_map: ^0.10.5
   location: ^4.4.0
   geolocator: ^9.0.2
+  filter_list: ^1.0.2
 
 dev_dependencies:
   flutter_test:

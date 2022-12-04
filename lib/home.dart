@@ -83,7 +83,7 @@ class _HomePageState extends State<HomePage> {
           actions: [
             IconButton(
                 onPressed: (){
-                  Navigator.pushNamed(context, '/map');
+                  Navigator.pushNamed(context, '/searchPage');
                 },
                 icon: const Icon(Icons.search))
           ],
