@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-class MyMap extends StatefulWidget {
-  const MyMap({Key? key}) : super(key: key);
+class Map extends StatefulWidget {
+  const Map({Key? key}) : super(key: key);
 
   @override
-  _MyMapState createState() => _MyMapState();
+  _Map createState() => _Map();
 }
 
-class _MyMapState extends State<MyMap> {
+class _Map extends State<Map> {
   late GoogleMapController mapController;
 
   final LatLng _center = const LatLng(45.521563, -122.677433);
@@ -22,10 +22,10 @@ class _MyMapState extends State<MyMap> {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: Text("Map")
+          title: const Text('Maps Sample App'),
+          backgroundColor: Colors.green[700],
         ),
         body: GoogleMap(
-          // markers: ,
           onMapCreated: _onMapCreated,
           initialCameraPosition: CameraPosition(
             target: _center,
