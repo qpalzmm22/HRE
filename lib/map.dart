@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:material_floating_search_bar/material_floating_search_bar.dart';
 
@@ -12,17 +15,26 @@ class Map extends StatefulWidget {
 }
 
 class _Map extends State<Map> {
-  late GoogleMapController mapController;
+
+  Completer<GoogleMapController> mapController = Completer();
+
+  get Geolocator => null;
 
   void _onMapCreated(GoogleMapController controller) {
-    mapController = controller;
+    mapController = mapController;
   }
 
+  Future<void> getCurrentLocation()  async {
+    final GoogleMapController controller = await mapController.future;
+    Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+    controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(target: LatLng(position.latitude, position.longitude))));
 
+  }
 
   @override
   Widget build(BuildContext context) {
-    Location location = ModalRoute.of(context)!.settings.arguments as Location;
+    MapPoint location = ModalRoute.of(context)!.settings.arguments as MapPoint;
 
     Widget buildFloatingSearchBar() {
       final isPortrait = MediaQuery.of(context).orientation == Orientation.portrait;
@@ -80,6 +92,8 @@ class _Map extends State<Map> {
           target: location.center,
           zoom: 17.0,
         ),
+        myLocationEnabled: false,
+        myLocationButtonEnabled: false,
       );
     }
 
@@ -94,6 +108,13 @@ class _Map extends State<Map> {
             buildMap(),
             buildFloatingSearchBar(),
           ]
+        ),
+        floatingActionButton: IconButton(
+          icon: const Icon(Icons.my_location),
+          onPressed: ()  {
+            getCurrentLocation();
+            },
+
         ),
       );
   }
