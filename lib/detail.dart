@@ -12,9 +12,11 @@ import 'package:provider/provider.dart';
 import 'package:horizontal_card_pager/horizontal_card_pager.dart';
 
 import 'appState.dart';
+import 'home.dart';
 
 Widget iconLocation(String str){
   return Row(
+    mainAxisAlignment: MainAxisAlignment.start,
     children: [
       const Icon(Icons.location_on),
       Text(str),
@@ -55,6 +57,7 @@ class _DetailPageState extends State<DetailPage> {
   @override
   Widget build(BuildContext context) {
     House house = ModalRoute.of(context)!.settings.arguments as House;
+    final NumberFormat numberFormat = NumberFormat.simpleCurrency(locale: "ko_KR");
 
     var isBookmarked = context.select<AppState, bool>(
           (cart) => cart.bookmarked
@@ -120,7 +123,7 @@ class _DetailPageState extends State<DetailPage> {
                 });
               },
               child: Image.network(
-                house.imageUrl,
+                house.thumbnail,
                 fit: BoxFit.fitHeight,
               ) ,
             ),
@@ -129,15 +132,16 @@ class _DetailPageState extends State<DetailPage> {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               Column(
+                crossAxisAlignment: CrossAxisAlignment.start ,
                 children: [
-                  Text("${house.deposit}만원 | ${house.monthlyPay}원"),
-                  iconLocation("장량로 128번길 24-5"), // TODO
+                  Text("  ${numberFormat.format(house.deposit)}만원 | ${numberFormat.format(house.monthlyPay)}원"),
+                  iconLocation(house.address), // TODO
                 ],
               ),
               Column(
                 //mainAxisAlignment: MainAxisAlignment.center ,
                 children: [
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
                   Row(
                     children: const [
                       Icon(
@@ -148,8 +152,10 @@ class _DetailPageState extends State<DetailPage> {
                     ],
                   ),
                   TextButton(
-                    onPressed: (){},
-                    child : const Text("all reviews"),
+                    onPressed: (){
+                      Navigator.pushNamed(context, '/map', arguments: MapPoint(name: house.name, center: house.location,),);
+                    },
+                    child : const Text("지도에서 열기"),
                   ),
                 ],
               ),

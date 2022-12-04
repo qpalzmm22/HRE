@@ -273,20 +273,22 @@ class _HomePageState extends State<HomePage> {
 
   List<Card> _buildHouseCards(
       BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-    final NumberFormat numberFormat =
-        NumberFormat.simpleCurrency(locale: "ko_KR");
+    final NumberFormat numberFormat = NumberFormat.simpleCurrency(locale: "ko_KR");
 
     return snapshot.data!.docs.map((DocumentSnapshot document) {
+      GeoPoint gps = document['location'];
       House house = House(
-        imageUrl: document['thumbnail'],
+        thumbnail: document['thumbnail'],
         name: document['name'],
-        location: document['location'],
+        address: document['address'],
         documentId: document.id,
         ownerId: document['userId'],
         description: document['description'] as String,
         monthlyPay: document['monthlyPay'] as int,
         deposit: document['deposit'],
         optionList: List<bool>.from(document['options']),
+        location: LatLng(gps.latitude, gps.longitude),
+        imageLinks: List.from(document['imagelinks']),
       );
 
       var isInCart = context.select<AppState, bool>(
@@ -310,7 +312,7 @@ class _HomePageState extends State<HomePage> {
                   ? Stack(
                       children: [
                         Image.network(
-                          house.imageUrl,
+                          house.thumbnail,
                           fit: BoxFit.cover,
                         ),
                         const Positioned(
@@ -324,7 +326,7 @@ class _HomePageState extends State<HomePage> {
                       ],
                     )
                   : Image.network(
-                      house.imageUrl,
+                      house.thumbnail,
                       fit: BoxFit.cover,
                     ),
             ),
@@ -351,7 +353,7 @@ class _HomePageState extends State<HomePage> {
                           Row(
                             children: [
                               Icon(Icons.location_on),
-                              Text("${house.location}"),
+                              Text("${house.address}"),
                             ],
                           ),
                           Expanded(

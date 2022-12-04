@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:handong_real_estate/messageSession.dart';
 import 'package:path/path.dart';
 
@@ -58,40 +59,63 @@ bool isUserExist(User? user){
   return false;
 }
 
-
-
-
-void addHouse(
-    String name,
-    int deposit,
-    int monthlyPay,
-    String description,
-    String thumbnail,
-    List<String> imageLinks,
-    List<bool> options){
-
-  User? user = FirebaseAuth.instance.currentUser;
-  if(user != null){
-    FirebaseFirestore.instance
+void addHouseToDB(House house){
+      FirebaseFirestore.instance
         .collection('houses')
         .add(<String, dynamic>{
-      'name': name,
-      'deposit': deposit,
-      'monthlyPay': monthlyPay,
-      'description' : description,
+      'name': house.name,
+      'deposit': house.deposit,
+      'monthlyPay': house.monthlyPay,
+      'description' : house.description,
       'houseSize' : 0, // TODO
-      'location' : "장성로 128번길 24-5", // TODO Geometry? string
-      'userId': user.uid,
+      'address' : house.address,
+      'userId': house.ownerId,
       'created': FieldValue.serverTimestamp(),
       'modified': FieldValue.serverTimestamp(),
       // TODO 'roomInfo' :  RoomInfo(room_type : "hello",  num_of_bedrooms : 2, num_of_bathrooms : 1), // TODO
       //'likers' : <String>[], // initial likes = 0
-      'thumbnail': thumbnail,
-      'imagelinks' : imageLinks,
-      'options' : options,
+      'thumbnail': house.thumbnail,
+      'imagelinks' : house.imageLinks,
+      'options' : house.optionList,
+      'location' : GeoPoint(house.location.latitude, house.location.longitude),
     });
-  }
 }
+
+// void addHouse(
+//     String address,
+//     LatLng location,
+//     String name,
+//     int deposit,
+//     int monthlyPay,
+//     String description,
+//     String thumbnail,
+//     List<String> imageLinks,
+//     List<bool> options,
+//     ){
+//
+//   User? user = FirebaseAuth.instance.currentUser;
+//   if(user != null){
+//     FirebaseFirestore.instance
+//         .collection('houses')
+//         .add(<String, dynamic>{
+//       'name': name,
+//       'deposit': deposit,
+//       'monthlyPay': monthlyPay,
+//       'description' : description,
+//       'houseSize' : 0, // TODO
+//       'address' : "장성로 128번길 24-5", // TODO Geometry? string
+//       'userId': user.uid,
+//       'created': FieldValue.serverTimestamp(),
+//       'modified': FieldValue.serverTimestamp(),
+//       // TODO 'roomInfo' :  RoomInfo(room_type : "hello",  num_of_bedrooms : 2, num_of_bathrooms : 1), // TODO
+//       //'likers' : <String>[], // initial likes = 0
+//       'thumbnail': thumbnail,
+//       'imagelinks' : imageLinks,
+//       'options' : options,
+//       'location' : location,
+//     });
+//   }
+// }
 
 Future<String> uploadFile (File? file) async {
   User? user = FirebaseAuth.instance.currentUser;

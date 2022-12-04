@@ -4,13 +4,15 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:horizontal_card_pager/card_item.dart';
 import 'package:horizontal_card_pager/horizontal_card_pager.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
-
+import 'package:geolocator/geolocator.dart';
 import 'package:getwidget/getwidget.dart';
 import 'package:kpostal/kpostal.dart';
+import 'appState.dart';
 import 'dbutility.dart';
 
 Widget IconLocation(String str) {
@@ -43,8 +45,8 @@ class _AddHousePageState extends State<AddHousePage> {
 
   String postCode = '-';
   String roadAddress = '-';
-  String kakaoLatitude = '-';
-  String kakaoLongitude = '-';
+  double kakaoLatitude = 0.0;
+  double kakaoLongitude = 0.0;
 
   static List<String> _options = [
     "sink",
@@ -63,7 +65,7 @@ class _AddHousePageState extends State<AddHousePage> {
   //List<String> get options => _options;
 
   List<bool> options_value = List.generate(_options.length, (index) => false);
-
+  User user = FirebaseAuth.instance.currentUser as User;
   @override
   Widget build(BuildContext context) {
     // default : false
@@ -86,16 +88,21 @@ class _AddHousePageState extends State<AddHousePage> {
                     if (i == 0) thumbnail = imageUrl;
                   }
                 }
-                addHouse(
-                  _houseNameController.text,
-                  int.parse(_houseDepositController.text),
-                  int.parse(_houseMonthlyController.text),
-                  _houseDescriptionController.text,
-                  thumbnail,
-                  uploadedImageUrls,
-                  options_value,
+                House house = House(
+                    thumbnail: thumbnail,
+                    name: _houseNameController.text, 
+                    monthlyPay: int.parse(_houseMonthlyController.text), 
+                    deposit: int.parse(_houseDepositController.text), 
+                    address: _houseAddressController.text,
+                    description: _houseDescriptionController.text,
+                    ownerId: user.uid,
+                    documentId: "",
+                    optionList: options_value,
+                    location: LatLng(kakaoLatitude ,kakaoLongitude),
+                    imageLinks: uploadedImageUrls,
                 );
-                Navigator.pushNamed(context, '/home');
+                addHouseToDB(house);
+                Navigator.pushReplacementNamed(context, '/home');
               },
               child: Text(
                 "Save",
@@ -159,11 +166,9 @@ class _AddHousePageState extends State<AddHousePage> {
                                 callback: (Kpostal result) {
                                   print(result);
                                   setState(() {
-                                    this.roadAddress = result.address;
-                                    this.kakaoLatitude =
-                                        result.kakaoLatitude.toString();
-                                    this.kakaoLongitude =
-                                        result.kakaoLongitude.toString();
+                                    roadAddress = result.address;
+                                    kakaoLatitude = result.kakaoLatitude as double;
+                                    kakaoLongitude = result.kakaoLongitude as double;
                                   });
                                 },
                               ),
