@@ -157,7 +157,8 @@ class _DetailPageState extends State<DetailPage> {
           ),
           Padding(
             padding: EdgeInsets.only(left:30, right:30),
-            child: Text("Available Options"),
+            child: availableOptionCards.length != 0 ?
+              Text("Available Options") : Text(""),
           ),
           SizedBox(
             height: 100,

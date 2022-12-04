@@ -351,26 +351,25 @@ class _HomePageState extends State<HomePage> {
                               child: Text("Send Message"),
                               onPressed: () async {
                                 //Navigator.pushNamed(context, '/detail', arguments: house);
-                                User? user = FirebaseAuth.instance.currentUser;
+                                String uid = getUid();
 
-                                if(user != null){
-                                  List<String> participants = [house.ownerId, user.uid];
+                                List<String> participants = [house.ownerId, uid];
 
-                                  String msid = "";
-                                  isMessageSessionExist(participants)?
-                                    msid = getMessageSessionIDbyuids(participants) :
-                                    msid = makeMessageSession(participants);
+                                String msid = "";
+                                isMessageSessionExist(participants)?
+                                  msid = getMessageSessionIDbyuids(participants) :
+                                  msid = makeMessageSession(participants);
 
-                                  MessageSession messageSession = await getMessageSession(msid);
-                                  Navigator.pushNamed(context, '/messagePage', arguments: messageSession);
-                                }
+                                if(msid == "") print("<ERROR> msid is null...");
+
+                                MessageSession messageSession = await getMessageSession(msid);
+                                Navigator.pushNamed(context, '/messagePage', arguments: messageSession);
+
                               },
                             )
                           ],
                         ),
                       ),
-
-                      //sendMessage();
                     ],
                   ),
                 ),
