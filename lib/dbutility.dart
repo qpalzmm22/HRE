@@ -146,14 +146,54 @@ class MessageSession {
   final Timestamp timestamp;
 }
 
+Future<List<MessageSession>> getMessageMutipleSessionsbyuid(String uid) async {
+
+  List<MessageSession> messageSessions = [];
+  await FirebaseFirestore.instance
+      .collection('messageSessions')
+      .where('users', arrayContains: uid)
+      .orderBy('timestamp', descending: true)
+      .get()
+      .then((snapshots){
+        for (var doc in snapshots.docs) {
+          messageSessions.add(MessageSession(
+              users: List<String>.from(doc['users']),
+              recentMessage: doc['recentMessage'],
+              messages: getMessages(doc['msid']),
+              msid: doc['msid'],
+              profileImage: doc['profileImage'],
+              timestamp: doc['timestamp'],
+              sessionName: doc['sessionName'],
+          ));
+        }
+    });
+    //   .then((value) {
+    //     print(value.docs.length);
+    //     value.docs.map((doc) {
+    //       print(doc.id);
+    //       messageSessions.add(MessageSession(
+    //         users: doc['users'],
+    //         recentMessage: doc['recentMessage'],
+    //         messages: getMessages(doc['msid']),
+    //         msid: doc['msid'],
+    //         profileImage: doc['profileImage'],
+    //         timestamp: doc['timestamp'],
+    //         sessionName: doc['sessionName'],
+    //     ));
+    //     });
+    // });
+  print("ins : ${messageSessions.length}");
+  return messageSessions;
+}
 
 bool isMessageSessionExist(List<String> uids){
   uids.sort();
+  print(uids);
 
   bool ret = false;
   FirebaseFirestore.instance
       .collection('messageSessions')
-      .where('users', arrayContains: uids) // TODO : need to check if this works
+      .where('users', isEqualTo: uids) // TODO : need to check if this works
       .get().then((value) {
     ret =  (value.size > 0);
   });
@@ -186,7 +226,7 @@ Future<MessageSession> getMessageSession(String msid){
       messages : getMessages(msid),
       msid: msid,
       profileImage: doc['profileImage'],
-      timestamp: doc['timestamp'] as Timestamp,
+      timestamp: doc['timestamp'],
       sessionName: doc['sessionName']
     ));
   //return messageSession;
@@ -244,6 +284,7 @@ Future<Message> addMessage(String msid, String senderid, String message) {
 
 List<Message> getMessages(String msid){
   List<Message> messages = [];
+
 
   FirebaseFirestore.instance
       .collection('messageSessions')

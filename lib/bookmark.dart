@@ -83,7 +83,6 @@ class _BookmarkedList extends StatelessWidget{
                 ),
               ),
             ),
-
           ),
         );
     }
@@ -106,13 +105,6 @@ class _BookmarkedList extends StatelessWidget{
             },
         );
       },
-
     );
-  
-  
   }
-
-
-
-
 }
