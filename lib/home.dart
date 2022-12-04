@@ -360,13 +360,14 @@ class _HomePageState extends State<HomePage> {
                                 List<String> participants = [house.ownerId, uid];
 
                                 String msid = "";
-                                isMessageSessionExist(participants)?
-                                  msid = getMessageSessionIDbyuids(participants) :
-                                  msid = makeMessageSession(participants);
+                                await isMessageSessionExist(participants)?
+                                  msid = await getMessageSessionIDbyuids(participants) :
+                                  msid = await makeMessageSession(participants);
 
-                                if(msid == "") print("<ERROR> msid is null...");
+                                // if(msid == "") print("<ERROR> msid is null...");
 
                                 MessageSession messageSession = await getMessageSession(msid);
+                                print("i sent : ${messageSession.messages.length}");
                                 Navigator.pushNamed(context, '/messagePage', arguments: messageSession);
 
                               },

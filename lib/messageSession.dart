@@ -4,51 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:custom_clippers/custom_clippers.dart';
 import 'dbutility.dart';
 
-
-
-
-
-// List<ListTile> _buildHouseListTiles(BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot, String uid){
-//
-//   return snapshot.data!.docs.map((DocumentSnapshot document) {
-//
-//     CollectionReference messagesRef = document.reference.collection('messageSessions');
-//
-//     MessageSession messageSession = MessageSession(
-//       profileImage : document['profileImage'],
-//       timestamp: document['timestamp'] as Timestamp, // last messaged
-//       msid : document['msid'] as String,
-//       recentMessage: document['recentMessage'],
-//       // messagesRef : messagesRef, // all the messages?
-//       messages: getMessages(document['msid']),
-//       sessionName : document['sessionName'],
-//       users : List<String>.from(document['users']),
-//     );
-//
-//     return ListTile(
-//         leading : Image.network(messageSession.profileImage),
-//         title: InkWell(
-//           onTap: (){
-//             Navigator.pushNamed(context, '/message', arguments: messageSession.messages);
-//           },
-//           child: Column(
-//             children: [
-//               Row(
-//                 children: [
-//                   Text(messageSession.sessionName),
-//                   Text(messageSession.timestamp.toString()),
-//                 ],
-//               ),
-//               Text(messageSession.recentMessage),
-//             ],
-//           ),
-//         )
-//     );
-//   }).toList();
-// }
-
-
-
 class MessageSessionPage {
 
   User? user = FirebaseAuth.instance.currentUser;
@@ -69,33 +24,36 @@ class MessageSessionPage {
                 child: FutureBuilder<List<MessageSession>>(
                   future: futureMessageSessions,
                   builder: (context, snapshot){
-
                     int len = snapshot.data == null ?  0 : snapshot.data!.length;
-                    print("lneght : $len");
+                    print("length : $len");
 
-                    var messageSessions = snapshot.data!;
+                    List<MessageSession>? messageSessions = snapshot.data!;
 
                     return ListView.builder(
                       itemCount: len,
                       itemBuilder: (BuildContext context, int idx) {
                         return ListTile(
-                            leading: Image.network(messageSessions[idx].profileImage),
+                            leading: AspectRatio(
+                              aspectRatio: 1/1,
+                              child:Image.network(messageSessions[idx].profileImage),
+                            ),
                             title: InkWell(
                               onTap: () {
                                 Navigator.pushNamed(context, '/messagePage',
-                                    arguments: messageSessions[idx].messages);
+                                    arguments: messageSessions[idx]);
                               },
-                              child: Column(
-                                children: [
-                                  Row(
-                                    children: [
-                                      Text(messageSessions[idx].sessionName),
-                                      Text(messageSessions[idx].timestamp.toString()),
-                                    ],
-                                  ),
-                                  Text(messageSessions[idx].recentMessage),
-                                ],
-                              ),
+                              child :Text(messageSessions[idx].sessionName),
+                              // child: Column(
+                              //   children: [
+                              //     Row(
+                              //       children: [
+                              //         Text(messageSessions[idx].sessionName),
+                              //         Text(messageSessions[idx].timestamp.toString()),
+                              //       ],
+                              //     ),
+                              //     Text(messageSessions[idx].recentMessage),
+                              //   ],
+                              // ),
                             )
                           );
                         }

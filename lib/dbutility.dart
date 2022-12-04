@@ -127,6 +127,7 @@ class Message{
 class MessageSession {
   MessageSession(
       {required this.users,
+        required this.usersString,
         required this.recentMessage,
         // required this.messagesRef,
         required this.messages,
@@ -137,6 +138,7 @@ class MessageSession {
       });
 
   final List<String> users;
+  final String usersString;
   final String recentMessage;
   //final CollectionReference messagesRef;
   final List<Message> messages;
@@ -154,12 +156,13 @@ Future<List<MessageSession>> getMessageMutipleSessionsbyuid(String uid) async {
       .where('users', arrayContains: uid)
       .orderBy('timestamp', descending: true)
       .get()
-      .then((snapshots){
+      .then((snapshots) async {
         for (var doc in snapshots.docs) {
           messageSessions.add(MessageSession(
               users: List<String>.from(doc['users']),
+              usersString: doc['usersString'],
               recentMessage: doc['recentMessage'],
-              messages: getMessages(doc['msid']),
+              messages: await getMessages(doc['msid']),
               msid: doc['msid'],
               profileImage: doc['profileImage'],
               timestamp: doc['timestamp'],
@@ -186,27 +189,29 @@ Future<List<MessageSession>> getMessageMutipleSessionsbyuid(String uid) async {
   return messageSessions;
 }
 
-bool isMessageSessionExist(List<String> uids){
+Future<bool> isMessageSessionExist(List<String> uids) async {
   uids.sort();
-  print(uids);
+  // concatenate uids(with seperator ',') and check if that string exist in "users"
 
   bool ret = false;
-  FirebaseFirestore.instance
+  await FirebaseFirestore.instance
       .collection('messageSessions')
-      .where('users', isEqualTo: uids) // TODO : need to check if this works
-      .get().then((value) {
-    ret =  (value.size > 0);
+      .where('usersString', isEqualTo: uids.toString()) // TODO : need to check if this works
+      .get()
+      .then((value)  {
+    ret = (value.size > 0);
   });
+  print("${uids.toString} exist is $ret");
   return ret;
 }
 
-String getMessageSessionIDbyuids(List<String> uids){
+Future<String> getMessageSessionIDbyuids(List<String> uids) async {
   uids.sort();
 
   String msid = "";
-  FirebaseFirestore.instance
+  await FirebaseFirestore.instance
       .collection('messageSessions')
-      .where('users', arrayContains: uids)
+      .where('usersString', isEqualTo: uids.toString())
       .get()
       .then((value) =>  msid = value.docs.elementAt(0).id
   );
@@ -214,16 +219,18 @@ String getMessageSessionIDbyuids(List<String> uids){
 }
 
 
-Future<MessageSession> getMessageSession(String msid){
+Future<MessageSession> getMessageSession(String msid) async {
+  print("get Message Session for $msid");
 
   return FirebaseFirestore.instance
     .collection('messageSessions')
     .doc(msid)
     .get()
-    .then((doc) => MessageSession(
+    .then((doc) async => MessageSession(
       users: List<String>.from(doc['users']),
+      usersString : doc['usersString'],
       recentMessage: doc['recentMessage'],
-      messages : getMessages(msid),
+      messages : await getMessages(msid),
       msid: msid,
       profileImage: doc['profileImage'],
       timestamp: doc['timestamp'],
@@ -233,19 +240,20 @@ Future<MessageSession> getMessageSession(String msid){
 }
 
 // Returns msid
-String makeMessageSession(List<String> uids){
+Future<String> makeMessageSession(List<String> uids) async {
   uids.sort();
 
   String msid = FirebaseFirestore.instance
       .collection('messageSessions').doc().id;
 
-  FirebaseFirestore.instance
+  await FirebaseFirestore.instance
       .collection('messageSessions').doc(msid)
       .set(<String, dynamic>{
     'msid': msid,
     'users': uids,
+    'usersString': uids.toString(),
     'recentMessage': "",
-    'profileImage' : "",// TODO : get it from firebase storage?
+    'profileImage' : "https://handong.edu/site/handong/res/img/logo.png",// TODO : get it from firebase storage?
     'timestamp': FieldValue.serverTimestamp(),
     'sessionName': "Message Session" // TODO : Fix this
 //    'messages' : ,
@@ -259,7 +267,7 @@ String getUid(){
   return "";
 }
 
-Future<Message> addMessage(String msid, String senderid, String message) {
+Future<Message> addMessage(String msid, String senderid, String message) async {
 
   Future<DocumentReference> messageRef =  FirebaseFirestore.instance
       .collection('messageSessions')
@@ -271,7 +279,7 @@ Future<Message> addMessage(String msid, String senderid, String message) {
     'message': message,
   });
 
-  return messageRef.then((docRef) {
+  Message newMessage = await messageRef.then((docRef) {
     return docRef.get().then((doc) => Message(
         timestamp: doc['timestamp'],
         senderId: doc['senderId'],
@@ -279,26 +287,39 @@ Future<Message> addMessage(String msid, String senderid, String message) {
     ));
   });
 
-  //return outMessage;
+  // TODO : update Message Sessions' recent page and timestamp
+
+  //addMessageToMessageSession(msid, new_message);
+  FirebaseFirestore.instance
+      .collection('messageSessions').doc(msid)
+      .set(<String, dynamic>{
+    // 'users': uids,
+    'recentMessage': newMessage.message,
+    'timestamp': newMessage.timestamp,
+  }, SetOptions(merge: true));
+
+  return newMessage;
 }
 
-List<Message> getMessages(String msid){
+Future<List<Message>> getMessages(String msid) async {
   List<Message> messages = [];
 
-
-  FirebaseFirestore.instance
+  await FirebaseFirestore.instance
       .collection('messageSessions')
       .doc(msid)
       .collection('messages')
-      .orderBy('timestamp')
-      .get().then((value) {
-        value.docs.map((doc) => messages.add(Message(
-          timestamp: doc['timestamp'],
-          senderId: doc['senderId'],
-          message : doc['message'],
-        ))
-      );
+      .orderBy('timestamp', descending: false)
+      .get()
+      .then((snapshots)  {
+        for( var doc in snapshots.docs) {
+          messages.add(Message(
+            timestamp: doc['timestamp'],
+            senderId: doc['senderId'],
+            message: doc['message'],
+        ));
+      }
   });
-  return messages;
 
+  print("out ${messages.length}");
+  return messages;
 }
