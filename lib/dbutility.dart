@@ -347,3 +347,12 @@ Future<List<Message>> getMessages(String msid) async {
   print("out ${messages.length}");
   return messages;
 }
+
+Stream<QuerySnapshot<Map<String, dynamic>>> getMessageStream(String msid){
+  return FirebaseFirestore.instance
+      .collection('messageSessions')
+      .doc(msid)
+      .collection('messages')
+      .orderBy('timestamp', descending: false)
+      .snapshots();
+}

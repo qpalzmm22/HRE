@@ -70,9 +70,12 @@ class _BookmarkedList extends StatelessWidget{
                     Row(
                       children: [
                         const Icon(Icons.location_on),
-                        Text(
-                          house.address,
-                          style: theme.textTheme.subtitle2,
+                        Expanded(
+                          child:Text(
+                            house.address,
+                            style: theme.textTheme.subtitle2,
+                            maxLines: 1,
+                          ),
                         ),
                       ],
                     ),

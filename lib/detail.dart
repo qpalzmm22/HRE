@@ -96,11 +96,11 @@ class _DetailPageState extends State<DetailPage> {
             icon: isBookmarked
             ? const Icon(
               Icons.bookmark_added,
-              color: Colors.yellow,
+              color: Colors.blue,
             )
             : const Icon(
                 Icons.bookmark_add_outlined,
-              color: Colors.yellow,
+              color: Colors.blue,
             ) // : Icon(Icons.bookmark),  // TODO : if bookmarked make it
           ),
         ],
@@ -153,7 +153,7 @@ class _DetailPageState extends State<DetailPage> {
                   ),
                   TextButton(
                     onPressed: (){
-                      Navigator.pushNamed(context, '/map', arguments: MapPoint(name: house.name, center: house.location,),);
+                      Navigator.pushNamed(context, '/map', arguments: MapPoint(name: house.name, center: house.location, zoom: 19.5),);
                     },
                     child : const Text("지도에서 열기"),
                   ),

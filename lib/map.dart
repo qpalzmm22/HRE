@@ -46,7 +46,7 @@ class _Map extends State<Map> {
         onMapCreated: _onMapCreated,
         initialCameraPosition: CameraPosition(
           target: location.center,
-          zoom: 18.0,
+          zoom: location.zoom,
         ),
         myLocationEnabled: false,
         myLocationButtonEnabled: false,

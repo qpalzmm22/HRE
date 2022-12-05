@@ -151,6 +151,48 @@ class _HomePageState extends State<HomePage> {
       body: SafeArea(
         child: buildBody(),
       ),
+      drawer: Drawer(
+        child: ListView(
+          // Important: Remove any padding from the ListView.
+          padding: EdgeInsets.zero,
+          children: [
+            const DrawerHeader(
+              decoration: BoxDecoration(
+                color: Colors.blue,
+              ),
+              child: Text('Drawer Header'),
+            ),
+            ListTile(
+              leading: Icon(Icons.person_search),
+              title: const Text('룸메이트 구해요'),
+              onTap: () {
+                //Navigator.pushNamed(context, '/roomMatePage');
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.house),
+              title: const Text('단기양도'),
+              onTap: () {
+                // Update the state of the app
+                // ...
+                // Then close the drawer
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.shopping_cart),
+              title: const Text('장터'),
+              onTap: () {
+                // Update the state of the app
+                // ...
+                // Then close the drawer
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        ),
+      ),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
@@ -243,7 +285,13 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
               TextButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.pushNamed(context, '/map', arguments: MapPoint(
+                    name: "양덕동 근처 매물",
+                    center: const LatLng(36.081809, 129.39697),
+                    zoom: 14,
+                  ));
+                },
                 child: const Text(
                   "View ALL",
                   style: TextStyle(color: Colors.grey, fontSize: 17),
@@ -259,23 +307,24 @@ class _HomePageState extends State<HomePage> {
                 _locationCard(
                     const Icon(Icons.home_filled),
                     MapPoint(
-                        name: "그할마",
-                        center: const LatLng(36.079753, 129.394197))),
+                        name: "그할마 ",
+                        center: const LatLng(36.079753, 129.394197),
+                        zoom: 17)),
                 _locationCard(
                     const Icon(Icons.shopping_cart),
                     MapPoint(
                         name: "다이소(양덕)",
-                        center: const LatLng(36.084206, 129.396543))),
+                        center: const LatLng(36.084206, 129.396543), zoom: 17)),
                 _locationCard(
                     const Icon(Icons.house_outlined),
                     MapPoint(
                         name: "법원",
-                        center: const LatLng(36.08925, 129.387588))),
+                        center: const LatLng(36.08925, 129.387588), zoom: 17)),
                 _locationCard(
                     const Icon(Icons.coffee),
                     MapPoint(
                         name: "커피유야",
-                        center: const LatLng(36.080508, 129.399658))),
+                        center: const LatLng(36.080508, 129.399658), zoom: 17)),
               ],
             ),
           ),
@@ -370,7 +419,10 @@ class _HomePageState extends State<HomePage> {
                           Row(
                             children: [
                               Icon(Icons.location_on),
-                              Text("${house.address}"),
+                              Expanded(
+                                  child: Text(
+                                      "${house.address}")
+                              ),
                             ],
                           ),
                           Expanded(
@@ -454,6 +506,8 @@ class _HomePageState extends State<HomePage> {
 class MapPoint {
   final String name;
   final LatLng center;
+  final double zoom;
+  MapPoint({required this.name, required this.center, required this.zoom});
 
-  MapPoint({required this.name, required this.center});
+
 }
