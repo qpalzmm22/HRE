@@ -236,23 +236,6 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  // Widget buildAnimSearchBar(){
-  //
-  //   return Padding(
-  //     padding:  const EdgeInsets.symmetric(vertical: 0, horizontal: 25),
-  //     child: AnimSearchBar(
-  //       autoFocus: true
-  //       width: 400,
-  //       textController: searchBarController,
-  //       onSuffixTap: (){
-  //         setState(() {
-  //           searchBarController.clear();
-  //         });
-  //       },
-  //     ),
-  //   );
-  // }
-
   SizedBox _locationCard(Icon icon, MapPoint location) {
     return SizedBox(
       child: Card(
@@ -375,12 +358,11 @@ class _HomePageState extends State<HomePage> {
             .isNotEmpty,
       );
 
-
       return Card(
           child: InkWell(
-        borderRadius: BorderRadius.circular(50),
-        onTap: () {
-          Navigator.pushNamed(context, '/detail', arguments: house);
+          borderRadius: BorderRadius.circular(50),
+          onTap: () {
+            Navigator.pushNamed(context, '/detail', arguments: house);
         },
         child: Column(
           //crossAxisAlignment: CrossAxisAlignment.start,
@@ -433,45 +415,26 @@ class _HomePageState extends State<HomePage> {
                             children: [
                               Icon(Icons.location_on),
                               Expanded(
-                                  child: Text(
-                                      "${house.address}")
+                                child: Text(
+                                  "${house.address}",
+                                  style: const TextStyle(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                )
                               ),
                             ],
                           ),
-                          Expanded(
-                            child: Text(
+                          Divider(height:8),
+                          Text(
                               "보증금 ${numberFormat.format(house.deposit)} / 월 ${numberFormat.format(house.monthlyPay)}", //document['monthlyPay']),
                               style: const TextStyle(
                                 fontSize: 11,
                               ),
                               maxLines: 2,
-                            ),
                           ),
-                          TextButton(
-                            child: Text("Send Message"),
-                            onPressed: () async {
-                              //Navigator.pushNamed(context, '/detail', arguments: house);
-                              String uid = getUid();
-
-                              List<String> participants = [house.ownerId, uid];
-
-                              String msid = "";
-                              await isMessageSessionExist(participants)
-                                  ? msid = await getMessageSessionIDbyuids(
-                                      participants)
-                                  : msid =
-                                      await makeMessageSession(participants);
-
-                              // if(msid == "") print("<ERROR> msid is null...");
-
-                              MessageSession messageSession =
-                                  await getMessageSession(msid);
-                              print(
-                                  "i sent : ${messageSession.messages.length}");
-                              Navigator.pushNamed(context, '/messagePage',
-                                  arguments: messageSession);
-                            },
-                          )
+                          Divider(height:8),
+                          Text("설명 : ${house.description}"),
                         ],
                       ),
                     ),
@@ -520,6 +483,4 @@ class MapPoint {
   final LatLng center;
   final double zoom;
   MapPoint({required this.name, required this.center, required this.zoom});
-
-
 }
