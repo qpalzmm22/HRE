@@ -356,3 +356,20 @@ Stream<QuerySnapshot<Map<String, dynamic>>> getMessageStream(String msid){
       .orderBy('timestamp', descending: false)
       .snapshots();
 }
+
+
+class Content {
+  Content(
+      {required this.author,
+        // required this.messagesRef,
+        required this.profileImage,
+        required this.upload_time,
+        required this.title,
+      });
+
+  final User author;
+  //final CollectionReference messagesRef;
+  final String profileImage;
+  final String title;
+  final Timestamp upload_time;
+}

@@ -6,6 +6,7 @@ import 'package:handong_real_estate/bookmark.dart';
 import 'package:handong_real_estate/dbutility.dart';
 import 'package:handong_real_estate/profile.dart';
 import 'package:handong_real_estate/messageSession.dart';
+import 'package:handong_real_estate/roommates.dart';
 import 'package:intl/intl.dart';
 // import 'package:anim_search_bar/anim_search_bar.dart';
 import 'package:provider/provider.dart';
@@ -48,7 +49,6 @@ class _HomePageState extends State<HomePage> {
 
     Widget homeScreen() {
       return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SizedBox(
             height: 10,
@@ -98,7 +98,7 @@ class _HomePageState extends State<HomePage> {
                 onPressed: () {
                   Navigator.pushNamed(context, '/searchPage');
                 },
-                icon: const Icon(Icons.search))
+                icon: const Icon(Icons.tune))
           ],
         );
       }
@@ -135,12 +135,12 @@ class _HomePageState extends State<HomePage> {
 
     Widget buildFloatActionButton() {
       if (_selectedIndex == 0) {
-        return IconButton(
-          icon: const Icon(Icons.add),
-          onPressed: () {
-            Navigator.pushNamed(context, '/addHouse');
-          },
-        );
+        return FloatingActionButton(
+          backgroundColor: Colors.pink,
+            onPressed: () {
+              Navigator.pushNamed(context, '/addHouse');
+            },
+        child: Icon(Icons.add),);
       } else {
         return Text("");
       }
@@ -165,28 +165,36 @@ class _HomePageState extends State<HomePage> {
             ListTile(
               leading: Icon(Icons.person_search),
               title: const Text('룸메이트 구해요'),
-              onTap: () {
-                //Navigator.pushNamed(context, '/roomMatePage');
+              onTap: () async {
+                await Navigator.pushNamed(context, '/page', arguments: PageInfo(pageTitle: "Roommate", collectionName: 'roommates', pageIndex: 0));
                 Navigator.pop(context);
+
               },
             ),
             ListTile(
               leading: Icon(Icons.house),
               title: const Text('단기양도'),
-              onTap: () {
+              onTap: () async {
                 // Update the state of the app
                 // ...
                 // Then close the drawer
+                await Navigator.pushNamed(context, '/page', arguments: PageInfo(pageTitle: "Roommate", collectionName: 'roommates', pageIndex: 1));
                 Navigator.pop(context);
               },
             ),
             ListTile(
               leading: Icon(Icons.shopping_cart),
               title: const Text('장터'),
-              onTap: () {
-                // Update the state of the app
-                // ...
-                // Then close the drawer
+              onTap: () async {
+                await Navigator.pushNamed(context, '/page', arguments: PageInfo(pageTitle: "Roommate", collectionName: 'roommates', pageIndex: 2));
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.local_taxi),
+              title: const Text('같이카'),
+              onTap: () async {
+                await Navigator.pushNamed(context, '/page', arguments: PageInfo(pageTitle: "Roommate", collectionName: 'roommates', pageIndex: 3));
                 Navigator.pop(context);
               },
             ),
@@ -470,7 +478,6 @@ class _HomePageState extends State<HomePage> {
         ),
       ));
     }).toList();
-
   }
 
   Widget buildHouseCard() {
