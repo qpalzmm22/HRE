@@ -411,7 +411,7 @@ class _HomePageState extends State<HomePage> {
                           Text(
                             house.name, //document['name'],
                             style: const TextStyle(
-                              fontSize: 13,
+                              fontSize: 14,
                               fontWeight: FontWeight.bold,
                             ),
                             maxLines: 1,
@@ -420,45 +420,24 @@ class _HomePageState extends State<HomePage> {
                             children: [
                               Icon(Icons.location_on),
                               Expanded(
-                                  child: Text(
-                                      "${house.address}")
+                                child: Text(
+                                  style: const TextStyle(
+                                    fontSize: 10,
+                                  ),
+                                  "${house.address}")
                               ),
                             ],
                           ),
-                          Expanded(
-                            child: Text(
-                              "보증금 ${numberFormat.format(house.deposit)} / 월 ${numberFormat.format(house.monthlyPay)}", //document['monthlyPay']),
-                              style: const TextStyle(
-                                fontSize: 11,
-                              ),
-                              maxLines: 2,
+                          Divider(height:3),
+                          Text(
+                            "보증금 ${numberFormat.format(house.deposit)} / 월 ${numberFormat.format(house.monthlyPay)}", //document['monthlyPay']),
+                            style: const TextStyle(
+                              fontSize: 11,
                             ),
+                            maxLines: 2,
                           ),
-                          TextButton(
-                            child: Text("Send Message"),
-                            onPressed: () async {
-                              //Navigator.pushNamed(context, '/detail', arguments: house);
-                              String uid = getUid();
-
-                              List<String> participants = [house.ownerId, uid];
-
-                              String msid = "";
-                              await isMessageSessionExist(participants)
-                                  ? msid = await getMessageSessionIDbyuids(
-                                      participants)
-                                  : msid =
-                                      await makeMessageSession(participants);
-
-                              // if(msid == "") print("<ERROR> msid is null...");
-
-                              MessageSession messageSession =
-                                  await getMessageSession(msid);
-                              print(
-                                  "i sent : ${messageSession.messages.length}");
-                              Navigator.pushNamed(context, '/messagePage',
-                                  arguments: messageSession);
-                            },
-                          )
+                          Divider(height:3),
+                          Text("설명 : ${house.description}"),
                         ],
                       ),
                     ),
@@ -508,6 +487,4 @@ class MapPoint {
   final LatLng center;
   final double zoom;
   MapPoint({required this.name, required this.center, required this.zoom});
-
-
 }

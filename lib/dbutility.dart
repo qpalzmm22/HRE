@@ -46,6 +46,39 @@ void addAnonymousUser(User? user){
   }
 }
 
+
+Future<HreUser> getUserFromDB(String uid) async {
+  return await FirebaseFirestore.instance
+      .collection('users')
+      .doc(uid)
+      .get()
+      .then((value) {
+        if(value.data() != null){
+          print("JY ERROR!!! :  getuserFromdb : no value().data ");
+        }
+        return HreUser(
+          uid: value.data()!['uid'],
+          name: value.data()!['name'],
+          profileImage:value.data()!['name'],
+          email: value.data()!['email'],
+        );
+  });
+}
+
+class HreUser{
+  HreUser(
+      {required this.uid,
+        required this.name,
+        required this.profileImage,
+        required this.email,
+      });
+  final String uid;
+  final String name;
+  final String profileImage;
+  final String email;
+}
+
+
 bool isUserExist(User? user){
 
   if(user != null){

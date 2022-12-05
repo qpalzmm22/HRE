@@ -9,8 +9,8 @@ import 'package:getwidget/getwidget.dart';
 import 'package:horizontal_card_pager/card_item.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:horizontal_card_pager/horizontal_card_pager.dart';
-
+import 'package:flutter_profile_picture/flutter_profile_picture.dart';
+import 'dbutility.dart';
 import 'appState.dart';
 import 'home.dart';
 
@@ -25,6 +25,15 @@ Widget iconLocation(String str){
 }
 
 
+Widget CircleProfile(String img){
+  print(img);
+  return ProfilePicture(
+    name: 'namemmm',
+    radius: 10,
+    fontsize: 15,
+    img: img,
+  );
+}
 
 
 class DetailPage extends StatefulWidget {
@@ -38,7 +47,6 @@ class DetailPage extends StatefulWidget {
 class _DetailPageState extends State<DetailPage> {
 
   int _selectedIndex = 0;
-
 
   List<Icon> optionIconList = [
     Icon(Icons.wifi), Icon(Icons.wifi), Icon(Icons.bed), Icon(Icons.wifi),
@@ -54,9 +62,13 @@ class _DetailPageState extends State<DetailPage> {
 
   List<Card> availableOptionCards = [];
 
+
+
   @override
   Widget build(BuildContext context) {
     House house = ModalRoute.of(context)!.settings.arguments as House;
+
+    // get profile image
     final NumberFormat numberFormat = NumberFormat.simpleCurrency(locale: "ko_KR");
 
     var isBookmarked = context.select<AppState, bool>(
@@ -76,6 +88,49 @@ class _DetailPageState extends State<DetailPage> {
           ),
         ));
       }
+    }
+
+
+    Widget buildFloatActionButton() {
+      return FutureBuilder(
+          future: getUserFromDB(house.ownerId),
+          builder: (BuildContext buildContext, AsyncSnapshot<HreUser> snapshot){
+            if(snapshot.hasData){
+              return Container(
+                color: Colors.red,
+                width:300,
+                child: Row(
+                  children: [
+                    CircleProfile(snapshot.data!.profileImage),
+                    Icon(Icons.add),
+                    IconButton(
+                      icon: const Icon(Icons.add),
+                      onPressed: () async {
+                        String uid = getUid();
+
+                        List<String> participants = [house.ownerId, uid];
+
+                        String msid = "";
+                        await isMessageSessionExist(participants)
+                            ? msid = await getMessageSessionIDbyuids(
+                            participants)
+                            : msid =
+                        await makeMessageSession(participants);
+
+                        MessageSession messageSession =
+                        await getMessageSession(msid);
+                        print("i sent : ${messageSession.messages.length}");
+                        Navigator.pushNamed(context, '/messagePage', arguments: messageSession);
+                      },
+                    ),
+                  ],
+                ),
+              );
+            } else{
+              return CircularProgressIndicator();
+            }
+
+        });
     }
 
     return Scaffold(
@@ -164,7 +219,7 @@ class _DetailPageState extends State<DetailPage> {
           Padding(
             padding: EdgeInsets.only(left:30, right:30),
             child: availableOptionCards.length != 0 ?
-              Text("Available Options") : Text(""),
+              Text("Available Options") : Text("No Options Available"),
           ),
           SizedBox(
             height: 100,
@@ -186,6 +241,8 @@ class _DetailPageState extends State<DetailPage> {
           ),
         ],
       ),
+      floatingActionButton: buildFloatActionButton(),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 }
