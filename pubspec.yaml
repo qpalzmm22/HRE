@@ -62,7 +62,15 @@ dependencies:
   json_serializable: ^6.5.4
   flutter_naver_map: ^0.10.5
   location: ^4.4.0
-  geolocator: ^9.0.2
+  geolocator: ^8.2.1
+  filter_list: ^1.0.2
+  flutter_google_places: ^0.3.0
+  flutter_google_places_hoc081098: ^1.0.0-nullsafety.1
+  google_maps_webservice: ^0.0.20-nullsafety.5
+  google_api_headers: ^1.5.0
+  geocoding: ^2.0.5
+  google_maps_pick_place: ^0.8.7
+  kpostal: ^0.5.1
 
 dev_dependencies:
   flutter_test:

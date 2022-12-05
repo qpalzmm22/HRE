@@ -2,6 +2,11 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+    <key>NSAppTransportSecurity</key>
+    <dict>
+        <key>NSAllowsArbitraryLoads</key>
+        <true/>
+    </dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
@@ -60,26 +65,7 @@
     		</array>
     	</dict>
     </array>
-    <key>NSCameraUsageDescription</key>
-    <string>Used to demonstrate image picker plugin</string>
-    <key>NSMicrophoneUsageDescription</key>
-    <string>Used to capture audio for image picker plugin</string>
-    <key>NSPhotoLibraryUsageDescription</key>
-    <string>Used to demonstrate image picker plugin</string>
     <!-- ADDED -->
-
-    // This is probably the only one you need. Background location is supported
-    // by this -- the caveat is that a blue badge is shown in the status bar
-    // when the app is using location service while in the background.
-    NSLocationWhenInUseUsageDescription
-
-    // Deprecated, use NSLocationAlwaysAndWhenInUseUsageDescription instead.
-    NSLocationAlwaysUsageDescription
-
-    // Use this very carefully. This key is required only if your iOS app
-    // uses APIs that access the user’s location information at all times,
-    // even if the app isn't running.
-    NSLocationAlwaysAndWhenInUseUsageDescription
 
 </dict>
 </plist>

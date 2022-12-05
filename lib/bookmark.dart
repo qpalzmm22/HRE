@@ -54,7 +54,7 @@ class _BookmarkedList extends StatelessWidget{
                   width: 90.0,
                   child: Image(
                       image: NetworkImage(
-                        house.imageUrl,
+                        house.thumbnail,
                       ),
                       fit: BoxFit.cover),
                 ),
@@ -70,9 +70,12 @@ class _BookmarkedList extends StatelessWidget{
                     Row(
                       children: [
                         const Icon(Icons.location_on),
-                        Text(
-                          house.location,
-                          style: theme.textTheme.subtitle2,
+                        Expanded(
+                          child:Text(
+                            house.address,
+                            style: theme.textTheme.subtitle2,
+                            maxLines: 1,
+                          ),
                         ),
                       ],
                     ),
@@ -93,7 +96,7 @@ class _BookmarkedList extends StatelessWidget{
         final house = cart.bookmarked[index];
         return Dismissible(
           background: Container(
-            padding: const EdgeInsets.only(right: 20),
+            padding: const EdgeInsets.only(right: 20, top: 20),
             alignment: Alignment.centerRight,
             color: Colors.red,
             child: const Icon(Icons.delete),

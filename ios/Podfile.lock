@@ -640,7 +640,7 @@ PODS:
   - Firebase/Storage (10.2.0):
     - Firebase/CoreOnly
     - FirebaseStorage (~> 10.2.0)
-  - firebase_auth (4.1.4):
+  - firebase_auth (4.1.5):
     - Firebase/Auth (= 10.2.0)
     - firebase_core
     - Flutter
@@ -651,7 +651,7 @@ PODS:
     - Firebase/Database (= 10.2.0)
     - firebase_core
     - Flutter
-  - firebase_dynamic_links (5.0.6):
+  - firebase_dynamic_links (5.0.7):
     - Firebase/DynamicLinks (= 10.2.0)
     - firebase_core
     - Flutter
@@ -702,12 +702,23 @@ PODS:
   - flutter_facebook_auth (4.4.1):
     - FBSDKLoginKit (= 14.1.0)
     - Flutter
+  - flutter_inappwebview (0.0.1):
+    - Flutter
+    - flutter_inappwebview/Core (= 0.0.1)
+    - OrderedSet (~> 5.0)
+  - flutter_inappwebview/Core (0.0.1):
+    - Flutter
+    - OrderedSet (~> 5.0)
   - flutter_naver_map (0.10.1):
     - Flutter
     - NMapsMap
   - fluttertoast (0.0.2):
     - Flutter
     - Toast
+  - geocoding (1.0.5):
+    - Flutter
+  - geolocator_apple (1.2.0):
+    - Flutter
   - google_maps_flutter_ios (0.0.1):
     - Flutter
     - GoogleMaps
@@ -802,13 +813,20 @@ PODS:
   - Libuv-gRPC/Implementation (0.0.10):
     - Libuv-gRPC/Interface (= 0.0.10)
   - Libuv-gRPC/Interface (0.0.10)
+  - location (0.0.1):
+    - Flutter
   - nanopb (2.30909.0):
     - nanopb/decode (= 2.30909.0)
     - nanopb/encode (= 2.30909.0)
   - nanopb/decode (2.30909.0)
   - nanopb/encode (2.30909.0)
   - NMapsMap (3.16.0)
+  - OrderedSet (5.0.0)
+  - package_info_plus (0.4.5):
+    - Flutter
   - path_provider_ios (0.0.1):
+    - Flutter
+  - permission_handler_apple (9.0.4):
     - Flutter
   - PromisesObjC (2.1.1)
   - sign_in_with_apple (0.0.1):
@@ -829,12 +847,18 @@ DEPENDENCIES:
   - firebase_storage (from `.symlinks/plugins/firebase_storage/ios`)
   - Flutter (from `Flutter`)
   - flutter_facebook_auth (from `.symlinks/plugins/flutter_facebook_auth/ios`)
+  - flutter_inappwebview (from `.symlinks/plugins/flutter_inappwebview/ios`)
   - flutter_naver_map (from `.symlinks/plugins/flutter_naver_map/ios`)
   - fluttertoast (from `.symlinks/plugins/fluttertoast/ios`)
+  - geocoding (from `.symlinks/plugins/geocoding/ios`)
+  - geolocator_apple (from `.symlinks/plugins/geolocator_apple/ios`)
   - google_maps_flutter_ios (from `.symlinks/plugins/google_maps_flutter_ios/ios`)
   - google_sign_in_ios (from `.symlinks/plugins/google_sign_in_ios/ios`)
   - image_picker_ios (from `.symlinks/plugins/image_picker_ios/ios`)
+  - location (from `.symlinks/plugins/location/ios`)
+  - package_info_plus (from `.symlinks/plugins/package_info_plus/ios`)
   - path_provider_ios (from `.symlinks/plugins/path_provider_ios/ios`)
+  - permission_handler_apple (from `.symlinks/plugins/permission_handler_apple/ios`)
   - sign_in_with_apple (from `.symlinks/plugins/sign_in_with_apple/ios`)
   - twitter_login (from `.symlinks/plugins/twitter_login/ios`)
   - webview_flutter_wkwebview (from `.symlinks/plugins/webview_flutter_wkwebview/ios`)
@@ -870,6 +894,7 @@ SPEC REPOS:
     - Libuv-gRPC
     - nanopb
     - NMapsMap
+    - OrderedSet
     - PromisesObjC
     - Toast
 
@@ -892,18 +917,30 @@ EXTERNAL SOURCES:
     :path: Flutter
   flutter_facebook_auth:
     :path: ".symlinks/plugins/flutter_facebook_auth/ios"
+  flutter_inappwebview:
+    :path: ".symlinks/plugins/flutter_inappwebview/ios"
   flutter_naver_map:
     :path: ".symlinks/plugins/flutter_naver_map/ios"
   fluttertoast:
     :path: ".symlinks/plugins/fluttertoast/ios"
+  geocoding:
+    :path: ".symlinks/plugins/geocoding/ios"
+  geolocator_apple:
+    :path: ".symlinks/plugins/geolocator_apple/ios"
   google_maps_flutter_ios:
     :path: ".symlinks/plugins/google_maps_flutter_ios/ios"
   google_sign_in_ios:
     :path: ".symlinks/plugins/google_sign_in_ios/ios"
   image_picker_ios:
     :path: ".symlinks/plugins/image_picker_ios/ios"
+  location:
+    :path: ".symlinks/plugins/location/ios"
+  package_info_plus:
+    :path: ".symlinks/plugins/package_info_plus/ios"
   path_provider_ios:
     :path: ".symlinks/plugins/path_provider_ios/ios"
+  permission_handler_apple:
+    :path: ".symlinks/plugins/permission_handler_apple/ios"
   sign_in_with_apple:
     :path: ".symlinks/plugins/sign_in_with_apple/ios"
   twitter_login:
@@ -922,10 +959,10 @@ SPEC CHECKSUMS:
   FBSDKCoreKit_Basics: 6e578c9bdc7aa1365dbbbde633c9ebb536bcaa98
   FBSDKLoginKit: 787de205d524c3a4b17d527916f1d066e4361660
   Firebase: a3ea7eba4382afd83808376edb99acdaff078dcf
-  firebase_auth: 2e7181850b75b99cdf7eccffa35def8f7704b905
+  firebase_auth: 3cc6db19e6babdb98e8876a98dee1da670659537
   firebase_core: db1432de826785171029b7c1a26e5b22ce1dd477
   firebase_database: d079ef5f8044ff121d39ab2a9e7eabbcd9017aea
-  firebase_dynamic_links: ad4928c1112e7cfbe2d14553cb34fedde4448481
+  firebase_dynamic_links: 7dd6b3c8e8023e455e53dd390efeac1a0f8353a9
   firebase_storage: c08af1e9ef906c05586b91cb52adc759dddee96e
   FirebaseAppCheckInterop: af164d9c623f82174e3ffa54394dee189587c601
   FirebaseAuth: 08e7739244eeae5216d0a3f8d9f16a76be9c252e
@@ -939,8 +976,11 @@ SPEC CHECKSUMS:
   FirebaseStorage: e7b3fdc90b579cda35e5a0e4c6b206325766e75a
   Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
   flutter_facebook_auth: 361ac7a57263ebf327f26089507ead0d66558ee8
+  flutter_inappwebview: bfd58618f49dc62f2676de690fc6dcda1d6c3721
   flutter_naver_map: 6c7f2f09a8f05722ac344149bbf9cf52a3d9eeaf
   fluttertoast: 74526702fea2c060ea55dde75895b7e1bde1c86b
+  geocoding: 32cfcdb16d38d907caaba65e2e42ad10d38bee58
+  geolocator_apple: cc556e6844d508c95df1e87e3ea6fa4e58c50401
   google_maps_flutter_ios: 66201f392bf62d500f07670a30488a247b9bb5b9
   google_sign_in_ios: 4f85eb9f937450765c8573bb85fd8cd6a5af675c
   GoogleMaps: 025272d5876d3b32604e5c080dc25eaf68764693
@@ -953,9 +993,13 @@ SPEC CHECKSUMS:
   image_picker_ios: b786a5dcf033a8336a657191401bfdf12017dabb
   leveldb-library: 50c7b45cbd7bf543c81a468fe557a16ae3db8729
   Libuv-gRPC: 55e51798e14ef436ad9bc45d12d43b77b49df378
+  location: 3a2eed4dd2fab25e7b7baf2a9efefe82b512d740
   nanopb: b552cce312b6c8484180ef47159bc0f65a1f0431
   NMapsMap: a2593320fca2bb09e521c05b4dffee4da42e96ed
+  OrderedSet: aaeb196f7fef5a9edf55d89760da9176ad40b93c
+  package_info_plus: 6c92f08e1f853dc01228d6f553146438dafcd14e
   path_provider_ios: 14f3d2fd28c4fdb42f44e0f751d12861c43cee02
+  permission_handler_apple: 44366e37eaf29454a1e7b1b7d736c2cceaeb17ce
   PromisesObjC: ab77feca74fa2823e7af4249b8326368e61014cb
   sign_in_with_apple: f3bf75217ea4c2c8b91823f225d70230119b8440
   Toast: 91b396c56ee72a5790816f40d3a94dd357abc196

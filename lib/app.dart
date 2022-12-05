@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutterfire_ui/auth.dart';
 import 'package:flutterfire_ui/i10n.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:handong_real_estate/placePicker.dart';
 import 'package:handong_real_estate/profile.dart';
+import 'package:handong_real_estate/search.dart';
 
 // import 'home.dart';
 import 'login.dart';
@@ -50,6 +52,9 @@ class HreApp extends StatelessWidget {
         '/detail': (BuildContext context) => const DetailPage(),
         '/addHouse' : (BuildContext context) => const AddHousePage(),
         // '/edit': (BuildContext context) => const UpdateProduct(),
+        '/map': (BuildContext context) =>  Map(),
+        '/messagePage': (BuildContext context) => const MessagePage(),
+        '/searchPage': (BuildContext context) => PlacePicker(),
         '/profile': (context) {
           return Scaffold(
             appBar: AppBar(
@@ -65,8 +70,6 @@ class HreApp extends StatelessWidget {
             ),
           );
         },
-        '/map': (BuildContext context) =>  Map(),
-        '/messagePage': (BuildContext context) => const MessagePage(),
         //'/messageSessions'
         // '/wishlist': (BuildContext context) => const Wishlist(),
       },

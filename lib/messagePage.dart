@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:custom_clippers/custom_clippers.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -28,77 +29,98 @@ class _MessagePageState extends State<MessagePage> {
     final _messageController = TextEditingController();
 
     MessageSession messageSession = ModalRoute.of(context)!.settings.arguments as MessageSession;
+    // get Messag
+
+
     List<Message> messages = messageSession.messages;
 
     print("len : ${messages.length}");
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(messageSession.sessionName)
-      ),
-      body: Column(
-        children :[
-          Expanded(
-            child : ListView.builder(
-              itemCount : messages.length,
-              itemBuilder: (BuildContext ctx, int idx) {
-                var isMyMessage = (getUid() == messages[idx].senderId);
-                var messageClipper = UpperNipMessageClipperTwo(MessageType.receive);
-                if(isMyMessage){
-                   messageClipper = UpperNipMessageClipperTwo(MessageType.send);
-                }
+        appBar: AppBar(
+            title: Text(messageSession.sessionName)
+        ),
+        body: Column(
+            children :[
+              Expanded(
+                  child : StreamBuilder(
+                      stream : getMessageStream(messageSession.msid),
+                      builder : (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot){
+                        if(snapshot.connectionState == ConnectionState.waiting){
+                          return const Center(
+                              child: Center(child: CircularProgressIndicator()));
+                        }
+                        else{
+                          return ListView.builder(
+                              itemCount : snapshot.data!.docs.length,
+                              itemBuilder: (BuildContext ctx, int idx) {
+                                var document = snapshot.data!.docs[idx];
+                                Message message = Message(
+                                  timestamp: document['timestamp'],
+                                  senderId: document['senderId'],
+                                  message: document['message'],
+                                );
 
-                String str_TimeSent = DateFormat("hh:mm:ss yyyy-MM-dd").format(DateTime.fromMillisecondsSinceEpoch(messages[idx].timestamp.millisecondsSinceEpoch));
+                                var isMyMessage = (getUid() == message.senderId);
+                                var messageClipper = UpperNipMessageClipperTwo(MessageType.receive);
+                                if(isMyMessage){
+                                  messageClipper = UpperNipMessageClipperTwo(MessageType.send);
+                                }
 
-                return Padding(
-                  padding : EdgeInsets.all(10),
-                  child : ClipPath(
-                      clipper: messageClipper,
-                      child: Container(
-                        //margin: EdgeInsets.all(20),
-                          padding : EdgeInsets.fromLTRB(20, 10, 20, 10,),
-                          color : isMyMessage ? Colors.yellow : Colors.white,
-                          // alignment: Alignment.topLeft,
-                          child : Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(messages[idx].message),
-                              Text(
-                                style : TextStyle(fontSize : 10),
-                                str_TimeSent
-                              ),
-                            ],
-                          )
-                      )
+                                String str_TimeSent = DateFormat("hh:mm:ss yyyy-MM-dd").format(DateTime.fromMillisecondsSinceEpoch(message.timestamp.millisecondsSinceEpoch));
+
+                                return Padding(
+                                    padding : EdgeInsets.all(10),
+                                    child : ClipPath(
+                                        clipper: messageClipper,
+                                        child: Container(
+                                          //margin: EdgeInsets.all(20),
+                                            padding : EdgeInsets.fromLTRB(20, 10, 20, 10,),
+                                            color : isMyMessage ? Colors.yellow : Colors.white,
+                                            // alignment: Alignment.topLeft,
+                                            child : Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                Text(message.message),
+                                                Text(
+                                                    style : TextStyle(fontSize : 10),
+                                                    str_TimeSent
+                                                ),
+                                              ],
+                                            )
+                                        )
+                                    )
+                                );// return Text('${idx} : ${messages[idx].message}');
+                              }
+                          );
+                        }
+                      }
                   )
-                );// return Text('${idx} : ${messages[idx].message}');
-              }
-            )
-          ),
-          Row(
-              children : [
-                SizedBox(width:10),
-                Expanded(
-                  child: TextField(
-                    controller: _messageController,
-                    decoration: const InputDecoration(
-                      labelText: 'message',
+              ),
+              Row(
+                  children : [
+                    SizedBox(width:10),
+                    Expanded(
+                      child: TextField(
+                        controller: _messageController,
+                        decoration: const InputDecoration(
+                          labelText: 'message',
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-                TextButton(
-                  child : Text("submit"),
-                  onPressed: () async {
-                    Message newMessage = await addMessage(messageSession.msid, getUid(), _messageController.text);
-                    setState(() {
-                      messages.add(newMessage);
-                    });
-                  },
-                ),
-              ]
-          ),
-        ]
-      )
+                    TextButton(
+                      child : Text("submit"),
+                      onPressed: () async {
+                        Message newMessage = await addMessage(messageSession.msid, getUid(), _messageController.text);
+                        setState(() {
+                          messages.add(newMessage);
+                        });
+                      },
+                    ),
+                  ]
+              ),
+            ]
+        )
     );
   }
 
