@@ -27,7 +27,7 @@ class MessageSessionPage {
                     int len = snapshot.data == null ?  0 : snapshot.data!.length;
                     print("length : $len");
 
-                    List<MessageSession>? messageSessions = snapshot.data!;
+                    List<MessageSession>? messageSessions = len == 0 ? [] : snapshot.data!;
 
                     return ListView.builder(
                       itemCount: len,

@@ -2,6 +2,11 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+    <key>NSAppTransportSecurity</key>
+    <dict>
+        <key>NSAllowsArbitraryLoads</key>
+        <true/>
+    </dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
@@ -60,20 +65,7 @@
     		</array>
     	</dict>
     </array>
-    <key>NSCameraUsageDescription</key>
-    <string>Used to demonstrate image picker plugin</string>
-    <key>NSMicrophoneUsageDescription</key>
-    <string>Used to capture audio for image picker plugin</string>
-    <key>NSPhotoLibraryUsageDescription</key>
-    <string>Used to demonstrate image picker plugin</string>
-    <dict>
-        <key>NMFClientId</key>
-        <string>gfekm2xo6d</string>
-    </dict>
-    <dict>
-        <key>NSLocationWhenInUseUsageDescription</key>
-        <string>네이버 지도 사용함</string>
-    </dict>
     <!-- ADDED -->
+
 </dict>
 </plist>

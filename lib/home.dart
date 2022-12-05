@@ -1,20 +1,17 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:handong_real_estate/bookmark.dart';
 import 'package:handong_real_estate/dbutility.dart';
 import 'package:handong_real_estate/profile.dart';
 import 'package:handong_real_estate/messageSession.dart';
 import 'package:intl/intl.dart';
-import 'package:anim_search_bar/anim_search_bar.dart';
+// import 'package:anim_search_bar/anim_search_bar.dart';
 import 'package:provider/provider.dart';
 import 'appState.dart';
 
-
-
 class HomePage extends StatefulWidget {
-
   const HomePage({Key? key}) : super(key: key);
 
   @override
@@ -24,11 +21,13 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
   TextEditingController searchBarController = TextEditingController();
-  CollectionReference houseCollectionReference = FirebaseFirestore.instance.collection('houses');
+  CollectionReference houseCollectionReference =
+      FirebaseFirestore.instance.collection('houses');
+
+  List<House> houseList = [];
 
   @override
   Widget build(BuildContext context) {
-
     var cart = context.watch<AppState>();
     final ThemeData theme = Theme.of(context);
 
@@ -36,18 +35,35 @@ class _HomePageState extends State<HomePage> {
     Bookmark bookmarkPage = Bookmark();
     MessageSessionPage messageSessionPage = MessageSessionPage();
 
+    for(House house in houseList){
+      Marker marker = Marker(
+          markerId: MarkerId(house.name),
+        position: house.location,
+        onTap: (){
+            Navigator.pushNamed(context, '/detail', arguments: house);
+        }
+      );
+      cart.addMarker(marker);
+    }
 
-    Widget homeScreen(){
-
+    Widget homeScreen() {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          buildAnimSearchBar(),
+          const SizedBox(
+            height: 10,
+          ),
+          //buildAnimSearchBar(),
           locationSection(),
-          const SizedBox(height: 10,),
+          const SizedBox(
+            height: 10,
+          ),
           const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 25,),
-            child: Text("새로운 매물",
+            padding: EdgeInsets.symmetric(
+              horizontal: 25,
+            ),
+            child: Text(
+              "새로운 매물",
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -59,53 +75,48 @@ class _HomePageState extends State<HomePage> {
       );
     }
 
-    Widget buildBody(){
-      if(_selectedIndex == 0){
+    Widget buildBody() {
+      if (_selectedIndex == 0) {
         return homeScreen();
-      } else if(_selectedIndex == 1){
+      } else if (_selectedIndex == 1) {
         return bookmarkPage.getBookmarkPage(context);
-      } else if(_selectedIndex == 2){
+      } else if (_selectedIndex == 2) {
         return messageSessionPage.getMessageSession();
-      }
-      else{
-        return profilePage.getProfile(FirebaseAuth.instance.currentUser as User);
-
+      } else {
+        return profilePage
+            .getProfile(FirebaseAuth.instance.currentUser as User);
       }
     }
 
-    AppBar? buildAppBar(){
-      if(_selectedIndex == 0){
+    AppBar? buildAppBar() {
+      if (_selectedIndex == 0) {
         return AppBar(
           leading: null,
           title: const Text("Home"),
           actions: [
             IconButton(
-                onPressed: (){
-                  Navigator.pushNamed(context, '/map');
+                onPressed: () {
+                  Navigator.pushNamed(context, '/searchPage');
                 },
-                icon: Icon(Icons.map))
+                icon: const Icon(Icons.search))
           ],
         );
       }
-      if(_selectedIndex == 1){
+      if (_selectedIndex == 1) {
         return AppBar(
           leading: null,
           title: const Text("Bookmarked"),
-          actions: [
-
-          ],
+          actions: [],
         );
       }
-      if(_selectedIndex == 2){
+      if (_selectedIndex == 2) {
         return AppBar(
           leading: null,
           title: const Text("Message"),
-          actions: [
-
-          ],
+          actions: [],
         );
       }
-      if(_selectedIndex == 3){
+      if (_selectedIndex == 3) {
         return AppBar(
           leading: null,
           title: const Text("Profile"),
@@ -119,28 +130,70 @@ class _HomePageState extends State<HomePage> {
           ],
         );
       }
+      return null;
     }
 
-    Widget buildFloatActionButton(){
-
-      if(_selectedIndex == 0){
+    Widget buildFloatActionButton() {
+      if (_selectedIndex == 0) {
         return IconButton(
           icon: const Icon(Icons.add),
           onPressed: () {
             Navigator.pushNamed(context, '/addHouse');
           },
         );
-      }
-      else {
+      } else {
         return Text("");
       }
     }
+
     return Scaffold(
       appBar: buildAppBar(),
       body: SafeArea(
         child: buildBody(),
       ),
-      bottomNavigationBar : BottomNavigationBar(
+      drawer: Drawer(
+        child: ListView(
+          // Important: Remove any padding from the ListView.
+          padding: EdgeInsets.zero,
+          children: [
+            const DrawerHeader(
+              decoration: BoxDecoration(
+                color: Colors.blue,
+              ),
+              child: Text('Drawer Header'),
+            ),
+            ListTile(
+              leading: Icon(Icons.person_search),
+              title: const Text('룸메이트 구해요'),
+              onTap: () {
+                //Navigator.pushNamed(context, '/roomMatePage');
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.house),
+              title: const Text('단기양도'),
+              onTap: () {
+                // Update the state of the app
+                // ...
+                // Then close the drawer
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.shopping_cart),
+              title: const Text('장터'),
+              onTap: () {
+                // Update the state of the app
+                // ...
+                // Then close the drawer
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        ),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
@@ -160,7 +213,7 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
         currentIndex: _selectedIndex,
-        onTap: (ind){
+        onTap: (ind) {
           setState(() {
             _selectedIndex = ind;
           });
@@ -170,32 +223,32 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget buildAnimSearchBar(){
+  // Widget buildAnimSearchBar(){
+  //
+  //   return Padding(
+  //     padding:  const EdgeInsets.symmetric(vertical: 0, horizontal: 25),
+  //     child: AnimSearchBar(
+  //       autoFocus: true
+  //       width: 400,
+  //       textController: searchBarController,
+  //       onSuffixTap: (){
+  //         setState(() {
+  //           searchBarController.clear();
+  //         });
+  //       },
+  //     ),
+  //   );
+  // }
 
-    return Padding(
-      padding:  const EdgeInsets.symmetric(vertical: 0, horizontal: 25),
-      child: AnimSearchBar(
-        autoFocus: true,
-        width: 400,
-        textController: searchBarController,
-        onSuffixTap: (){
-          setState(() {
-            searchBarController.clear();
-          });
-        },
-      ),
-    );
-  }
-
-  SizedBox _locationCard(String where, Icon icon){
-    return  SizedBox(
+  SizedBox _locationCard(Icon icon, MapPoint location) {
+    return SizedBox(
       child: Card(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(5),
           ),
-          child:InkWell(
-            onTap: (){
-
+          child: InkWell(
+            onTap: () {
+              Navigator.pushNamed(context, '/map', arguments: location);
             },
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -203,17 +256,18 @@ class _HomePageState extends State<HomePage> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   icon,
-                  const SizedBox(width: 5,),
-                  Text(where),
+                  const SizedBox(
+                    width: 5,
+                  ),
+                  Text(location.name),
                 ],
               ),
-            ) ,
-          )
-      ),
+            ),
+          )),
     );
   }
 
-  Widget locationSection(){
+  Widget locationSection() {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 25),
       child: Column(
@@ -227,18 +281,20 @@ class _HomePageState extends State<HomePage> {
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
-                  ),),
-              ) ,
+                  ),
+                ),
+              ),
               TextButton(
-                onPressed: (){
-
+                onPressed: () {
+                  Navigator.pushNamed(context, '/map', arguments: MapPoint(
+                    name: "양덕동 근처 매물",
+                    center: const LatLng(36.081809, 129.39697),
+                    zoom: 14,
+                  ));
                 },
                 child: const Text(
                   "View ALL",
-                  style: TextStyle(
-                      color: Colors.grey,
-                      fontSize: 17
-                  ),
+                  style: TextStyle(color: Colors.grey, fontSize: 17),
                 ),
               ),
             ],
@@ -248,10 +304,27 @@ class _HomePageState extends State<HomePage> {
             child: ListView(
               scrollDirection: Axis.horizontal,
               children: [
-                _locationCard("그할마", const Icon(Icons.home_filled)),
-                _locationCard("다이소(양덕)", const Icon(Icons.shopping_cart)),
-                _locationCard("법원", const Icon(Icons.house_outlined)),
-                _locationCard("커피유야", const Icon(Icons.coffee)),
+                _locationCard(
+                    const Icon(Icons.home_filled),
+                    MapPoint(
+                        name: "그할마 ",
+                        center: const LatLng(36.079753, 129.394197),
+                        zoom: 17)),
+                _locationCard(
+                    const Icon(Icons.shopping_cart),
+                    MapPoint(
+                        name: "다이소(양덕)",
+                        center: const LatLng(36.084206, 129.396543), zoom: 17)),
+                _locationCard(
+                    const Icon(Icons.house_outlined),
+                    MapPoint(
+                        name: "법원",
+                        center: const LatLng(36.08925, 129.387588), zoom: 17)),
+                _locationCard(
+                    const Icon(Icons.coffee),
+                    MapPoint(
+                        name: "커피유야",
+                        center: const LatLng(36.080508, 129.399658), zoom: 17)),
               ],
             ),
           ),
@@ -260,159 +333,181 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  List<Card> _buildHouseCards(BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot){
+  List<Card> _buildHouseCards(
+      BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
     final NumberFormat numberFormat = NumberFormat.simpleCurrency(locale: "ko_KR");
 
     return snapshot.data!.docs.map((DocumentSnapshot document) {
+      GeoPoint gps = document['location'];
 
       House house = House(
-        imageUrl : document['thumbnail'],
-        name : document['name'],
-        location : document['location'],
-        documentId : document.id,
-        ownerId : document['userId'],
+        thumbnail: document['thumbnail'],
+        name: document['name'],
+        address: document['address'],
+        documentId: document.id,
+        ownerId: document['userId'],
         description: document['description'] as String,
-        monthlyPay : document['monthlyPay'] as int ,
-        deposit : document['deposit'],
-        optionList : List<bool>.from(document['options']),
+        monthlyPay: document['monthlyPay'] as int,
+        deposit: document['deposit'],
+        optionList: List<bool>.from(document['options']),
+        location: LatLng(gps.latitude, gps.longitude),
+        imageLinks: List.from(document['imagelinks']),
       );
 
+      houseList.add(house);
+
       var isInCart = context.select<AppState, bool>(
-            (cart) => cart.bookmarked
+        (cart) => cart.bookmarked
             .where((element) => element.documentId == document.id)
             .isNotEmpty,
       );
 
+
       return Card(
-        child: InkWell(
-          borderRadius: BorderRadius.circular(50),
-          onTap: (){
-            Navigator.pushNamed(context, '/detail', arguments: house);
-          },
-          child: Column(
-            //crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              AspectRatio(
-                aspectRatio: 16 / 11,
-                child: isInCart
-                    ? Stack(
-                  children: [
-                    Image.network(
-                      house.imageUrl,
+          child: InkWell(
+        borderRadius: BorderRadius.circular(50),
+        onTap: () {
+          Navigator.pushNamed(context, '/detail', arguments: house);
+        },
+        child: Column(
+          //crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            AspectRatio(
+              aspectRatio: 16 / 11,
+              child: isInCart
+                  ? Stack(
+                      children: [
+                        Image.network(
+                          house.thumbnail,
+                          fit: BoxFit.cover,
+                        ),
+                        const Positioned(
+                          top: 10,
+                          right: 10,
+                          child: Icon(
+                            Icons.check_circle,
+                            color: Colors.blue,
+                          ),
+                        ),
+                      ],
+                    )
+                  : Image.network(
+                      house.thumbnail,
                       fit: BoxFit.cover,
                     ),
-                    const Positioned(
-                      top: 10,
-                      right: 10,
-                      child: Icon(
-                        Icons.check_circle,
-                        color: Colors.blue,
-                      ),),
-                  ],
-                )
-                    : Image.network(
-                  house.imageUrl,
-                  fit: BoxFit.cover,
-                ),
-              ),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
-                  child: Row(
-                    children: [
-                      const SizedBox(
-                        width: 7,
-                      ),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Text(
-                              house.name,//document['name'],
+            ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+                child: Row(
+                  children: [
+                    const SizedBox(
+                      width: 7,
+                    ),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text(
+                            house.name, //document['name'],
+                            style: const TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            maxLines: 1,
+                          ),
+                          Row(
+                            children: [
+                              Icon(Icons.location_on),
+                              Expanded(
+                                  child: Text(
+                                      "${house.address}")
+                              ),
+                            ],
+                          ),
+                          Expanded(
+                            child: Text(
+                              "보증금 ${numberFormat.format(house.deposit)} / 월 ${numberFormat.format(house.monthlyPay)}", //document['monthlyPay']),
                               style: const TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.bold,
+                                fontSize: 11,
                               ),
-                              maxLines: 1,
+                              maxLines: 2,
                             ),
-                            Row(
-                              children: [
-                                Icon(Icons.location_on),
-                                Text("${house.location}"),
-                              ],
-                            ),
-                            Expanded(
-                              child: Text(
-                                "보증금 ${numberFormat.format(house.deposit)} / 월 ${numberFormat.format(house.monthlyPay)}",//document['monthlyPay']),
-                                style: const TextStyle(
-                                  fontSize: 11,
-                                ),
-                                maxLines: 2,
-                              ),
-                            ),
+                          ),
+                          TextButton(
+                            child: Text("Send Message"),
+                            onPressed: () async {
+                              //Navigator.pushNamed(context, '/detail', arguments: house);
+                              String uid = getUid();
 
-                            TextButton(
-                              child: Text("Send Message"),
-                              onPressed: () async {
-                                //Navigator.pushNamed(context, '/detail', arguments: house);
-                                String uid = getUid();
+                              List<String> participants = [house.ownerId, uid];
 
-                                List<String> participants = [house.ownerId, uid];
+                              String msid = "";
+                              await isMessageSessionExist(participants)
+                                  ? msid = await getMessageSessionIDbyuids(
+                                      participants)
+                                  : msid =
+                                      await makeMessageSession(participants);
 
-                                String msid = "";
-                                await isMessageSessionExist(participants)?
-                                  msid = await getMessageSessionIDbyuids(participants) :
-                                  msid = await makeMessageSession(participants);
+                              // if(msid == "") print("<ERROR> msid is null...");
 
-                                // if(msid == "") print("<ERROR> msid is null...");
-
-                                MessageSession messageSession = await getMessageSession(msid);
-                                print("i sent : ${messageSession.messages.length}");
-                                Navigator.pushNamed(context, '/messagePage', arguments: messageSession);
-
-                              },
-                            )
-                          ],
-                        ),
+                              MessageSession messageSession =
+                                  await getMessageSession(msid);
+                              print(
+                                  "i sent : ${messageSession.messages.length}");
+                              Navigator.pushNamed(context, '/messagePage',
+                                  arguments: messageSession);
+                            },
+                          )
+                        ],
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
-            ],
-          ),
-        )
-
-      );
-    }).toList();
-  }
-
-  Widget buildHouseCard(){
-    return
-      Expanded(
-        child: StreamBuilder<QuerySnapshot>(
-          stream: houseCollectionReference.orderBy('monthlyPay', descending: true).snapshots(),
-          builder: (BuildContext context,
-              AsyncSnapshot<QuerySnapshot> snapshot) {
-            if(snapshot.connectionState == ConnectionState.waiting){
-              return const Center(
-                  child: Center(child: CircularProgressIndicator()));
-            }
-            else{
-              return OrientationBuilder(
-                builder: (context, orientation) {
-                  return GridView.count(
-                    scrollDirection: Axis.horizontal,
-                    crossAxisCount: 1,
-                    padding: const EdgeInsets.all(16.0),
-                    childAspectRatio: 16.0 / 12.0,
-                    children: _buildHouseCards(context, snapshot),
-                  );
-                },
-              );
-            }
-          },
+            ),
+          ],
         ),
-      );
+      ));
+    }).toList();
+
   }
+
+  Widget buildHouseCard() {
+
+    return Expanded(
+      child: StreamBuilder<QuerySnapshot>(
+        stream: houseCollectionReference
+            .orderBy('monthlyPay', descending: true)
+            .snapshots(),
+        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+                child: Center(child: CircularProgressIndicator()));
+          } else {
+            return OrientationBuilder(
+              builder: (context, orientation) {
+                return GridView.count(
+                  scrollDirection: Axis.horizontal,
+                  crossAxisCount: 1,
+                  padding: const EdgeInsets.all(16.0),
+                  childAspectRatio: 16.0 / 12.0,
+                  children: _buildHouseCards(context, snapshot),
+                );
+              },
+            );
+          }
+        },
+      ),
+    );
+  }
+}
+
+class MapPoint {
+  final String name;
+  final LatLng center;
+  final double zoom;
+  MapPoint({required this.name, required this.center, required this.zoom});
+
+
 }
