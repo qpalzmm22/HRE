@@ -6,6 +6,7 @@ import 'package:handong_real_estate/bookmark.dart';
 import 'package:handong_real_estate/dbutility.dart';
 import 'package:handong_real_estate/profile.dart';
 import 'package:handong_real_estate/messageSession.dart';
+import 'package:handong_real_estate/roommates.dart';
 import 'package:intl/intl.dart';
 // import 'package:anim_search_bar/anim_search_bar.dart';
 import 'package:provider/provider.dart';
@@ -48,7 +49,6 @@ class _HomePageState extends State<HomePage> {
 
     Widget homeScreen() {
       return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SizedBox(
             height: 10,
@@ -58,18 +58,23 @@ class _HomePageState extends State<HomePage> {
           const SizedBox(
             height: 10,
           ),
-          const Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: 25,
-            ),
-            child: Text(
-              "새로운 매물",
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
+          Row(
+            children: const [
+              Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: 25,
+                ),
+                child: Text(
+                  "새로운 매물",
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
-            ),
+            ],
           ),
+
           buildHouseCard(),
         ],
       );
@@ -98,7 +103,7 @@ class _HomePageState extends State<HomePage> {
                 onPressed: () {
                   Navigator.pushNamed(context, '/searchPage');
                 },
-                icon: const Icon(Icons.search))
+                icon: const Icon(Icons.tune))
           ],
         );
       }
@@ -135,12 +140,12 @@ class _HomePageState extends State<HomePage> {
 
     Widget buildFloatActionButton() {
       if (_selectedIndex == 0) {
-        return IconButton(
-          icon: const Icon(Icons.add),
-          onPressed: () {
-            Navigator.pushNamed(context, '/addHouse');
-          },
-        );
+        return FloatingActionButton(
+          backgroundColor: Colors.pink,
+            onPressed: () {
+              Navigator.pushNamed(context, '/addHouse');
+            },
+        child: Icon(Icons.add),);
       } else {
         return Text("");
       }
@@ -165,28 +170,36 @@ class _HomePageState extends State<HomePage> {
             ListTile(
               leading: Icon(Icons.person_search),
               title: const Text('룸메이트 구해요'),
-              onTap: () {
-                //Navigator.pushNamed(context, '/roomMatePage');
+              onTap: () async {
+                await Navigator.pushNamed(context, '/page', arguments: PageInfo(pageTitle: "Roommate", collectionName: 'roommates', pageIndex: 0));
                 Navigator.pop(context);
+
               },
             ),
             ListTile(
               leading: Icon(Icons.house),
               title: const Text('단기양도'),
-              onTap: () {
+              onTap: () async {
                 // Update the state of the app
                 // ...
                 // Then close the drawer
+                await Navigator.pushNamed(context, '/page', arguments: PageInfo(pageTitle: "Roommate", collectionName: 'roommates', pageIndex: 1));
                 Navigator.pop(context);
               },
             ),
             ListTile(
               leading: Icon(Icons.shopping_cart),
               title: const Text('장터'),
-              onTap: () {
-                // Update the state of the app
-                // ...
-                // Then close the drawer
+              onTap: () async {
+                await Navigator.pushNamed(context, '/page', arguments: PageInfo(pageTitle: "Roommate", collectionName: 'roommates', pageIndex: 2));
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.local_taxi),
+              title: const Text(' 택시팟'),
+              onTap: () async {
+                await Navigator.pushNamed(context, '/page', arguments: PageInfo(pageTitle: "Roommate", collectionName: 'roommates', pageIndex: 3));
                 Navigator.pop(context);
               },
             ),
@@ -222,23 +235,6 @@ class _HomePageState extends State<HomePage> {
       floatingActionButton: buildFloatActionButton(),
     );
   }
-
-  // Widget buildAnimSearchBar(){
-  //
-  //   return Padding(
-  //     padding:  const EdgeInsets.symmetric(vertical: 0, horizontal: 25),
-  //     child: AnimSearchBar(
-  //       autoFocus: true
-  //       width: 400,
-  //       textController: searchBarController,
-  //       onSuffixTap: (){
-  //         setState(() {
-  //           searchBarController.clear();
-  //         });
-  //       },
-  //     ),
-  //   );
-  // }
 
   SizedBox _locationCard(Icon icon, MapPoint location) {
     return SizedBox(
@@ -362,12 +358,11 @@ class _HomePageState extends State<HomePage> {
             .isNotEmpty,
       );
 
-
       return Card(
           child: InkWell(
-        borderRadius: BorderRadius.circular(50),
-        onTap: () {
-          Navigator.pushNamed(context, '/detail', arguments: house);
+          borderRadius: BorderRadius.circular(50),
+          onTap: () {
+            Navigator.pushNamed(context, '/detail', arguments: house);
         },
         child: Column(
           //crossAxisAlignment: CrossAxisAlignment.start,
@@ -420,45 +415,26 @@ class _HomePageState extends State<HomePage> {
                             children: [
                               Icon(Icons.location_on),
                               Expanded(
-                                  child: Text(
-                                      "${house.address}")
+                                child: Text(
+                                  "${house.address}",
+                                  style: const TextStyle(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                )
                               ),
                             ],
                           ),
-                          Expanded(
-                            child: Text(
+                          Divider(height:8),
+                          Text(
                               "보증금 ${numberFormat.format(house.deposit)} / 월 ${numberFormat.format(house.monthlyPay)}", //document['monthlyPay']),
                               style: const TextStyle(
                                 fontSize: 11,
                               ),
                               maxLines: 2,
-                            ),
                           ),
-                          TextButton(
-                            child: Text("Send Message"),
-                            onPressed: () async {
-                              //Navigator.pushNamed(context, '/detail', arguments: house);
-                              String uid = getUid();
-
-                              List<String> participants = [house.ownerId, uid];
-
-                              String msid = "";
-                              await isMessageSessionExist(participants)
-                                  ? msid = await getMessageSessionIDbyuids(
-                                      participants)
-                                  : msid =
-                                      await makeMessageSession(participants);
-
-                              // if(msid == "") print("<ERROR> msid is null...");
-
-                              MessageSession messageSession =
-                                  await getMessageSession(msid);
-                              print(
-                                  "i sent : ${messageSession.messages.length}");
-                              Navigator.pushNamed(context, '/messagePage',
-                                  arguments: messageSession);
-                            },
-                          )
+                          Divider(height:8),
+                          Text("설명 : ${house.description}"),
                         ],
                       ),
                     ),
@@ -470,7 +446,6 @@ class _HomePageState extends State<HomePage> {
         ),
       ));
     }).toList();
-
   }
 
   Widget buildHouseCard() {
@@ -508,6 +483,4 @@ class MapPoint {
   final LatLng center;
   final double zoom;
   MapPoint({required this.name, required this.center, required this.zoom});
-
-
 }

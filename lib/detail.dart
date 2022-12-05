@@ -9,10 +9,12 @@ import 'package:getwidget/getwidget.dart';
 import 'package:horizontal_card_pager/card_item.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:horizontal_card_pager/horizontal_card_pager.dart';
+import 'package:horizontal_card_pager/horizontal_card_pager.dart'; // TODO
+import 'package:flutter_profile_picture/flutter_profile_picture.dart';
 
 import 'appState.dart';
 import 'home.dart';
+import 'dbutility.dart';
 
 Widget iconLocation(String str){
   return Row(
@@ -24,7 +26,14 @@ Widget iconLocation(String str){
   );
 }
 
-
+Widget CircleProfile(String img){
+  return ProfilePicture(
+    name: 'ss',
+    radius: 30,
+    fontsize: 15,
+    img: img,
+  );
+}
 
 
 class DetailPage extends StatefulWidget {
@@ -76,6 +85,56 @@ class _DetailPageState extends State<DetailPage> {
           ),
         ));
       }
+    }
+
+    Widget buildFloatActionButton() {
+      return FutureBuilder(
+          future: getUserFromDB(house.ownerId),
+          builder: (BuildContext buildContext, AsyncSnapshot<HreUser> snapshot){
+
+            if(snapshot.hasData){
+              HreUser? owner = snapshot.data;
+              return Container(
+                color: Colors.red,
+                width:300,
+                height: 100,
+                child: Row(
+                  children: [
+                  //   Column(
+                  //     children: [
+                  //       CircleProfile(snapshot.data!.profileImage),
+                  //       Expanded(child: Text(snapshot.data!.name)),
+                  //     ],
+                  //   ),
+                    CircleProfile(owner!.profileImage),
+                    Text(owner!.name),
+                    IconButton(
+                      icon: const Icon(Icons.add),
+                      onPressed: () async {
+                        String uid = getUid();
+
+                        List<String> participants = [house.ownerId, uid];
+
+                        String msid = "";
+                        await isMessageSessionExist(participants)
+                            ? msid = await getMessageSessionIDbyuids(
+                            participants)
+                            : msid =
+                        await makeMessageSession(participants);
+
+                        MessageSession messageSession =
+                        await getMessageSession(msid);
+                        print("i sent : ${messageSession.messages.length}");
+                        Navigator.pushNamed(context, '/messagePage', arguments: messageSession);
+                      },
+                    ),
+                  ],
+                ),
+              );
+            } else{
+              return CircularProgressIndicator();
+            }
+          });
     }
 
     return Scaffold(
@@ -164,7 +223,7 @@ class _DetailPageState extends State<DetailPage> {
           Padding(
             padding: EdgeInsets.only(left:30, right:30),
             child: availableOptionCards.length != 0 ?
-              Text("Available Options") : Text(""),
+              Text("Available Options") : Text("No Option Available"),
           ),
           SizedBox(
             height: 100,
@@ -186,6 +245,8 @@ class _DetailPageState extends State<DetailPage> {
           ),
         ],
       ),
+      floatingActionButton: buildFloatActionButton(),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 }

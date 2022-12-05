@@ -4,6 +4,7 @@ import 'package:flutterfire_ui/i10n.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:handong_real_estate/placePicker.dart';
 import 'package:handong_real_estate/profile.dart';
+import 'package:handong_real_estate/roommates.dart';
 import 'package:handong_real_estate/search.dart';
 
 // import 'home.dart';
@@ -54,6 +55,7 @@ class HreApp extends StatelessWidget {
         // '/edit': (BuildContext context) => const UpdateProduct(),
         '/map': (BuildContext context) =>  Map(),
         '/messagePage': (BuildContext context) => const MessagePage(),
+        '/page' : (BuildContext context) => const ComunityPage(),
         '/searchPage': (BuildContext context) => PlacePicker(),
         '/profile': (context) {
           return Scaffold(
