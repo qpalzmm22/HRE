@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+
 
 import 'dbutility.dart';
 
@@ -36,22 +38,53 @@ class _ComunityPageState extends State<ComunityPage>{
                     future: page.get(),
                     builder: (context, snapshot){
 
-                      List myDocCount = snapshot.data == null ? [] : snapshot.data!.docs;
+                      List data = snapshot.data == null ? [] : snapshot.data!.docs;
                       int len = snapshot.data == null ?  0 : snapshot.data!.docs.length;
                       print("length : $len");
 
                       return ListView.builder(
                           itemCount: len,
                           itemBuilder: (BuildContext context, int idx) {
-                            return ListTile(
+                            return Card(
+                              color: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                side: BorderSide(
+                                  color: Colors.green.shade300,
+                                ),
+                                borderRadius: BorderRadius.circular(15.0),
+                              ),
+                              child:  ListTile(
                                 title: InkWell(
                                   onTap: () {
-                                    Navigator.pushNamed(context, '/messagePage',
-                                        arguments: myDocCount[idx]['title']);
+                                    Navigator.pushNamed(context, '/messagePage', arguments: data);
                                   },
-                                  child :Text(myDocCount[idx]['title']),
-                                )
+                                  child : Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(data[idx]['title']),
+                                      Row(
+                                        children: [
+                                          Text(data[idx]['author'],
+                                            style: TextStyle(
+                                              fontSize: 12,
+                                              color: Colors.grey,
+                                            ),),
+                                          Text(
+                                            '${DateFormat('yy').format(data[idx]["upload_time"])}.${data[idx]["upload_time"]
+                                                .month}.${data[idx]["upload_time"].day} ${data[idx]["upload_time"]
+                                                .hour}:${data[idx]["upload_time"].minute}:${data[idx]["upload_time"]
+                                                .second} created',
+                                            style: const TextStyle(fontSize: 10, color: Colors.grey),
+                                          ),
+
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
                             );
+
                           }
                       );
                     }),

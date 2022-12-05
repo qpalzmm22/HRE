@@ -58,18 +58,23 @@ class _HomePageState extends State<HomePage> {
           const SizedBox(
             height: 10,
           ),
-          const Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: 25,
-            ),
-            child: Text(
-              "새로운 매물",
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
+          Row(
+            children: const [
+              Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: 25,
+                ),
+                child: Text(
+                  "새로운 매물",
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
-            ),
+            ],
           ),
+
           buildHouseCard(),
         ],
       );
@@ -192,7 +197,7 @@ class _HomePageState extends State<HomePage> {
             ),
             ListTile(
               leading: Icon(Icons.local_taxi),
-              title: const Text('같이카'),
+              title: const Text(' 택시팟'),
               onTap: () async {
                 await Navigator.pushNamed(context, '/page', arguments: PageInfo(pageTitle: "Roommate", collectionName: 'roommates', pageIndex: 3));
                 Navigator.pop(context);
