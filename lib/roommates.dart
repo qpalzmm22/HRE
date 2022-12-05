@@ -317,7 +317,9 @@ class _RoommateDetailState extends State<RoommateDetail> {
             title: Text(data["title"]),
             actions: [
               currentUser.uid == data['uid']
-                  ? IconButton(onPressed: () {}, icon: Icon(Icons.edit))
+                  ? IconButton(onPressed: () {
+
+              }, icon: Icon(Icons.edit))
                   : Text("")
             ],
           ),
@@ -326,10 +328,10 @@ class _RoommateDetailState extends State<RoommateDetail> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(height: 10,),
+                const SizedBox(height: 10,),
                 Expanded(
                     child: TextField(
-                      focusNode: new AlwaysDisabledFocusNode(),
+                      focusNode: AlwaysDisabledFocusNode(),
                       controller: _contentController,
                       maxLines: 20,
                       decoration: const InputDecoration(
@@ -371,8 +373,22 @@ class _RoommateDetailState extends State<RoommateDetail> {
                               ],
                             ),
                         IconButton(
-                            onPressed: (){
+                            onPressed: () async {
+                              String uid = getUid();
 
+                              List<String> participants = [data['uid'], uid];
+
+                              String msid = "";
+                              await isMessageSessionExist(participants)
+                                  ? msid = await getMessageSessionIDbyuids(
+                                  participants)
+                                  : msid =
+                              await makeMessageSession(participants);
+
+                              MessageSession messageSession =
+                              await getMessageSession(msid);
+                              print("i sent : ${messageSession.messages.length}");
+                              Navigator.pushNamed(context, '/messagePage', arguments: messageSession);
                             },
                             icon: const Icon(Icons.message))
                       ],
