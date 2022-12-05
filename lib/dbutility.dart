@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+// import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:handong_real_estate/messageSession.dart';
 import 'package:path/path.dart';
 
@@ -14,7 +14,7 @@ import 'package:provider/provider.dart';
 
 import 'appState.dart';
 
-void addGoogleUser(User? user){
+void addUser(User? user){
 
   if(user != null) {
     print(user.uid);
@@ -26,6 +26,7 @@ void addGoogleUser(User? user){
       'name': user.displayName.toString(),
       'status_message': 'I promise to take the test honestly before GOD',
       'uid': user.uid,
+      'profileImage':user.photoURL,
     });
   }
 }
@@ -42,6 +43,7 @@ void addAnonymousUser(User? user){
       'name': "",
       'status_message': 'I promise to take the test honestly before GOD',
       'uid': user.uid,
+      'profileImage':user.photoURL,
     });
   }
 }
@@ -81,41 +83,37 @@ void addHouseToDB(House house){
     });
 }
 
-// void addHouse(
-//     String address,
-//     LatLng location,
-//     String name,
-//     int deposit,
-//     int monthlyPay,
-//     String description,
-//     String thumbnail,
-//     List<String> imageLinks,
-//     List<bool> options,
-//     ){
-//
-//   User? user = FirebaseAuth.instance.currentUser;
-//   if(user != null){
-//     FirebaseFirestore.instance
-//         .collection('houses')
-//         .add(<String, dynamic>{
-//       'name': name,
-//       'deposit': deposit,
-//       'monthlyPay': monthlyPay,
-//       'description' : description,
-//       'houseSize' : 0, // TODO
-//       'address' : "장성로 128번길 24-5", // TODO Geometry? string
-//       'userId': user.uid,
-//       'created': FieldValue.serverTimestamp(),
-//       'modified': FieldValue.serverTimestamp(),
-//       // TODO 'roomInfo' :  RoomInfo(room_type : "hello",  num_of_bedrooms : 2, num_of_bathrooms : 1), // TODO
-//       //'likers' : <String>[], // initial likes = 0
-//       'thumbnail': thumbnail,
-//       'imagelinks' : imageLinks,
-//       'options' : options,
-//       'location' : location,
-//     });
-//   }
-// }
+class HreUser{
+  HreUser(
+      {required this.uid,
+        required this.name,
+        required this.profileImage,
+        required this.email,
+      });
+  final String uid;
+  final String name;
+  final String profileImage;
+  final String email;
+}
+
+Future<HreUser> getUserFromDB(String uid) async {
+  return await FirebaseFirestore.instance
+      .collection('users')
+      .doc(uid)
+      .get()
+      .then((value) {
+    if(value.data() == null){
+      print("JY ERROR!!! :  getuserFromdb : no value().data ");
+    }
+    return HreUser(
+      uid: value.data()!['uid'],
+      name: value.data()!['name'],
+      profileImage:value.data()!['profileImage'],
+      email: value.data()!['email'],
+    );
+  });
+}
+
 
 Future<String> uploadFile (File? file) async {
   User? user = FirebaseAuth.instance.currentUser;
@@ -166,11 +164,21 @@ class MessageSession {
   final String recentMessage;
   //final CollectionReference messagesRef;
   final List<Message> messages;
-  final String profileImage;
+  final List<String> profileImage;
   final String msid;
   final String sessionName;
   final Timestamp timestamp;
 }
+
+Stream<QuerySnapshot<Map<String,dynamic>>> getMessageSessionStreambyuid(String uid){
+  return FirebaseFirestore.instance
+      .collection('messageSessions')
+      .where('users', arrayContains: uid)
+      .orderBy('timestamp', descending: false)
+      .snapshots();
+}
+
+
 
 Future<List<MessageSession>> getMessageMutipleSessionsbyuid(String uid) async {
 
@@ -188,7 +196,7 @@ Future<List<MessageSession>> getMessageMutipleSessionsbyuid(String uid) async {
               recentMessage: doc['recentMessage'],
               messages: await getMessages(doc['msid']),
               msid: doc['msid'],
-              profileImage: doc['profileImage'],
+              profileImage: List<String>.from(doc['profileImage']),
               timestamp: doc['timestamp'],
               sessionName: doc['sessionName'],
           ));
@@ -256,7 +264,7 @@ Future<MessageSession> getMessageSession(String msid) async {
       recentMessage: doc['recentMessage'],
       messages : await getMessages(msid),
       msid: msid,
-      profileImage: doc['profileImage'],
+      profileImage: List<String>.from(doc['profileImage']),
       timestamp: doc['timestamp'],
       sessionName: doc['sessionName']
     ));
@@ -265,7 +273,10 @@ Future<MessageSession> getMessageSession(String msid) async {
 
 // Returns msid
 Future<String> makeMessageSession(List<String> uids) async {
-  uids.sort();
+  uids.sort(); //
+
+  HreUser user1 = await getUserFromDB(uids[0]);
+  HreUser user2 = await getUserFromDB(uids[1]);
 
   String msid = FirebaseFirestore.instance
       .collection('messageSessions').doc().id;
@@ -277,10 +288,9 @@ Future<String> makeMessageSession(List<String> uids) async {
     'users': uids,
     'usersString': uids.toString(),
     'recentMessage': "",
-    'profileImage' : "https://handong.edu/site/handong/res/img/logo.png",// TODO : get it from firebase storage?
+    'profileImage' : [user1.profileImage, user2.profileImage], // Access Profile image by index ..!
     'timestamp': FieldValue.serverTimestamp(),
-    'sessionName': "Message Session" // TODO : Fix this
-//    'messages' : ,
+    'sessionName': "${user1.name} 와 ${user2.name} 의 대화방",
   });
   return msid;
 }

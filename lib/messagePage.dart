@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+// import 'package:fluttertoast/fluttertoast.dart';
 
 import 'package:intl/intl.dart';
 
@@ -31,10 +31,9 @@ class _MessagePageState extends State<MessagePage> {
     MessageSession messageSession = ModalRoute.of(context)!.settings.arguments as MessageSession;
     // get Messag
 
+    // List<Message> messages = messageSession.messages;
 
-    List<Message> messages = messageSession.messages;
-
-    print("len : ${messages.length}");
+    // print("len : ${messages.length}");
 
     return Scaffold(
         appBar: AppBar(
@@ -112,9 +111,10 @@ class _MessagePageState extends State<MessagePage> {
                       child : Text("submit"),
                       onPressed: () async {
                         Message newMessage = await addMessage(messageSession.msid, getUid(), _messageController.text);
-                        setState(() {
-                          messages.add(newMessage);
-                        });
+
+                        // setState(() {
+                        //   messages.add(newMessage);
+                        // });
                       },
                     ),
                   ]

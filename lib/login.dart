@@ -42,6 +42,7 @@ class _LoginPageState extends State<LoginPage> {
     return SignInScreen(
       actions: [
         AuthStateChangeAction<SignedIn>((context, state) {
+          addUser(FirebaseAuth.instance.currentUser);
           Navigator.pushReplacementNamed(context, '/home');
         }),
       ],
