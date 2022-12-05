@@ -45,6 +45,8 @@ class _ComunityPageState extends State<ComunityPage>{
                       return ListView.builder(
                           itemCount: len,
                           itemBuilder: (BuildContext context, int idx) {
+                            DateTime createdTime = DateTime.parse(data[idx]['upload_time'].toDate().toString());
+
                             return Card(
                               color: Colors.white,
                               shape: RoundedRectangleBorder(
@@ -64,15 +66,16 @@ class _ComunityPageState extends State<ComunityPage>{
                                       Text(data[idx]['title']),
                                       Row(
                                         children: [
-                                          Text(data[idx]['author'],
+                                          Expanded(child: Text(data[idx]['author'],
                                             style: TextStyle(
                                               fontSize: 12,
                                               color: Colors.grey,
-                                            ),),
+                                            ),),),
+
                                           Text(
-                                            '${DateFormat('yy').format(data[idx]["upload_time"])}.${data[idx]["upload_time"]
-                                                .month}.${data[idx]["upload_time"].day} ${data[idx]["upload_time"]
-                                                .hour}:${data[idx]["upload_time"].minute}:${data[idx]["upload_time"]
+                                            '${DateFormat('yy').format(createdTime)}.${createdTime
+                                                .month}.${createdTime.day} ${createdTime
+                                                .hour}:${createdTime.minute}:${createdTime
                                                 .second} created',
                                             style: const TextStyle(fontSize: 10, color: Colors.grey),
                                           ),
