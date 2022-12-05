@@ -171,9 +171,8 @@ class _HomePageState extends State<HomePage> {
               leading: Icon(Icons.person_search),
               title: const Text('룸메이트 구해요'),
               onTap: () async {
-                await Navigator.pushNamed(context, '/page', arguments: PageInfo(pageTitle: "Roommate", collectionName: 'roommates', pageIndex: 0));
                 Navigator.pop(context);
-
+                await Navigator.pushNamed(context, '/communityPage', arguments: PageInfo(pageTitle: "Roommate", collectionName: 'roommates', pageIndex: 0));
               },
             ),
             ListTile(
@@ -183,7 +182,7 @@ class _HomePageState extends State<HomePage> {
                 // Update the state of the app
                 // ...
                 // Then close the drawer
-                await Navigator.pushNamed(context, '/page', arguments: PageInfo(pageTitle: "Roommate", collectionName: 'roommates', pageIndex: 1));
+                await Navigator.pushNamed(context, '/communityPage', arguments: PageInfo(pageTitle: "Roommate", collectionName: 'roommates', pageIndex: 1));
                 Navigator.pop(context);
               },
             ),
@@ -191,7 +190,7 @@ class _HomePageState extends State<HomePage> {
               leading: Icon(Icons.shopping_cart),
               title: const Text('장터'),
               onTap: () async {
-                await Navigator.pushNamed(context, '/page', arguments: PageInfo(pageTitle: "Roommate", collectionName: 'roommates', pageIndex: 2));
+                await Navigator.pushNamed(context, '/communityPage', arguments: PageInfo(pageTitle: "Roommate", collectionName: 'roommates', pageIndex: 2));
                 Navigator.pop(context);
               },
             ),
@@ -199,7 +198,7 @@ class _HomePageState extends State<HomePage> {
               leading: Icon(Icons.local_taxi),
               title: const Text(' 택시팟'),
               onTap: () async {
-                await Navigator.pushNamed(context, '/page', arguments: PageInfo(pageTitle: "Roommate", collectionName: 'roommates', pageIndex: 3));
+                await Navigator.pushNamed(context, '/communityPage', arguments: PageInfo(pageTitle: "Roommate", collectionName: 'roommates', pageIndex: 3));
                 Navigator.pop(context);
               },
             ),

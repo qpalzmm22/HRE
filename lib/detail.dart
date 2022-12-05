@@ -95,40 +95,53 @@ class _DetailPageState extends State<DetailPage> {
             if(snapshot.hasData){
               HreUser? owner = snapshot.data;
               return Container(
-                color: Colors.red,
-                width:300,
-                height: 100,
-                child: Row(
-                  children: [
-                  //   Column(
-                  //     children: [
-                  //       CircleProfile(snapshot.data!.profileImage),
-                  //       Expanded(child: Text(snapshot.data!.name)),
-                  //     ],
-                  //   ),
-                    CircleProfile(owner!.profileImage),
-                    Text(owner!.name),
-                    IconButton(
-                      icon: const Icon(Icons.add),
-                      onPressed: () async {
-                        String uid = getUid();
+                width:250,
+                height: 90,
+                child:
+                Card(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  child: InkWell(
+                    onTap: () async {
+                      String uid = getUid();
 
-                        List<String> participants = [house.ownerId, uid];
+                      List<String> participants = [house.ownerId, uid];
 
-                        String msid = "";
-                        await isMessageSessionExist(participants)
-                            ? msid = await getMessageSessionIDbyuids(
-                            participants)
-                            : msid =
-                        await makeMessageSession(participants);
+                      String msid = "";
+                      await isMessageSessionExist(participants)
+                          ? msid = await getMessageSessionIDbyuids(
+                          participants)
+                          : msid =
+                      await makeMessageSession(participants);
 
-                        MessageSession messageSession =
-                        await getMessageSession(msid);
-                        print("i sent : ${messageSession.messages.length}");
-                        Navigator.pushNamed(context, '/messagePage', arguments: messageSession);
-                      },
+                      MessageSession messageSession =
+                      await getMessageSession(msid);
+                      print("i sent : ${messageSession.messages.length}");
+                      Navigator.pushNamed(context, '/messagePage', arguments: messageSession);
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                      child: Row(
+                        children: [
+                          ProfilePicture(
+                            name: 'ss',
+                            radius: 30,
+                            fontsize: 15,
+                            img: owner!.profileImage,
+                          ),
+                          const SizedBox(width: 10,),
+                          Text(
+                            "Owner: ${owner!.name}",
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 13,
+                            ),),
+                        ],
+                      ),
                     ),
-                  ],
+                  ),
+
                 ),
               );
             } else{
