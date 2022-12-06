@@ -202,21 +202,7 @@ Future<List<MessageSession>> getMessageMutipleSessionsbyuid(String uid) async {
           ));
         }
     });
-    //   .then((value) {
-    //     print(value.docs.length);
-    //     value.docs.map((doc) {
-    //       print(doc.id);
-    //       messageSessions.add(MessageSession(
-    //         users: doc['users'],
-    //         recentMessage: doc['recentMessage'],
-    //         messages: getMessages(doc['msid']),
-    //         msid: doc['msid'],
-    //         profileImage: doc['profileImage'],
-    //         timestamp: doc['timestamp'],
-    //         sessionName: doc['sessionName'],
-    //     ));
-    //     });
-    // });
+
   print("ins : ${messageSessions.length}");
   return messageSessions;
 }
@@ -266,7 +252,7 @@ Future<MessageSession> getMessageSession(String msid) async {
       msid: msid,
       profileImage: List<String>.from(doc['profileImage']),
       timestamp: doc['timestamp'],
-      sessionName: doc['sessionName']
+      sessionName: doc['sessionName'],
     ));
   //return messageSession;
 }
@@ -292,6 +278,9 @@ Future<String> makeMessageSession(List<String> uids) async {
     'timestamp': FieldValue.serverTimestamp(),
     'sessionName': "${user1.name} 와 ${user2.name} 의 대화방",
   });
+
+  createViewCountDB(msid, uids);
+
   return msid;
 }
 
@@ -321,8 +310,6 @@ Future<Message> addMessage(String msid, String senderid, String message) async {
     ));
   });
 
-  // TODO : update Message Sessions' recent page and timestamp
-
   //addMessageToMessageSession(msid, new_message);
   FirebaseFirestore.instance
       .collection('messageSessions').doc(msid)
@@ -342,7 +329,7 @@ Future<List<Message>> getMessages(String msid) async {
       .collection('messageSessions')
       .doc(msid)
       .collection('messages')
-      .orderBy('timestamp', descending: false)
+      .orderBy('timestamp', descending: true)
       .get()
       .then((snapshots)  {
         for( var doc in snapshots.docs) {
@@ -363,9 +350,52 @@ Stream<QuerySnapshot<Map<String, dynamic>>> getMessageStream(String msid){
       .collection('messageSessions')
       .doc(msid)
       .collection('messages')
-      .orderBy('timestamp', descending: false)
+      .orderBy('timestamp', descending: true)
       .snapshots();
 }
+
+// Only works when there's only two exist
+void createViewCountDB(String msid, List<String> uids) async {
+
+  await FirebaseFirestore.instance
+      .collection('msViewCount')
+      .doc(msid)
+      .set(<String, dynamic>{
+    'msid': msid,
+    // 'user0': uids[0],
+    // 'user1': uids[1],
+    // 'user0viewCount' : 0,
+    // 'user1viewCount' : 0,
+    uids[0] : 0,
+    uids[1] : 0,
+  });
+}
+
+void updateViewCountDB(String msid, String uid, int addingAmount){
+  FirebaseFirestore.instance
+      .collection('msViewCount')
+      .doc(msid)
+      .set(<String, dynamic>{
+        uid : FieldValue.increment(addingAmount),
+  }, SetOptions(merge: true));
+}
+
+Future<int> getViewCountDB(String msid, String uid) async{
+  return await FirebaseFirestore.instance
+      .collection('msViewCount')
+      .doc(msid)
+      .get()
+      .then((snapshot) => snapshot.data()![uid]);
+}
+
+Future<int> getDiffViewCount(String msid, String uid) async {
+  int prevCount = await getViewCountDB(msid, uid);
+  int curCount = await getMessageSession(msid).then((value) => value.messages.length);
+  return curCount - prevCount;
+}
+
+
+
 
 
 class Content {

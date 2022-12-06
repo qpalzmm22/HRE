@@ -14,6 +14,7 @@ import 'detail.dart';
 import 'addHouse.dart';
 import 'map.dart';
 import 'messagePage.dart';
+import 'edit.dart';
 
 class LabelOverrides extends DefaultLocalizations {
   const LabelOverrides();
@@ -51,6 +52,7 @@ class HreApp extends StatelessWidget {
         // '/product_detail': (BuildContext context) => const ProductDetail(),
         '/home': (BuildContext context) => const HomePage(),
         '/detail': (BuildContext context) => const DetailPage(),
+        '/editPage': (BuildContext context) => const EditPage(),
         '/addHouse' : (BuildContext context) => const AddHousePage(),
         // '/edit': (BuildContext context) => const UpdateProduct(),
         '/map': (BuildContext context) =>  Map(),

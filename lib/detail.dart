@@ -28,7 +28,7 @@ Widget iconLocation(String str){
 
 Widget CircleProfile(String img){
   return ProfilePicture(
-    name: 'ss',
+    name: 'fixdetailpage:31',
     radius: 30,
     fontsize: 15,
     img: img,
@@ -100,13 +100,10 @@ class _DetailPageState extends State<DetailPage> {
                 height: 100,
                 child: Row(
                   children: [
-                  //   Column(
-                  //     children: [
-                  //       CircleProfile(snapshot.data!.profileImage),
-                  //       Expanded(child: Text(snapshot.data!.name)),
-                  //     ],
-                  //   ),
-                    CircleProfile(owner!.profileImage),
+                    Padding(
+                      padding: EdgeInsets.all(10),
+                      child: CircleProfile(owner!.profileImage),
+                    ),
                     Text(owner!.name),
                     IconButton(
                       icon: const Icon(Icons.add),
@@ -137,32 +134,44 @@ class _DetailPageState extends State<DetailPage> {
           });
     }
 
+    Widget BookmarkIcon(){
+      return IconButton(
+          onPressed: isBookmarked
+              ? (){
+            var cart = context.read<AppState>();
+            cart.remove(house);
+          }
+              : () {
+            var cart = context.read<AppState>();
+            cart.add(house);
+            //TODO Add the database
+          },
+          icon: isBookmarked
+              ? const Icon(
+            Icons.bookmark_added,
+            color: Colors.blue,
+          )
+              : const Icon(
+            Icons.bookmark_add_outlined,
+            color: Colors.blue,
+          ) // : Icon(Icons.bookmark),  // TODO : if bookmarked make it
+      );
+    }
+
+
     return Scaffold(
       appBar: AppBar(
         title: Text(house.name), // TODO
-        actions: [
-          IconButton(
-            onPressed: isBookmarked
-            ? (){
-              var cart = context.read<AppState>();
-              cart.remove(house);
-            }
-            : () {
-              var cart = context.read<AppState>();
-              cart.add(house);
-              //TODO Add the database
+        actions: house.ownerId == getUid() ?
+        [ IconButton(
+            onPressed: (){
+              Navigator.pushNamed(context, '/editPage', arguments: house);
             },
-            icon: isBookmarked
-            ? const Icon(
-              Icons.bookmark_added,
-              color: Colors.blue,
-            )
-            : const Icon(
-                Icons.bookmark_add_outlined,
-              color: Colors.blue,
-            ) // : Icon(Icons.bookmark),  // TODO : if bookmarked make it
+              icon: Icon(Icons.edit),
           ),
-        ],
+          BookmarkIcon()
+        ] :
+        [BookmarkIcon()],
       ),
       body : Column(
         crossAxisAlignment : CrossAxisAlignment.start,
