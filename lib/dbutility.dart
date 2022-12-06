@@ -80,6 +80,7 @@ void addHouseToDB(House house){
       'imagelinks' : house.imageLinks,
       'options' : house.optionList,
       'location' : GeoPoint(house.location.latitude, house.location.longitude),
+      'views' : house.views,
     });
 }
 
@@ -103,6 +104,7 @@ void setHouseToDB(String hid, House house){
     'imagelinks' : house.imageLinks,
     'options' : house.optionList,
     'location' : GeoPoint(house.location.latitude, house.location.longitude),
+    'views' : house.views,
   });
 }
 
@@ -306,6 +308,13 @@ Future<String> makeMessageSession(List<String> uids) async {
   createViewCountDB(msid, uids);
 
   return msid;
+}
+
+void increaseHouseViewCount(String hid){
+  FirebaseFirestore.instance
+      .collection('houses')
+      .doc(hid)
+      .update({'views' : FieldValue.increment(1)});
 }
 
 String getUid(){

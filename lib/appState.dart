@@ -26,6 +26,7 @@ class House {
   final LatLng location;
   final List<bool> optionList;
   final List<String> imageLinks;
+  final int views;
   House({
     required this.location,
     required this.thumbnail,
@@ -38,6 +39,7 @@ class House {
     required this.documentId,
     required this.optionList,
     required this.imageLinks,
+    required this.views,
   });
 }
 

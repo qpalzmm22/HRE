@@ -127,6 +127,7 @@ class _EditPageState extends State<EditPage> {
                   optionList: options_value,
                   location: LatLng(kakaoLatitude ,kakaoLongitude),
                   imageLinks: isFileUploaded? uploadedImageUrls : _existImages,
+                  views: house.views,
                 );
                 setHouseToDB(house.documentId, newHouse);
                 Navigator.pushReplacementNamed(context, '/home');
