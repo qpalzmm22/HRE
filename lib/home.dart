@@ -142,6 +142,7 @@ class _HomePageState extends State<HomePage> {
         return FloatingActionButton(
           backgroundColor: Colors.pink,
           onPressed: () {
+
             Navigator.pushNamed(context, '/addHouse');
           },
           child: Icon(Icons.add),
@@ -316,11 +317,11 @@ class _HomePageState extends State<HomePage> {
               TextButton(
                 onPressed: () {
                   Navigator.pushNamed(context, '/map',
-                      arguments: MapPoint(
-                        name: "양덕동 근처 매물",
-                        center: const LatLng(36.081809, 129.39697),
-                        zoom: 14,
-                      ));
+                    arguments: MapPoint(
+                      name: "양덕동 근처 매물",
+                      center: const LatLng(36.081809, 129.39697),
+                      zoom: 14,
+                    ));
                 },
                 child: const Text(
                   "View ALL",
@@ -386,6 +387,7 @@ class _HomePageState extends State<HomePage> {
         optionList: List<bool>.from(document['options']),
         location: LatLng(gps.latitude, gps.longitude),
         imageLinks: List.from(document['imagelinks']),
+        views: document['views'],
       );
 
       houseList.add(house);
@@ -400,6 +402,7 @@ class _HomePageState extends State<HomePage> {
           child: InkWell(
         borderRadius: BorderRadius.circular(50),
         onTap: () {
+          increaseHouseViewCount(house.documentId);
           Navigator.pushNamed(context, '/detail', arguments: house);
         },
         child: Column(

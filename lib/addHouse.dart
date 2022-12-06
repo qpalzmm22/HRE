@@ -100,6 +100,7 @@ class _AddHousePageState extends State<AddHousePage> {
                     optionList: options_value,
                     location: LatLng(kakaoLatitude ,kakaoLongitude),
                     imageLinks: uploadedImageUrls,
+                    views: 0,
                 );
                 addHouseToDB(house);
                 Navigator.pushReplacementNamed(context, '/home');

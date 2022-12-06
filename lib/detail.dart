@@ -227,12 +227,12 @@ class _DetailPageState extends State<DetailPage> {
                 children: [
                   const SizedBox(height: 16),
                   Row(
-                    children: const [
-                      Icon(
-                        Icons.star,
-                        color: Colors.yellow,
+                    children: [
+                      const Icon(
+                        Icons.remove_red_eye,
                       ),
-                      Text("10"),
+                      SizedBox(width: 10),
+                      Text(house.views.toString()),
                     ],
                   ),
                   TextButton(

@@ -32,11 +32,14 @@ class EditPage extends StatefulWidget {
 }
 
 class _EditPageState extends State<EditPage> {
-  List<XFile> _images = [
-    XFile(
-        "https://firebasestorage.googleapis.com/v0/b/handong-real-estate.appspot.com/o/addPhoto.png?alt=media&token=90bcd02f-91d3-4dd6-adb0-43317ad3cda8")
+  List<XFile> _newImages = [
+    XFile("https://firebasestorage.googleapis.com/v0/b/handong-real-estate.appspot.com/o/addPhoto.png?alt=media&token=90bcd02f-91d3-4dd6-adb0-43317ad3cda8")
   ];
+  String _thumbnail = '';
+  List<String> _existImages = [];
   bool isFileUploaded = false;
+  bool isFileExist = false;
+  int _imgLen = 0;
   final _houseNameController = TextEditingController();
   final _houseDepositController = TextEditingController();
   final _houseMonthlyController = TextEditingController();
@@ -68,6 +71,29 @@ class _EditPageState extends State<EditPage> {
   User user = FirebaseAuth.instance.currentUser as User;
   @override
   Widget build(BuildContext context) {
+    House house = ModalRoute.of(context)!.settings.arguments as House;
+
+    bool isFileExist = house.thumbnail.isNotEmpty;
+    if(isFileExist){
+      _existImages = house.imageLinks;
+      _thumbnail = house.thumbnail;
+      _imgLen = house.imageLinks.length;
+    }
+
+    _houseNameController.text = house.name;
+    _houseDepositController.text = house.deposit.toString();
+    _houseMonthlyController.text = house.monthlyPay.toString();
+    _houseDescriptionController.text = house.description;
+    _houseAddressController.text = house.address;
+
+    options_value = house.optionList;
+
+    // postCode = house.;
+    roadAddress = '-';
+    kakaoLatitude = house.location.latitude;
+    kakaoLongitude = house.location.longitude;
+
+
     // default : false
     //List<bool> options_value = List.generate(_options.length, (index) => false);
 
@@ -79,17 +105,18 @@ class _EditPageState extends State<EditPage> {
         actions: [
           TextButton(
               onPressed: () async {
-                String thumbnail = '';
+
                 List<String> uploadedImageUrls = [];
                 if (isFileUploaded) {
-                  for (int i = 0; i < _images.length; i++) {
-                    String imageUrl = await uploadFile(File(_images[i].path));
+                  _imgLen = _newImages.length;
+                  for (int i = 0; i < _newImages.length; i++) {
+                    String imageUrl = await uploadFile(File(_newImages[i].path));
                     uploadedImageUrls.add(imageUrl);
-                    if (i == 0) thumbnail = imageUrl;
+                    if (i == 0) _thumbnail = imageUrl;
                   }
                 }
-                House house = House(
-                  thumbnail: thumbnail,
+                House newHouse = House(
+                  thumbnail: _thumbnail,
                   name: _houseNameController.text,
                   monthlyPay: int.parse(_houseMonthlyController.text),
                   deposit: int.parse(_houseDepositController.text),
@@ -99,9 +126,10 @@ class _EditPageState extends State<EditPage> {
                   documentId: "",
                   optionList: options_value,
                   location: LatLng(kakaoLatitude ,kakaoLongitude),
-                  imageLinks: uploadedImageUrls,
+                  imageLinks: isFileUploaded? uploadedImageUrls : _existImages,
+                  views: house.views,
                 );
-                addHouseToDB(house);
+                setHouseToDB(house.documentId, newHouse);
                 Navigator.pushReplacementNamed(context, '/home');
               },
               child: const Text(
@@ -117,11 +145,11 @@ class _EditPageState extends State<EditPage> {
               initialPage: 2, // default value is 2
               onPageChanged: (page) {},
               onSelectedItem: (page) {},
-              items: List<ImageCarditem>.generate(_images.length, (index) {
+              items: List<ImageCarditem>.generate(_imgLen, (index) {
                 return ImageCarditem(
                     image: isFileUploaded
-                        ? Image.file(File(_images[index].path))
-                        : Image.network(_images[index].path));
+                        ? Image.file(File(_newImages[index].path))
+                        : Image.network(_existImages[index]));
               }),
             ),
             Row(
@@ -137,7 +165,7 @@ class _EditPageState extends State<EditPage> {
                     //var images = await imagePicker.pickMultiImage();
                     setState(() {
                       if (images.isNotEmpty) {
-                        _images = images;
+                        _newImages = images;
                         isFileUploaded = true;
                       }
                     });
