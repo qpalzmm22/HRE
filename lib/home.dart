@@ -36,14 +36,13 @@ class _HomePageState extends State<HomePage> {
     Bookmark bookmarkPage = Bookmark();
     MessageSessionPage messageSessionPage = MessageSessionPage();
 
-    for(House house in houseList){
+    for (House house in houseList) {
       Marker marker = Marker(
           markerId: MarkerId(house.name),
-        position: house.location,
-        onTap: (){
+          position: house.location,
+          onTap: () {
             Navigator.pushNamed(context, '/detail', arguments: house);
-        }
-      );
+          });
       cart.addMarker(marker);
     }
 
@@ -142,10 +141,11 @@ class _HomePageState extends State<HomePage> {
       if (_selectedIndex == 0) {
         return FloatingActionButton(
           backgroundColor: Colors.pink,
-            onPressed: () {
-              Navigator.pushNamed(context, '/addHouse');
-            },
-        child: Icon(Icons.add),);
+          onPressed: () {
+            Navigator.pushNamed(context, '/addHouse');
+          },
+          child: Icon(Icons.add),
+        );
       } else {
         return Text("");
       }
@@ -157,50 +157,82 @@ class _HomePageState extends State<HomePage> {
         child: buildBody(),
       ),
       drawer: Drawer(
-        child: ListView(
+        child: Column(
           // Important: Remove any padding from the ListView.
-          padding: EdgeInsets.zero,
+          //padding: EdgeInsets.zero,
           children: [
             const DrawerHeader(
               decoration: BoxDecoration(
                 color: Colors.blue,
               ),
-              child: Text('Drawer Header'),
+              child: Center(
+                child: Text(
+                  '커뮤니티',
+                  style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+                ),
+              ),
             ),
             ListTile(
               leading: Icon(Icons.person_search),
               title: const Text('룸메이트 구해요'),
               onTap: () async {
-                await Navigator.pushNamed(context, '/page', arguments: PageInfo(pageTitle: "Roommate", collectionName: 'roommates', pageIndex: 0));
                 Navigator.pop(context);
-
+                await Navigator.pushNamed(context, '/communityPage',
+                    arguments: PageInfo(
+                        pageTitle: "룸메이트",
+                        collectionName: 'roommates',
+                        pageIndex: 0));
               },
             ),
             ListTile(
               leading: Icon(Icons.house),
               title: const Text('단기양도'),
               onTap: () async {
-                // Update the state of the app
-                // ...
-                // Then close the drawer
-                await Navigator.pushNamed(context, '/page', arguments: PageInfo(pageTitle: "Roommate", collectionName: 'roommates', pageIndex: 1));
                 Navigator.pop(context);
+                await Navigator.pushNamed(context, '/communityPage',
+                    arguments: PageInfo(
+                        pageTitle: "단기양도",
+                        collectionName: '단기양도',
+                        pageIndex: 1));
               },
             ),
             ListTile(
               leading: Icon(Icons.shopping_cart),
               title: const Text('장터'),
               onTap: () async {
-                await Navigator.pushNamed(context, '/page', arguments: PageInfo(pageTitle: "Roommate", collectionName: 'roommates', pageIndex: 2));
                 Navigator.pop(context);
+                await Navigator.pushNamed(context, '/communityPage',
+                    arguments: PageInfo(
+                        pageTitle: "장터",
+                        collectionName: 'market',
+                        pageIndex: 2));
               },
             ),
             ListTile(
               leading: Icon(Icons.local_taxi),
-              title: const Text(' 택시팟'),
+              title: const Text('같이카'),
               onTap: () async {
-                await Navigator.pushNamed(context, '/page', arguments: PageInfo(pageTitle: "Roommate", collectionName: 'roommates', pageIndex: 3));
                 Navigator.pop(context);
+                await Navigator.pushNamed(context, '/communityPage',
+                    arguments: PageInfo(
+                        pageTitle: "택시", collectionName: 'taxi', pageIndex: 3));
+              },
+            ),
+            const Expanded(child: Text("")),
+            ListTile(
+              leading: const Icon(
+                Icons.logout,
+                color: Colors.red,
+              ),
+              title: const Text(
+                "로그아웃",
+                style: TextStyle(
+                  color: Colors.red,
+                ),
+              ),
+              onTap: () {
+                FirebaseAuth.instance.signOut();
+                Navigator.pushReplacementNamed(context, '/');
               },
             ),
           ],
@@ -282,11 +314,12 @@ class _HomePageState extends State<HomePage> {
               ),
               TextButton(
                 onPressed: () {
-                  Navigator.pushNamed(context, '/map', arguments: MapPoint(
-                    name: "양덕동 근처 매물",
-                    center: const LatLng(36.081809, 129.39697),
-                    zoom: 14,
-                  ));
+                  Navigator.pushNamed(context, '/map',
+                      arguments: MapPoint(
+                        name: "양덕동 근처 매물",
+                        center: const LatLng(36.081809, 129.39697),
+                        zoom: 14,
+                      ));
                 },
                 child: const Text(
                   "View ALL",
@@ -310,17 +343,20 @@ class _HomePageState extends State<HomePage> {
                     const Icon(Icons.shopping_cart),
                     MapPoint(
                         name: "다이소(양덕)",
-                        center: const LatLng(36.084206, 129.396543), zoom: 17)),
+                        center: const LatLng(36.084206, 129.396543),
+                        zoom: 17)),
                 _locationCard(
                     const Icon(Icons.house_outlined),
                     MapPoint(
                         name: "법원",
-                        center: const LatLng(36.08925, 129.387588), zoom: 17)),
+                        center: const LatLng(36.08925, 129.387588),
+                        zoom: 17)),
                 _locationCard(
                     const Icon(Icons.coffee),
                     MapPoint(
                         name: "커피유야",
-                        center: const LatLng(36.080508, 129.399658), zoom: 17)),
+                        center: const LatLng(36.080508, 129.399658),
+                        zoom: 17)),
               ],
             ),
           ),
@@ -331,7 +367,8 @@ class _HomePageState extends State<HomePage> {
 
   List<Card> _buildHouseCards(
       BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-    final NumberFormat numberFormat = NumberFormat.simpleCurrency(locale: "ko_KR");
+    final NumberFormat numberFormat =
+        NumberFormat.simpleCurrency(locale: "ko_KR");
 
     return snapshot.data!.docs.map((DocumentSnapshot document) {
       GeoPoint gps = document['location'];
@@ -360,9 +397,9 @@ class _HomePageState extends State<HomePage> {
 
       return Card(
           child: InkWell(
-          borderRadius: BorderRadius.circular(50),
-          onTap: () {
-            Navigator.pushNamed(context, '/detail', arguments: house);
+        borderRadius: BorderRadius.circular(50),
+        onTap: () {
+          Navigator.pushNamed(context, '/detail', arguments: house);
         },
         child: Column(
           //crossAxisAlignment: CrossAxisAlignment.start,
@@ -415,25 +452,24 @@ class _HomePageState extends State<HomePage> {
                             children: [
                               Icon(Icons.location_on),
                               Expanded(
-                                child: Text(
-                                  "${house.address}",
-                                  style: const TextStyle(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                )
-                              ),
+                                  child: Text(
+                                "${house.address}",
+                                style: const TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              )),
                             ],
                           ),
-                          Divider(height:8),
+                          Divider(height: 8),
                           Text(
-                              "보증금 ${numberFormat.format(house.deposit)} / 월 ${numberFormat.format(house.monthlyPay)}", //document['monthlyPay']),
-                              style: const TextStyle(
-                                fontSize: 11,
-                              ),
-                              maxLines: 2,
+                            "보증금 ${numberFormat.format(house.deposit)} / 월 ${numberFormat.format(house.monthlyPay)}", //document['monthlyPay']),
+                            style: const TextStyle(
+                              fontSize: 11,
+                            ),
+                            maxLines: 2,
                           ),
-                          Divider(height:8),
+                          Divider(height: 8),
                           Text("설명 : ${house.description}"),
                         ],
                       ),
@@ -449,7 +485,6 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget buildHouseCard() {
-
     return Expanded(
       child: StreamBuilder<QuerySnapshot>(
         stream: houseCollectionReference
