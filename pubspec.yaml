@@ -71,6 +71,7 @@ dependencies:
   google_maps_pick_place: ^0.8.7
   kpostal: ^0.5.1
   flutter_profile_picture: ^2.0.0
+  badges: ^2.0.3
 
 dev_dependencies:
   flutter_test:

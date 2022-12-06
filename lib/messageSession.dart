@@ -1,7 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:custom_clippers/custom_clippers.dart';
+import 'package:badges/badges.dart';
+
 import 'dbutility.dart';
 
 class MessageSessionPage {
@@ -41,7 +42,21 @@ class MessageSessionPage {
                         return ListTile(
                             leading: AspectRatio(
                               aspectRatio: 1/1,
-                              child:Image.network(messageSessionProfileImage),
+                              child : FutureBuilder(
+                                future : getDiffViewCount(messageSessions[idx].msid, getUid()),
+                                builder: (context, snapshot){
+                                  if(snapshot.hasData && snapshot.data! > 0 ){
+                                    print("snapshot has data :  ${snapshot.data.toString()}");
+                                    return Badge(
+                                      badgeContent: Text(snapshot.data.toString()), // To mae
+                                      child: Image.network(messageSessionProfileImage),
+                                    );
+                                  } else {
+                                    print("snapshot doesn't data :  ${snapshot.data.toString()}");
+                                    return Image.network(messageSessionProfileImage);
+                                  }
+                              }),
+                              // child: Image.network(messageSessionProfileImage),
                             ),
                             title: InkWell(
                               onTap: () {
@@ -49,17 +64,6 @@ class MessageSessionPage {
                                     arguments: messageSessions[idx]);
                               },
                               child :Text(messageSessions[idx].sessionName),
-                              // child: Column(
-                              //   children: [
-                              //     Row(
-                              //       children: [
-                              //         Text(messageSessions[idx].sessionName),
-                              //         Text(messageSessions[idx].timestamp.toString()),
-                              //       ],
-                              //     ),
-                              //     Text(messageSessions[idx].recentMessage),
-                              //   ],
-                              // ),
                             )
                           );
                         }
