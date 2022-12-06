@@ -21,9 +21,9 @@ class _ComunityPageState extends State<ComunityPage> {
     _selectedIndex = index;
   }
 
-  Widget getContentsPage(BuildContext context, PageInfo pageInfo) {
-    CollectionReference page =
-        FirebaseFirestore.instance.collection(pageInfo.collectionName);
+
+  Widget getContentsPage(BuildContext context, String collectionName) {
+    CollectionReference page = FirebaseFirestore.instance.collection(collectionName);
 
     return SafeArea(
         child: Container(
@@ -31,7 +31,7 @@ class _ComunityPageState extends State<ComunityPage> {
       padding: const EdgeInsets.symmetric(horizontal: 30.0),
       child: Column(
         children: [
-          SizedBox(
+          const SizedBox(
             height: 10,
           ),
           Expanded(
@@ -72,7 +72,7 @@ class _ComunityPageState extends State<ComunityPage> {
                                       Expanded(
                                         child: Text(
                                           data[idx]['author'],
-                                          style: TextStyle(
+                                          style: const TextStyle(
                                             fontSize: 12,
                                             color: Colors.grey,
                                           ),
@@ -97,6 +97,18 @@ class _ComunityPageState extends State<ComunityPage> {
       ),
     ));
   }
+  Widget buildBody(){
+    if(_selectedIndex == 0){
+      return getContentsPage(context, "roommates");
+    } else if (_selectedIndex == 1){
+      return getContentsPage(context, "단기양도");
+    } else if (_selectedIndex == 2){
+      return getContentsPage(context, "market");
+    } else{
+      return getContentsPage(context, "taxi");
+
+    }
+  }
 
   AppBar? buildAppBar() {
     if (_selectedIndex == 0) {
@@ -106,7 +118,7 @@ class _ComunityPageState extends State<ComunityPage> {
         actions: [
           IconButton(
               onPressed: () {
-                Navigator.pushNamed(context, '/postPage');
+                Navigator.pushNamed(context, '/postPage', arguments: "roommates");
               },
               icon: const Icon(Icons.edit))
         ],
@@ -116,14 +128,26 @@ class _ComunityPageState extends State<ComunityPage> {
       return AppBar(
         leading: null,
         title: const Text("단기양도"),
-        actions: [],
+        actions: [
+          IconButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/postPage', arguments: "단기양도");
+              },
+              icon: const Icon(Icons.edit))
+        ],
       );
     }
     if (_selectedIndex == 2) {
       return AppBar(
         leading: null,
         title: const Text("장터"),
-        actions: [],
+        actions: [
+          IconButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/postPage', arguments: "market");
+              },
+              icon: const Icon(Icons.edit))
+        ],
       );
     }
     if (_selectedIndex == 3) {
@@ -134,7 +158,7 @@ class _ComunityPageState extends State<ComunityPage> {
           IconButton(
             icon: const Icon(Icons.edit),
             onPressed: () async {
-              Navigator.pushNamed(context, '/profile');
+              Navigator.pushNamed(context, '/postPage', arguments: "taxi");
             },
           ),
         ],
@@ -151,7 +175,7 @@ class _ComunityPageState extends State<ComunityPage> {
 
     return Scaffold(
       appBar: buildAppBar(),
-      body: getContentsPage(context, pageInfo),
+      body: buildBody(),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
@@ -191,8 +215,24 @@ class PageInfo {
   PageInfo(
       {required this.pageTitle,
       required this.collectionName,
-      required this.pageIndex});
+      required this.pageIndex,
+      });
 }
+
+// class PostPageInfo {
+//   final String pageTitle;
+//   final String collectionName;
+//   final String titleHintText;
+//   final String contentHintText;
+//
+//   PostPageInfo(
+//       {required this.pageTitle,
+//         required this.collectionName,
+//         required this.titleHintText,
+//         required this.contentHintText,
+//
+//       });
+// }
 
 class PostPage extends StatefulWidget {
   const PostPage({super.key});
@@ -208,7 +248,8 @@ class _PostPageState extends State<PostPage> {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
+    String collectionName = ModalRoute.of(context)!.settings.arguments as String;
+
     return Scaffold(
       appBar: AppBar(
         title: Text("글쓰기"),
@@ -216,7 +257,7 @@ class _PostPageState extends State<PostPage> {
           IconButton(
             onPressed: () async {
               FirebaseFirestore.instance
-                  .collection('roommates')
+                  .collection(collectionName)
                   .add(<String, dynamic>{
                 'author': currentUser.displayName,
                 'uid': currentUser.uid,
@@ -229,7 +270,8 @@ class _PostPageState extends State<PostPage> {
                   arguments: PageInfo(
                       pageTitle: "룸메이트 찾기",
                       pageIndex: 0,
-                      collectionName: 'roommates'));
+                      collectionName: 'roommates',
+                  ));
             },
             icon: const Icon(Icons.save),
           ),
