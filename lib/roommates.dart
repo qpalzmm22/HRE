@@ -1,101 +1,110 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_profile_picture/flutter_profile_picture.dart';
 import 'package:intl/intl.dart';
-
 
 import 'dbutility.dart';
 
 class ComunityPage extends StatefulWidget {
-  const ComunityPage ({Key? key}) : super(key: key);
+  const ComunityPage({Key? key}) : super(key: key);
 
   @override
   _ComunityPageState createState() => _ComunityPageState();
 }
 
-class _ComunityPageState extends State<ComunityPage>{
-
+class _ComunityPageState extends State<ComunityPage> {
   int _selectedIndex = 0;
   User currentUser = FirebaseAuth.instance.currentUser as User;
 
-  void setInitIndex(int index){
+  void setInitIndex(int index) {
     _selectedIndex = index;
   }
 
-  Widget getContentsPage(BuildContext context, PageInfo pageInfo) {
 
-    CollectionReference page = FirebaseFirestore.instance.collection(pageInfo.collectionName);
+  Widget getContentsPage(BuildContext context, String collectionName) {
+    CollectionReference page = FirebaseFirestore.instance.collection(collectionName);
 
     return SafeArea(
         child: Container(
-          alignment: Alignment.center,
-          padding: const EdgeInsets.symmetric(horizontal: 30.0),
-          child: Column(
-            children: [
-              SizedBox(height: 10,),
-              Expanded(
-                child: FutureBuilder(
-                    future: page.get(),
-                    builder: (context, snapshot){
+      alignment: Alignment.center,
+      padding: const EdgeInsets.symmetric(horizontal: 30.0),
+      child: Column(
+        children: [
+          const SizedBox(
+            height: 10,
+          ),
+          Expanded(
+            child: FutureBuilder(
+                future: page.orderBy('upload_time', descending: true).get(),
+                builder: (context, snapshot) {
+                  List data = snapshot.data == null ? [] : snapshot.data!.docs;
+                  int len =
+                      snapshot.data == null ? 0 : snapshot.data!.docs.length;
+                  print("length : $len");
 
-                      List data = snapshot.data == null ? [] : snapshot.data!.docs;
-                      int len = snapshot.data == null ?  0 : snapshot.data!.docs.length;
-                      print("length : $len");
+                  return ListView.builder(
+                      itemCount: len,
+                      itemBuilder: (BuildContext context, int idx) {
+                        DateTime createdTime = DateTime.parse(
+                            data[idx]['upload_time'].toDate().toString());
 
-                      return ListView.builder(
-                          itemCount: len,
-                          itemBuilder: (BuildContext context, int idx) {
-                            DateTime createdTime = DateTime.parse(data[idx]['upload_time'].toDate().toString());
-
-                            return Card(
-                              color: Colors.white,
-                              shape: RoundedRectangleBorder(
-                                side: BorderSide(
-                                  color: Colors.green.shade300,
-                                ),
-                                borderRadius: BorderRadius.circular(15.0),
-                              ),
-                              child:  ListTile(
-                                title: InkWell(
-                                  onTap: () {
-                                    Navigator.pushNamed(context, '/messagePage', arguments: data);
-                                  },
-                                  child : Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                        return ListTile(
+                            title: InkWell(
+                              onTap: () {
+                                Navigator.pushNamed(context, '/roommateDetail',
+                                    arguments: data[idx]);
+                              },
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(data[idx]['title']),
+                                  Row(
                                     children: [
-                                      Text(data[idx]['title']),
-                                      Row(
-                                        children: [
-                                          Expanded(child: Text(data[idx]['author'],
-                                            style: TextStyle(
-                                              fontSize: 12,
-                                              color: Colors.grey,
-                                            ),),),
-
-                                          Text(
-                                            '${DateFormat('yy').format(createdTime)}.${createdTime
-                                                .month}.${createdTime.day} ${createdTime
-                                                .hour}:${createdTime.minute}:${createdTime
-                                                .second} created',
-                                            style: const TextStyle(fontSize: 10, color: Colors.grey),
+                                      Expanded(
+                                        child: Text(
+                                          "작성자: ${data[idx]['author']}",
+                                          style: const TextStyle(
+                                            fontSize: 12,
+                                            color: Colors.grey,
                                           ),
-
-                                        ],
+                                        ),
+                                      ),
+                                      Text(
+                                        '${DateFormat('yy').format(createdTime)}.${createdTime.month}.${createdTime.day} ${createdTime.hour}:${createdTime.minute}:${createdTime.second} created',
+                                        style: const TextStyle(
+                                            fontSize: 10, color: Colors.grey),
                                       ),
                                     ],
                                   ),
-                                ),
+                                  const SizedBox(
+                                    height: 12,
+                                    width: double.infinity,
+                                    child: Divider(color: Colors.black, thickness: 0.5),
+                                  ),
+                                ],
                               ),
-                            );
-
-                          }
-                      );
-                    }),
-              ),
-            ],
+                            ),
+                          );
+                      });
+                }),
           ),
-        )
-    );
+
+        ],
+      ),
+    ));
+  }
+  Widget buildBody(){
+    if(_selectedIndex == 0){
+      return getContentsPage(context, "roommates");
+    } else if (_selectedIndex == 1){
+      return getContentsPage(context, "단기양도");
+    } else if (_selectedIndex == 2){
+      return getContentsPage(context, "market");
+    } else{
+      return getContentsPage(context, "taxi");
+
+    }
   }
 
   AppBar? buildAppBar() {
@@ -104,11 +113,7 @@ class _ComunityPageState extends State<ComunityPage>{
         leading: null,
         title: const Text("룸메이트 찾기"),
         actions: [
-          IconButton(
-              onPressed: () {
-                Navigator.pushNamed(context, '/searchPage');
-              },
-              icon: const Icon(Icons.edit))
+          IconButton(onPressed: (){}, icon: Icon(Icons.search))
         ],
       );
     }
@@ -116,47 +121,71 @@ class _ComunityPageState extends State<ComunityPage>{
       return AppBar(
         leading: null,
         title: const Text("단기양도"),
-        actions: [
-
-        ],
       );
     }
     if (_selectedIndex == 2) {
       return AppBar(
         leading: null,
         title: const Text("장터"),
-        actions: [
-
-        ],
       );
     }
     if (_selectedIndex == 3) {
       return AppBar(
         leading: null,
         title: const Text("같이카"),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.edit),
-            onPressed: () async {
-              Navigator.pushNamed(context, '/profile');
-            },
-          ),
-        ],
       );
     }
     return null;
   }
 
+  Widget buildFloatingActionButton(){
+    if(_selectedIndex == 0){
+       return FloatingActionButton(
+         backgroundColor: Colors.pink,
+           onPressed: () {
+             Navigator.pushNamed(context, '/postPage', arguments: PageInfo(pageTitle: '룸메이트 찾기', collectionName: 'roommates', pageIndex: 0));
+           },
+         child: const Icon(Icons.add),
+
+       );
+    } else if(_selectedIndex == 1){
+      return FloatingActionButton(
+        backgroundColor: Colors.pink,
+        onPressed: (){
+          Navigator.pushNamed(context, '/postPage', arguments: PageInfo(pageTitle: '단기양도', collectionName: '단기양도', pageIndex: 1));
+        },
+        child: const Icon(Icons.add),
+
+      );
+    } else if(_selectedIndex == 2){
+      return FloatingActionButton(
+        backgroundColor: Colors.pink,
+        onPressed: (){
+          Navigator.pushNamed(context, '/postPage', arguments: PageInfo(pageTitle: '장터', collectionName: 'market', pageIndex: 2));
+        },
+        child: const Icon(Icons.add),
+      );
+    } else{
+      return FloatingActionButton(
+        backgroundColor: Colors.pink,
+        onPressed: (){
+          Navigator.pushNamed(context, '/postPage', arguments: PageInfo(pageTitle: '같이카', collectionName: 'taxi', pageIndex: 3));
+        },
+        child: const Icon(Icons.add),
+
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-
     PageInfo pageInfo = ModalRoute.of(context)!.settings.arguments as PageInfo;
 
     setInitIndex(pageInfo.pageIndex);
 
     return Scaffold(
       appBar: buildAppBar(),
-      body: getContentsPage(context, pageInfo),
+      body: buildBody(),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
@@ -178,22 +207,325 @@ class _ComunityPageState extends State<ComunityPage>{
         ],
         currentIndex: _selectedIndex,
         onTap: (ind) {
-          setState((){
+          setState(() {
             pageInfo.pageIndex = ind;
             _selectedIndex = ind;
           });
         },
       ),
+      floatingActionButton: buildFloatingActionButton(),
     );
   }
 }
-
-
 
 class PageInfo {
   final String pageTitle;
   final String collectionName;
   late int pageIndex;
 
-  PageInfo({required this.pageTitle, required this.collectionName, required this.pageIndex});
+  PageInfo(
+      {required this.pageTitle,
+      required this.collectionName,
+      required this.pageIndex,
+      });
+}
+
+class PostPage extends StatefulWidget {
+  const PostPage({super.key});
+
+  _PostPageState createState() => _PostPageState();
+}
+
+class _PostPageState extends State<PostPage> {
+  User currentUser = FirebaseAuth.instance.currentUser as User;
+
+  final _titleController = TextEditingController();
+  final _contentController = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    PageInfo pageInfo = ModalRoute.of(context)!.settings.arguments as PageInfo;
+
+    if(pageInfo.pageIndex == 1){
+      return Scaffold(
+        appBar: AppBar(
+          title: Text("글쓰기"),
+          actions: [
+            IconButton(
+              onPressed: () async {
+                await FirebaseFirestore.instance
+                    .collection(pageInfo.collectionName)
+                    .add(<String, dynamic>{
+                  'author': currentUser.displayName,
+                  'uid': currentUser.uid,
+                  'title': _titleController.text,
+                  'content': _contentController.text,
+                  'upload_time': FieldValue.serverTimestamp(),
+                });
+                Navigator.pop(context);
+                Navigator.pushReplacementNamed(context, '/communityPage',
+                    arguments: PageInfo(
+                      pageTitle: pageInfo.pageTitle,
+                      pageIndex: pageInfo.pageIndex,
+                      collectionName: pageInfo.collectionName,
+                    ));
+              },
+              icon: const Icon(Icons.save),
+            ),
+          ],
+        ),
+        body: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 30),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                "제목",
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              TextField(
+                decoration: const InputDecoration(
+                    hintText: "제목을 입력해주세요.",
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(10)),
+                      borderSide: BorderSide(color: Colors.blue),
+                    )),
+                controller: _titleController,
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              const Text(
+                "내용",
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              Expanded(
+                  child: TextField(
+                    controller: _contentController,
+                    maxLines: 20,
+                    decoration: const InputDecoration(
+                        hintText:
+                        "내용을 입력해주세요. (ex: 룸메이트 구합니다. 비흡연자, 남자 원합니다. \n가격은 월 20만원씩 입니다.",
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(10)),
+                          borderSide: BorderSide(color: Colors.blue),
+                        )),
+                  )),
+              const SizedBox(
+                height: 20,
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+    else{
+      return Scaffold(
+        appBar: AppBar(
+          title: Text("글쓰기"),
+          actions: [
+            IconButton(
+              onPressed: () async {
+                await FirebaseFirestore.instance
+                    .collection(pageInfo.collectionName)
+                    .add(<String, dynamic>{
+                  'author': currentUser.displayName,
+                  'uid': currentUser.uid,
+                  'title': _titleController.text,
+                  'content': _contentController.text,
+                  'upload_time': FieldValue.serverTimestamp(),
+                });
+                Navigator.pop(context);
+                Navigator.pushReplacementNamed(context, '/communityPage',
+                    arguments: PageInfo(
+                      pageTitle: pageInfo.pageTitle,
+                      pageIndex: pageInfo.pageIndex,
+                      collectionName: pageInfo.collectionName,
+                    ));
+              },
+              icon: const Icon(Icons.save),
+            ),
+          ],
+        ),
+        body: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 30),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                "제목",
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              TextField(
+                decoration: const InputDecoration(
+                    hintText: "제목을 입력해주세요.",
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(10)),
+                      borderSide: BorderSide(color: Colors.blue),
+                    )),
+                controller: _titleController,
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              const Text(
+                "내용",
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              Expanded(
+                  child: TextField(
+                    controller: _contentController,
+                    maxLines: 20,
+                    decoration: const InputDecoration(
+                        hintText:
+                        "내용을 입력해주세요. (ex: 룸메이트 구합니다. 비흡연자, 남자 원합니다. \n가격은 월 20만원씩 입니다.",
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(10)),
+                          borderSide: BorderSide(color: Colors.blue),
+                        )),
+                  )),
+              const SizedBox(
+                height: 20,
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+  }
+}
+
+class RoommateDetail extends StatefulWidget {
+  const RoommateDetail({super.key});
+
+  _RoommateDetailState createState() => _RoommateDetailState();
+}
+
+class _RoommateDetailState extends State<RoommateDetail> {
+  User currentUser = FirebaseAuth.instance.currentUser as User;
+  CollectionReference userReference = FirebaseFirestore.instance.collection('users');
+
+  final _contentController = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    DocumentSnapshot data =
+        ModalRoute.of(context)!.settings.arguments as DocumentSnapshot;
+    _contentController.text = data['content'];
+    DateTime createdTime = DateTime.parse(
+        data['upload_time'].toDate().toString());
+      return Scaffold(
+          appBar: AppBar(
+            title: Text(data["title"]),
+            actions: currentUser.uid == data['uid']
+            ? [IconButton(onPressed: () {}, icon: Icon(Icons.edit)), IconButton(onPressed: (){}, icon: Icon(Icons.delete))]
+            : [],
+          ),
+          body: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 10,),
+                Expanded(
+                    child: TextField(
+                      focusNode: AlwaysDisabledFocusNode(),
+                      controller: _contentController,
+                      maxLines: 20,
+                      decoration: const InputDecoration(
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(10)),
+                            borderSide: BorderSide(color: Colors.blue),
+                          )),
+                    )),
+                SizedBox(height: 20,),
+                Card(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        FutureBuilder(
+                            future: userReference.doc(data["uid"]).get(),
+                            builder: (context, snapshot) {
+                              String profileImage = snapshot.data == null ? "" : snapshot.data!["profileImage"];
+                              return ProfilePicture(
+                                name: 'ss',
+                                radius: 30,
+                                fontsize: 15,
+                                img: profileImage,
+                              );
+                            }),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text("작성자: ${data["author"]}"),
+                                Text(
+                                  '${DateFormat('yy').format(createdTime)}.${createdTime.month}.${createdTime.day} ${createdTime.hour}:${createdTime.minute}:${createdTime.second} created',
+                                  style: const TextStyle(
+                                      fontSize: 10, color: Colors.grey),
+                                ),
+                              ],
+                            ),
+                        IconButton(
+                            onPressed: () async {
+                              String uid = getUid();
+
+                              List<String> participants = [data['uid'], uid];
+
+                              String msid = "";
+                              await isMessageSessionExist(participants)
+                                  ? msid = await getMessageSessionIDbyuids(
+                                  participants)
+                                  : msid =
+                              await makeMessageSession(participants);
+
+                              MessageSession messageSession =
+                              await getMessageSession(msid);
+                              print("i sent : ${messageSession.messages.length}");
+                              Navigator.pushNamed(context, '/messagePage', arguments: messageSession);
+                            },
+                            icon: const Icon(Icons.message))
+                      ],
+                    ),
+                  ),
+                ),
+
+              ],
+            ),
+          ));
+    }
+  }
+
+class AlwaysDisabledFocusNode extends FocusNode {
+  @override
+  bool get hasFocus => false;
 }
