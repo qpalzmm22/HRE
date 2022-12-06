@@ -49,15 +49,7 @@ class _ComunityPageState extends State<ComunityPage> {
                         DateTime createdTime = DateTime.parse(
                             data[idx]['upload_time'].toDate().toString());
 
-                        return Card(
-                          color: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            side: BorderSide(
-                              color: Colors.green.shade300,
-                            ),
-                            borderRadius: BorderRadius.circular(15.0),
-                          ),
-                          child: ListTile(
+                        return ListTile(
                             title: InkWell(
                               onTap: () {
                                 Navigator.pushNamed(context, '/roommateDetail',
@@ -71,7 +63,7 @@ class _ComunityPageState extends State<ComunityPage> {
                                     children: [
                                       Expanded(
                                         child: Text(
-                                          data[idx]['author'],
+                                          "작성자: ${data[idx]['author']}",
                                           style: const TextStyle(
                                             fontSize: 12,
                                             color: Colors.grey,
@@ -85,14 +77,19 @@ class _ComunityPageState extends State<ComunityPage> {
                                       ),
                                     ],
                                   ),
+                                  const SizedBox(
+                                    height: 12,
+                                    width: double.infinity,
+                                    child: Divider(color: Colors.black, thickness: 0.5),
+                                  ),
                                 ],
                               ),
                             ),
-                          ),
-                        );
+                          );
                       });
                 }),
           ),
+
         ],
       ),
     ));
@@ -116,11 +113,7 @@ class _ComunityPageState extends State<ComunityPage> {
         leading: null,
         title: const Text("룸메이트 찾기"),
         actions: [
-          IconButton(
-              onPressed: () {
-                Navigator.pushNamed(context, '/postPage', arguments: "roommates");
-              },
-              icon: const Icon(Icons.edit))
+          IconButton(onPressed: (){}, icon: Icon(Icons.search))
         ],
       );
     }
@@ -128,43 +121,60 @@ class _ComunityPageState extends State<ComunityPage> {
       return AppBar(
         leading: null,
         title: const Text("단기양도"),
-        actions: [
-          IconButton(
-              onPressed: () {
-                Navigator.pushNamed(context, '/postPage', arguments: "단기양도");
-              },
-              icon: const Icon(Icons.edit))
-        ],
       );
     }
     if (_selectedIndex == 2) {
       return AppBar(
         leading: null,
         title: const Text("장터"),
-        actions: [
-          IconButton(
-              onPressed: () {
-                Navigator.pushNamed(context, '/postPage', arguments: "market");
-              },
-              icon: const Icon(Icons.edit))
-        ],
       );
     }
     if (_selectedIndex == 3) {
       return AppBar(
         leading: null,
         title: const Text("같이카"),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.edit),
-            onPressed: () async {
-              Navigator.pushNamed(context, '/postPage', arguments: "taxi");
-            },
-          ),
-        ],
       );
     }
     return null;
+  }
+
+  Widget buildFloatingActionButton(){
+    if(_selectedIndex == 0){
+       return FloatingActionButton(
+         backgroundColor: Colors.pink,
+           onPressed: () {
+             Navigator.pushNamed(context, '/postPage', arguments: PageInfo(pageTitle: '룸메이트 찾기', collectionName: 'roommates', pageIndex: 0));
+           },
+         child: const Icon(Icons.add),
+
+       );
+    } else if(_selectedIndex == 1){
+      return FloatingActionButton(
+        backgroundColor: Colors.pink,
+        onPressed: (){
+          Navigator.pushNamed(context, '/postPage', arguments: PageInfo(pageTitle: '단기양도', collectionName: '단기양도', pageIndex: 1));
+        },
+        child: const Icon(Icons.add),
+
+      );
+    } else if(_selectedIndex == 2){
+      return FloatingActionButton(
+        backgroundColor: Colors.pink,
+        onPressed: (){
+          Navigator.pushNamed(context, '/postPage', arguments: PageInfo(pageTitle: '장터', collectionName: 'market', pageIndex: 2));
+        },
+        child: const Icon(Icons.add),
+      );
+    } else{
+      return FloatingActionButton(
+        backgroundColor: Colors.pink,
+        onPressed: (){
+          Navigator.pushNamed(context, '/postPage', arguments: PageInfo(pageTitle: '같이카', collectionName: 'taxi', pageIndex: 3));
+        },
+        child: const Icon(Icons.add),
+
+      );
+    }
   }
 
   @override
@@ -203,6 +213,7 @@ class _ComunityPageState extends State<ComunityPage> {
           });
         },
       ),
+      floatingActionButton: buildFloatingActionButton(),
     );
   }
 }
@@ -219,21 +230,6 @@ class PageInfo {
       });
 }
 
-// class PostPageInfo {
-//   final String pageTitle;
-//   final String collectionName;
-//   final String titleHintText;
-//   final String contentHintText;
-//
-//   PostPageInfo(
-//       {required this.pageTitle,
-//         required this.collectionName,
-//         required this.titleHintText,
-//         required this.contentHintText,
-//
-//       });
-// }
-
 class PostPage extends StatefulWidget {
   const PostPage({super.key});
 
@@ -248,91 +244,179 @@ class _PostPageState extends State<PostPage> {
 
   @override
   Widget build(BuildContext context) {
-    String collectionName = ModalRoute.of(context)!.settings.arguments as String;
+    PageInfo pageInfo = ModalRoute.of(context)!.settings.arguments as PageInfo;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("글쓰기"),
-        actions: [
-          IconButton(
-            onPressed: () async {
-              FirebaseFirestore.instance
-                  .collection(collectionName)
-                  .add(<String, dynamic>{
-                'author': currentUser.displayName,
-                'uid': currentUser.uid,
-                'title': _titleController.text,
-                'content': _contentController.text,
-                'upload_time': FieldValue.serverTimestamp(),
-              });
-
-              Navigator.pushReplacementNamed(context, '/communityPage',
-                  arguments: PageInfo(
-                      pageTitle: "룸메이트 찾기",
-                      pageIndex: 0,
-                      collectionName: 'roommates',
-                  ));
-            },
-            icon: const Icon(Icons.save),
-          ),
-        ],
-      ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 30),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              "제목",
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-            TextField(
-              decoration: const InputDecoration(
-                  hintText: "제목을 입력해주세요.",
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(10)),
-                    borderSide: BorderSide(color: Colors.blue),
-                  )),
-              controller: _titleController,
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-            const Text(
-              "내용",
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-            Expanded(
-                child: TextField(
-              controller: _contentController,
-              maxLines: 20,
-              decoration: const InputDecoration(
-                  hintText:
-                      "내용을 입력해주세요. (ex: 룸메이트 구합니다. 비흡연자, 남자 원합니다. \n가격은 월 20만원씩 입니다.",
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(10)),
-                    borderSide: BorderSide(color: Colors.blue),
-                  )),
-            )),
-            const SizedBox(
-              height: 20,
+    if(pageInfo.pageIndex == 1){
+      return Scaffold(
+        appBar: AppBar(
+          title: Text("글쓰기"),
+          actions: [
+            IconButton(
+              onPressed: () async {
+                await FirebaseFirestore.instance
+                    .collection(pageInfo.collectionName)
+                    .add(<String, dynamic>{
+                  'author': currentUser.displayName,
+                  'uid': currentUser.uid,
+                  'title': _titleController.text,
+                  'content': _contentController.text,
+                  'upload_time': FieldValue.serverTimestamp(),
+                });
+                Navigator.pop(context);
+                Navigator.pushReplacementNamed(context, '/communityPage',
+                    arguments: PageInfo(
+                      pageTitle: pageInfo.pageTitle,
+                      pageIndex: pageInfo.pageIndex,
+                      collectionName: pageInfo.collectionName,
+                    ));
+              },
+              icon: const Icon(Icons.save),
             ),
           ],
         ),
-      ),
-    );
+        body: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 30),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                "제목",
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              TextField(
+                decoration: const InputDecoration(
+                    hintText: "제목을 입력해주세요.",
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(10)),
+                      borderSide: BorderSide(color: Colors.blue),
+                    )),
+                controller: _titleController,
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              const Text(
+                "내용",
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              Expanded(
+                  child: TextField(
+                    controller: _contentController,
+                    maxLines: 20,
+                    decoration: const InputDecoration(
+                        hintText:
+                        "내용을 입력해주세요. (ex: 룸메이트 구합니다. 비흡연자, 남자 원합니다. \n가격은 월 20만원씩 입니다.",
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(10)),
+                          borderSide: BorderSide(color: Colors.blue),
+                        )),
+                  )),
+              const SizedBox(
+                height: 20,
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+    else{
+      return Scaffold(
+        appBar: AppBar(
+          title: Text("글쓰기"),
+          actions: [
+            IconButton(
+              onPressed: () async {
+                await FirebaseFirestore.instance
+                    .collection(pageInfo.collectionName)
+                    .add(<String, dynamic>{
+                  'author': currentUser.displayName,
+                  'uid': currentUser.uid,
+                  'title': _titleController.text,
+                  'content': _contentController.text,
+                  'upload_time': FieldValue.serverTimestamp(),
+                });
+                Navigator.pop(context);
+                Navigator.pushReplacementNamed(context, '/communityPage',
+                    arguments: PageInfo(
+                      pageTitle: pageInfo.pageTitle,
+                      pageIndex: pageInfo.pageIndex,
+                      collectionName: pageInfo.collectionName,
+                    ));
+              },
+              icon: const Icon(Icons.save),
+            ),
+          ],
+        ),
+        body: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 30),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                "제목",
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              TextField(
+                decoration: const InputDecoration(
+                    hintText: "제목을 입력해주세요.",
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(10)),
+                      borderSide: BorderSide(color: Colors.blue),
+                    )),
+                controller: _titleController,
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              const Text(
+                "내용",
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              Expanded(
+                  child: TextField(
+                    controller: _contentController,
+                    maxLines: 20,
+                    decoration: const InputDecoration(
+                        hintText:
+                        "내용을 입력해주세요. (ex: 룸메이트 구합니다. 비흡연자, 남자 원합니다. \n가격은 월 20만원씩 입니다.",
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(10)),
+                          borderSide: BorderSide(color: Colors.blue),
+                        )),
+                  )),
+              const SizedBox(
+                height: 20,
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
   }
 }
 
@@ -346,7 +430,8 @@ class _RoommateDetailState extends State<RoommateDetail> {
   User currentUser = FirebaseAuth.instance.currentUser as User;
   CollectionReference userReference = FirebaseFirestore.instance.collection('users');
 
-  var _contentController = TextEditingController();
+  final _contentController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     DocumentSnapshot data =
@@ -357,13 +442,9 @@ class _RoommateDetailState extends State<RoommateDetail> {
       return Scaffold(
           appBar: AppBar(
             title: Text(data["title"]),
-            actions: [
-              currentUser.uid == data['uid']
-                  ? IconButton(onPressed: () {
-
-              }, icon: Icon(Icons.edit))
-                  : Text("")
-            ],
+            actions: currentUser.uid == data['uid']
+            ? [IconButton(onPressed: () {}, icon: Icon(Icons.edit)), IconButton(onPressed: (){}, icon: Icon(Icons.delete))]
+            : [],
           ),
           body: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
