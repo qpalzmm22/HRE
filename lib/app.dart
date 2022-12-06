@@ -68,13 +68,14 @@ class HreApp extends StatelessWidget {
               // no providerConfigs property here as well
               actions: [
                 SignedOutAction((context) {
+                  Navigator.pop(context);
                   Navigator.pushReplacementNamed(context, '/');
                 }),
               ],
             ),
           );
         },
-        //'/messageSessions'
+        //'ssions'
         // '/wishlist': (BuildContext context) => const Wishlist(),
       },
       theme: ThemeData(

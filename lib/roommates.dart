@@ -443,7 +443,14 @@ class _RoommateDetailState extends State<RoommateDetail> {
           appBar: AppBar(
             title: Text(data["title"]),
             actions: currentUser.uid == data['uid']
-            ? [IconButton(onPressed: () {}, icon: Icon(Icons.edit)), IconButton(onPressed: (){}, icon: Icon(Icons.delete))]
+            ? [
+              IconButton(onPressed: () {
+
+              },
+                icon: Icon(Icons.edit)),
+              IconButton(onPressed: (){
+
+              }, icon: Icon(Icons.delete),)]
             : [],
           ),
           body: Padding(
