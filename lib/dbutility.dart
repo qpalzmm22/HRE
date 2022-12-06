@@ -83,6 +83,30 @@ void addHouseToDB(House house){
     });
 }
 
+void setHouseToDB(String hid, House house){
+  FirebaseFirestore.instance
+      .collection('houses')
+      .doc(hid)
+      .set(<String, dynamic>{
+    'name': house.name,
+    'deposit': house.deposit,
+    'monthlyPay': house.monthlyPay,
+    'description' : house.description,
+    'houseSize' : 0, // TODO
+    'address' : house.address,
+    'userId': house.ownerId,
+    'created': FieldValue.serverTimestamp(),
+    'modified': FieldValue.serverTimestamp(),
+    // TODO 'roomInfo' :  RoomInfo(room_type : "hello",  num_of_bedrooms : 2, num_of_bathrooms : 1), // TODO
+    //'likers' : <String>[], // initial likes = 0
+    'thumbnail': house.thumbnail,
+    'imagelinks' : house.imageLinks,
+    'options' : house.optionList,
+    'location' : GeoPoint(house.location.latitude, house.location.longitude),
+  });
+}
+
+
 class HreUser{
   HreUser(
       {required this.uid,
