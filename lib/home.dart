@@ -13,6 +13,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'appState.dart';
 
+
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
@@ -89,7 +90,7 @@ class _HomePageState extends State<HomePage> {
       } else if (_selectedIndex == 1) {
         return bookmarkPage.getBookmarkPage(context);
       } else if (_selectedIndex == 2) {
-        return messageSessionPage.getMessageSession();
+        return messageSessionPage.getMessageSessionPage();
       } else {
         return profilePage
             .getProfile(FirebaseAuth.instance.currentUser as User);

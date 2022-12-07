@@ -48,6 +48,7 @@ class AppState extends ChangeNotifier {
   final List<House> _recentlyView = [];
   late List<Marker> _markers = [];
 
+  bool isNeedToBeUpdated = false;
   List<House> get bookmarked => _bookmarked;
   List<House> get recentlyView => _recentlyView;
   List<Marker> get markers => _markers;

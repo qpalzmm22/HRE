@@ -62,7 +62,6 @@ class _MessagePageState extends State<MessagePage> {
                             itemBuilder: (BuildContext ctx, int idx) {
                               if(snapshot.data!.docs[idx].exists){ // not working...
                                 var document = snapshot.data!.docs[idx];
-                                print("document :> $document");
 
                                 Message message = Message(
                                   senderId: document['senderId'],
@@ -133,9 +132,9 @@ class _MessagePageState extends State<MessagePage> {
                           // updateMSViewCount(messageSession.msid, _len);
 
                           _messageController.clear();
-                          setState(() {
-                            increaseTotalMessageDB(messageSession.msid, 1);
-                            updateMSViewCount(messageSession.msid, _len);
+                          setState(() async {
+                            await increaseTotalMessageDB(messageSession.msid, 1);
+                            await updateMSViewCount(messageSession.msid, _len);
                           });
                         },
                       ),

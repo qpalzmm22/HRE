@@ -1,9 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:badges/badges.dart';
+import 'dart:async';
 
 import 'dbutility.dart';
+
 
 class MessageSessionPage {
 
@@ -11,7 +14,7 @@ class MessageSessionPage {
   // @override
   // Widget build(BuildContext context) {
 
-  Widget getMessageSession() {
+  Widget getMessageSessionPage() {
     Future<List<MessageSession>> futureMessageSessions = getMessageMutipleSessionsbyuid(user!.uid);
 
     return SafeArea(
@@ -61,10 +64,16 @@ class MessageSessionPage {
                             title: InkWell(
                               onTap: () {
                                 // setState(){
-                                  updateMSViewCount(messageSessions[idx].msid, messageSessions[idx].messages.length);
+                                  //updateMSViewCount(messageSessions[idx].msid, messageSessions[idx].messages.length);
                                 // }
-                                Navigator.pushNamed(context, '/messagePage',
-                                    arguments: messageSessions[idx]);
+                                // Navigator.pushNamed(context, '/messagePage',
+                                //     arguments: messageSessions[idx]);
+
+                                  Navigator.pushNamed(context, '/messagePage', arguments: messageSessions[idx]).then((_) async {
+                                    MessageSession newMessageSession = await getMessageSession(messageSessions[idx].msid);
+                                    await updateMSViewCount(messageSessions[idx].msid, newMessageSession.messages.length);
+                                  });
+
                               },
                               child :Text(messageSessions[idx].sessionName),
                             )
