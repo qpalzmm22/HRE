@@ -9,8 +9,8 @@ import 'package:getwidget/getwidget.dart';
 import 'package:horizontal_card_pager/card_item.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:horizontal_card_pager/horizontal_card_pager.dart'; // TODO
 import 'package:flutter_profile_picture/flutter_profile_picture.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 
 import 'appState.dart';
 import 'home.dart';
@@ -160,7 +160,6 @@ class _DetailPageState extends State<DetailPage> {
               : () {
             var cart = context.read<AppState>();
             cart.add(house);
-            //TODO Add the database
           },
           icon: isBookmarked
               ? const Icon(
@@ -170,7 +169,7 @@ class _DetailPageState extends State<DetailPage> {
               : const Icon(
             Icons.bookmark_add_outlined,
             color: Colors.blue,
-          ) // : Icon(Icons.bookmark),  // TODO : if bookmarked make it
+          )
       );
     }
 
@@ -192,26 +191,72 @@ class _DetailPageState extends State<DetailPage> {
       body : Column(
         crossAxisAlignment : CrossAxisAlignment.start,
         children : [
-          AspectRatio(
-            aspectRatio: 16/11,
-            child :
-            InkWell(
-              onDoubleTap: (){
-                setState(() {
-                  var cart = context.read<AppState>();
-                  if(isBookmarked){
-                    cart.remove(house);
-                  } else{
-                    cart.add(house);
-                  }
-                });
-              },
-              child: Image.network(
-                house.thumbnail,
-                fit: BoxFit.fitHeight,
-              ) ,
+          CarouselSlider(
+            options: CarouselOptions(
+              height: 200,
+              aspectRatio: 16/9,
+              viewportFraction: 0.8,
+              initialPage: 0,
+              enableInfiniteScroll: true,
+              reverse: false,
+              autoPlay: true,
+              autoPlayInterval: Duration(seconds: 3),
+              autoPlayAnimationDuration: Duration(milliseconds: 800),
+              autoPlayCurve: Curves.fastOutSlowIn,
+              enlargeCenterPage: true,
+              // onPageChanged: callbackFunction,
+              scrollDirection: Axis.horizontal,
             ),
+            items: house.imageLinks.map((i) {
+              return Builder(
+                builder: (BuildContext context) {
+                  return Container(
+                    width: MediaQuery.of(context).size.width,
+                    margin: EdgeInsets.symmetric(horizontal: 5.0),
+                    // decoration: BoxDecoration(
+                    //     color: Colors.amber
+                    // ),
+                    child: InkWell(
+                      onDoubleTap: (){
+                        setState(() {
+                          var cart = context.read<AppState>();
+                          if(isBookmarked){
+                            cart.remove(house);
+                          } else{
+                            cart.add(house);
+                          }
+                        });
+                      },
+                      child: Image.network(
+                        i,
+                        fit: BoxFit.fitHeight,
+                      ) ,
+                    ),
+                  );
+                },
+              );
+            }).toList(),
           ),
+          // AspectRatio(
+          //   aspectRatio: 16/11,
+          //   child :
+          //   InkWell(
+          //     onDoubleTap: (){
+          //       setState(() {
+          //         var cart = context.read<AppState>();
+          //         if(isBookmarked){
+          //           cart.remove(house);
+          //         } else{
+          //           cart.add(house);
+          //         }
+          //       });
+          //     },
+          //     child: Image.network(
+          //       house.thumbnail,
+          //       fit: BoxFit.fitHeight,
+          //     ) ,
+          //   ),
+          // ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [

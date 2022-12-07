@@ -43,7 +43,7 @@ class MessageSessionPage {
                             leading: AspectRatio(
                               aspectRatio: 1/1,
                               child : FutureBuilder(
-                                future : getDiffViewCount(messageSessions[idx].msid, getUid()),
+                                future : getDiffMSViewCount(messageSessions[idx].msid, getUid()),
                                 builder: (context, snapshot){
                                   if(snapshot.hasData && snapshot.data! > 0 ){
                                     print("snapshot has data :  ${snapshot.data.toString()}");
@@ -60,6 +60,9 @@ class MessageSessionPage {
                             ),
                             title: InkWell(
                               onTap: () {
+                                // setState(){
+                                  updateMSViewCount(messageSessions[idx].msid, messageSessions[idx].messages.length);
+                                // }
                                 Navigator.pushNamed(context, '/messagePage',
                                     arguments: messageSessions[idx]);
                               },

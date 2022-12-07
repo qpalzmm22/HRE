@@ -7,6 +7,7 @@ import 'package:handong_real_estate/dbutility.dart';
 import 'package:handong_real_estate/profile.dart';
 import 'package:handong_real_estate/messageSession.dart';
 import 'package:handong_real_estate/roommates.dart';
+import 'package:badges/badges.dart';
 import 'package:intl/intl.dart';
 // import 'package:anim_search_bar/anim_search_bar.dart';
 import 'package:provider/provider.dart';
@@ -25,26 +26,29 @@ class _HomePageState extends State<HomePage> {
   CollectionReference houseCollectionReference =
       FirebaseFirestore.instance.collection('houses');
 
+  String uid = getUid();
+  // bool _isNewMessage = false;
   List<House> houseList = [];
 
   @override
   Widget build(BuildContext context) {
     var cart = context.watch<AppState>();
     final ThemeData theme = Theme.of(context);
+    // _isNewMessage = awgetUserDiffMSViewCount(uid) > 0;
 
     Profile profilePage = Profile();
     Bookmark bookmarkPage = Bookmark();
     MessageSessionPage messageSessionPage = MessageSessionPage();
 
-    for (House house in houseList) {
-      Marker marker = Marker(
-          markerId: MarkerId(house.name),
-          position: house.location,
-          onTap: () {
-            Navigator.pushNamed(context, '/detail', arguments: house);
-          });
-      cart.addMarker(marker);
-    }
+    // for (House house in houseList) {
+    //   Marker marker = Marker(
+    //       markerId: MarkerId(house.name),
+    //       position: house.location,
+    //       onTap: () {
+    //         Navigator.pushNamed(context, '/detail', arguments: house);
+    //       });
+    //   cart.addMarker(marker);
+    // }
 
     Widget homeScreen() {
       return Column(
@@ -240,7 +244,7 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
+        items:  <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: 'home',
@@ -250,7 +254,20 @@ class _HomePageState extends State<HomePage> {
             label: 'bookmark',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.message),
+            icon: FutureBuilder(
+              future : getUserDiffMSViewCount(getUid()),
+              builder: (context, snapshot){
+                if(snapshot.hasData){
+                  return snapshot.data! > 0 ?
+                  Badge(
+                    badgeContent: Text(snapshot.data.toString()), // To mae
+                    child: Icon(Icons.message),
+                  ) :
+                  Icon(Icons.message);
+                } else {
+                  return Icon(Icons.message);
+                }
+              }),
             label: 'message',
           ),
           BottomNavigationBarItem(

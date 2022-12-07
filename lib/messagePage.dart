@@ -30,13 +30,7 @@ class _MessagePageState extends State<MessagePage> {
 
     final _messageController = TextEditingController();
 
-    void updateViewCount(String msid, int newLen) async {
-      int prevViewCount = await getViewCountDB(msid, uid);
-      if( prevViewCount != newLen){
-        print(" viewCount: $prevViewCount, $newLen");
-        updateViewCountDB(msid, uid, newLen - prevViewCount);
-      }
-    }
+
 
     MessageSession messageSession = ModalRoute.of(context)!.settings.arguments as MessageSession;
 
@@ -54,59 +48,60 @@ class _MessagePageState extends State<MessagePage> {
                         return const Center(
                             child: Center(child: CircularProgressIndicator()));
                       } else{
-                        // int len = snapshot.data == null ?  0 : snapshot.data!.length;
+                        // int len = snapshot.data == null ?  0 : snapshot.data!.f;
                         // print("length : $len");
                         // List<MessageSession>? messageSessions = len == 0 ? [] : snapshot.data!;
 
                         print("snapshot data exist? ${snapshot.data}");
                         var len = snapshot.data!.docs.length;
                         _len = len;
-                        if(snapshot.hasData == true){
+                        if(snapshot.hasData == true){ // not working..
                           return ListView.builder(
                             reverse: true,
                             itemCount : len,
                             itemBuilder: (BuildContext ctx, int idx) {
+                              if(snapshot.data!.docs[idx].exists){ // not working...
+                                var document = snapshot.data!.docs[idx];
+                                print("document :> $document");
 
-                              var document = snapshot.data!.docs[idx];
+                                Message message = Message(
+                                  senderId: document['senderId'],
+                                  message: document['message'],
+                                  timestamp: document['timestamp'] as Timestamp,
+                                );
 
-                              Message message = Message(
-                                timestamp: document['timestamp'],
-                                senderId: document['senderId'],
-                                message: document['message'],
-                              );
+                                var isMyMessage = (uid == message.senderId);
+                                var messageClipper = UpperNipMessageClipperTwo(MessageType.receive);
+                                if(isMyMessage){
+                                  messageClipper = UpperNipMessageClipperTwo(MessageType.send);
+                                }
 
-                              var isMyMessage = (uid == message.senderId);
-                              var messageClipper = UpperNipMessageClipperTwo(MessageType.receive);
-                              if(isMyMessage){
-                                messageClipper = UpperNipMessageClipperTwo(MessageType.send);
+                                String str_TimeSent = DateFormat("hh:mm:ss yyyy-MM-dd").format(DateTime.fromMillisecondsSinceEpoch(message.timestamp.millisecondsSinceEpoch));
+                                return Padding(
+                                    padding : EdgeInsets.all(10),
+                                    child : ClipPath(
+                                        clipper: messageClipper,
+                                        child: Container(
+                                          //margin: EdgeInsets.all(20),
+                                            padding : EdgeInsets.fromLTRB(20, 10, 20, 10,),
+                                            color : isMyMessage ? Colors.yellow : Colors.white,
+                                            // alignment: Alignment.topLeft,
+                                            child : Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                Text(message.message),
+                                                Text(
+                                                    style : TextStyle(fontSize : 10),
+                                                    str_TimeSent
+                                                ),
+                                              ],
+                                            )
+                                        )
+                                    )
+                                );
+                              } else {
+                                return SizedBox(height: 100,);
                               }
-
-                              String str_TimeSent = DateFormat("hh:mm:ss yyyy-MM-dd").format(DateTime.fromMillisecondsSinceEpoch(message.timestamp.millisecondsSinceEpoch));
-
-
-
-                              return Padding(
-                                  padding : EdgeInsets.all(10),
-                                  child : ClipPath(
-                                      clipper: messageClipper,
-                                      child: Container(
-                                        //margin: EdgeInsets.all(20),
-                                          padding : EdgeInsets.fromLTRB(20, 10, 20, 10,),
-                                          color : isMyMessage ? Colors.yellow : Colors.white,
-                                          // alignment: Alignment.topLeft,
-                                          child : Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                              Text(message.message),
-                                              Text(
-                                                style : TextStyle(fontSize : 10),
-                                                str_TimeSent
-                                              ),
-                                            ],
-                                          )
-                                      )
-                                  )
-                                );// return Text('${idx} : ${messages[idx].message}');
                               }
                             );
                           } else{
@@ -134,9 +129,14 @@ class _MessagePageState extends State<MessagePage> {
                         onPressed: () async {
 
                           await addMessage(messageSession.msid, uid, _messageController.text);
-                          updateViewCount(messageSession.msid, _len);
+                          // increaseTotalMessageDB(messageSession.msid, 1);
+                          // updateMSViewCount(messageSession.msid, _len);
 
                           _messageController.clear();
+                          setState(() {
+                            increaseTotalMessageDB(messageSession.msid, 1);
+                            updateMSViewCount(messageSession.msid, _len);
+                          });
                         },
                       ),
                     ]
