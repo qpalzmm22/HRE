@@ -9,6 +9,7 @@ import 'package:horizontal_card_pager/card_item.dart';
 import 'package:horizontal_card_pager/horizontal_card_pager.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:getwidget/getwidget.dart';
 import 'package:kpostal/kpostal.dart';
@@ -114,17 +115,71 @@ class _AddHousePageState extends State<AddHousePage> {
       body: SafeArea(
         child: ListView(
           children: [
-            HorizontalCardPager(
-              initialPage: 2, // default value is 2
-              onPageChanged: (page) {},
-              onSelectedItem: (page) {},
-              items: List<ImageCarditem>.generate(_images.length, (index) {
-                return ImageCarditem(
-                    image: isFileUploaded
-                        ? Image.file(File(_images[index].path))
-                        : Image.network(_images[index].path));
-              }),
+            CarouselSlider(
+              options: CarouselOptions(
+                height: 200,
+                aspectRatio: 16/9,
+                viewportFraction: 0.8,
+                initialPage: 0,
+                enableInfiniteScroll: true,
+                autoPlay: isFileUploaded,
+                autoPlayInterval: Duration(seconds: 3),
+                autoPlayAnimationDuration: Duration(milliseconds: 800),
+                autoPlayCurve: Curves.fastOutSlowIn,
+                enlargeCenterPage: true,
+                // onPageChanged: callbackFunction,
+                scrollDirection: Axis.horizontal,
+
+              ),
+              items: _images.map((i) {
+                return Builder(
+                  builder: (BuildContext context) {
+                    return Container(
+                      width: MediaQuery.of(context).size.width,
+                      margin: EdgeInsets.symmetric(horizontal: 5.0),
+                      // decoration: BoxDecoration(
+                      //     color: Colors.amber
+                      // ),
+                      child: InkWell(
+                        onDoubleTap: () async {
+                          // Pick an image
+                          final ImagePicker imagePicker = ImagePicker();
+                          //var image = await ImagePicker.platform.pickImage(source: ImageSource.gallery);
+                          final List<XFile> images =
+                              await imagePicker.pickMultiImage();
+                          //var images = await imagePicker.pickMultiImage();
+                          setState(() {
+                            if (images.isNotEmpty) {
+                              _images = images;
+                              isFileUploaded = true;
+                            }
+                          });
+                        },
+                        child: isFileUploaded ? Image.file(
+                          File(i.path),
+                          fit: BoxFit.fitHeight,
+                        ) :
+                        Image.network(
+                          i.path,
+                          fit: BoxFit.fitHeight,
+                        ),
+                      ),
+                    );
+                  },
+                );
+              }).toList(),
             ),
+            // HorizontalCardPager(
+            //   initialPage: 2, // default value is 2
+            //   onPageChanged: (page) {},
+            //   onSelectedItem: (page) {},
+            //   items: List<ImageCarditem>.generate(_images.length, (index) {
+            //     return ImageCarditem(
+            //         image: isFileUploaded
+            //             ? Image.file(File(_images[index].path))
+            //             : Image.network(_images[index].path));
+            //   }),
+            // ),
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [

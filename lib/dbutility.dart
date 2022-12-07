@@ -18,15 +18,28 @@ void addUser(User? user){
 
   if(user != null) {
     print(user.uid);
+
+    bool isUserExist = false;
     FirebaseFirestore.instance
         .collection('users')
         .doc(user.uid)
-        .set({
-      'email': user.email.toString(),
-      'name': user.displayName.toString(),
-      'status_message': 'I promise to take the test honestly before GOD',
-      'uid': user.uid,
-      'profileImage':user.photoURL,
+        .get()
+        .then((docSnapshot) {
+          if(docSnapshot.exists){
+            isUserExist = true;
+          } else {
+            FirebaseFirestore.instance
+                .collection('users')
+                .doc(user.uid)
+                .set({
+              'email': user.email.toString(),
+              'name': user.displayName.toString(),
+              'status_message': 'I promise to take the test honestly before GOD',
+              'uid': user.uid,
+              'profileImage':user.photoURL,
+              'messageViewCount' : 0,
+            });
+          }
     });
   }
 }
@@ -115,11 +128,13 @@ class HreUser{
         required this.name,
         required this.profileImage,
         required this.email,
+        required this.messageViewCount,
       });
   final String uid;
   final String name;
   final String profileImage;
   final String email;
+  final int messageViewCount;
 }
 
 Future<HreUser> getUserFromDB(String uid) async {
@@ -136,6 +151,7 @@ Future<HreUser> getUserFromDB(String uid) async {
       name: value.data()!['name'],
       profileImage:value.data()!['profileImage'],
       email: value.data()!['email'],
+      messageViewCount : value.data()!['messageViewCount'],
     );
   });
 }
@@ -373,8 +389,6 @@ Future<List<Message>> getMessages(String msid) async {
         ));
       }
   });
-
-  print("out ${messages.length}");
   return messages;
 }
 
@@ -394,42 +408,93 @@ void createViewCountDB(String msid, List<String> uids) async {
       .collection('msViewCount')
       .doc(msid)
       .set(<String, dynamic>{
-    'msid': msid,
-    // 'user0': uids[0],
-    // 'user1': uids[1],
-    // 'user0viewCount' : 0,
-    // 'user1viewCount' : 0,
-    uids[0] : 0,
-    uids[1] : 0,
+      'msid': msid,
+      uids[0] : 0,
+      uids[1] : 0,
+      'numMessages' : 0,
   });
 }
 
-void updateViewCountDB(String msid, String uid, int addingAmount){
-  FirebaseFirestore.instance
+// Updates UserViewCount as well
+// Update == increase the num_messages
+void updateMSViewCountDB(String msid, String uid, int addingAmount) async {
+  print("Updating view count for session: $addingAmount");
+  await FirebaseFirestore.instance
       .collection('msViewCount')
       .doc(msid)
       .set(<String, dynamic>{
         uid : FieldValue.increment(addingAmount),
+        // "numMessages" : FieldValue.increment(addingAmount),
+  }, SetOptions(merge: true));
+
+  print("Updating view count for user: $addingAmount");
+  await FirebaseFirestore.instance
+    .collection('users')
+    .doc(uid)
+    .set(<String, dynamic>{
+      'messageViewCount' : FieldValue.increment(addingAmount),
+  }, SetOptions(merge: true));
+}
+//
+void increaseTotalMessageDB(String msid, int addingAmount){
+  FirebaseFirestore.instance
+      .collection('msViewCount')
+      .doc(msid)
+      .set(<String, dynamic>{
+    'numMessages' : FieldValue.increment(addingAmount),
   }, SetOptions(merge: true));
 }
 
-Future<int> getViewCountDB(String msid, String uid) async{
+Future<int> getMSViewCountDB(String msid, String uid) async{
   return await FirebaseFirestore.instance
       .collection('msViewCount')
       .doc(msid)
       .get()
       .then((snapshot) => snapshot.data()![uid]);
 }
+Future<int> getUserMSViewCount(String uid) async {
+  return await FirebaseFirestore.instance
+      .collection('users')
+      .doc(uid)
+      .get()
+      .then((snapshot) => snapshot.data()!['messageViewCount']);
+}
 
-Future<int> getDiffViewCount(String msid, String uid) async {
-  int prevCount = await getViewCountDB(msid, uid);
+Future<int> getDiffMSViewCount(String msid, String uid) async {
+  int prevCount = await getMSViewCountDB(msid, uid);
   int curCount = await getMessageSession(msid).then((value) => value.messages.length);
   return curCount - prevCount;
 }
 
+Future<int> getUserDiffMSViewCount(String uid) async {
 
+  int prevCount = await getUserMSViewCount(uid); // UserDB
+  int curCount = 0;
+  await FirebaseFirestore.instance
+        .collection('msViewCount')
+        .where(uid, isNotEqualTo: '')
+        .get()
+        .then((snapshot) {
+          for(var doc in snapshot.docs){
+            curCount += doc.data()['numMessages'] as int;
+          }
+  });
 
+  // MessageSessionDB
+  print("user diff : $curCount , $prevCount");
+  return curCount - prevCount;
+}
 
+void updateMSViewCount(String msid, int newLen) async {
+  String uid = getUid();
+  // HreUser hreUser = await getUserFromDB(uid);
+
+  int prevViewCount = await getMSViewCountDB(msid, uid);
+  if( prevViewCount != newLen){
+    print(" viewCount: $prevViewCount, $newLen");
+    updateMSViewCountDB(msid, uid, newLen - prevViewCount);
+  }
+}
 
 class Content {
   Content(
