@@ -3,15 +3,9 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:custom_clippers/custom_clippers.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:provider/provider.dart';
-// import 'package:fluttertoast/fluttertoast.dart';
 
 import 'package:intl/intl.dart';
 
-import 'appState.dart';
-import 'firebase_options.dart';
 import 'dbutility.dart';
 
 
@@ -30,12 +24,17 @@ class _MessagePageState extends State<MessagePage> {
 
     final _messageController = TextEditingController();
 
-
-
-    MessageSession messageSession = ModalRoute.of(context)!.settings.arguments as MessageSession;
+    MessageSession messageSession = ModalRoute.of(context)!.settings.arguments as MessageSession ;
 
      return Scaffold(
         appBar: AppBar(
+            leading : IconButton(
+              onPressed: () async {
+                await updateMSViewCount(messageSession.msid, _len);
+                Navigator.pushNamed(context, '/home', arguments: 2); // 2: messageSession index
+              },
+              icon: Icon(Icons.arrow_back_ios),
+            ),
             title: Text(messageSession.sessionName)
         ),
         body: Column(
@@ -62,7 +61,6 @@ class _MessagePageState extends State<MessagePage> {
                             itemBuilder: (BuildContext ctx, int idx) {
                               if(snapshot.data!.docs[idx].exists){ // not working...
                                 var document = snapshot.data!.docs[idx];
-                                print("document :> $document");
 
                                 Message message = Message(
                                   senderId: document['senderId'],
@@ -133,9 +131,9 @@ class _MessagePageState extends State<MessagePage> {
                           // updateMSViewCount(messageSession.msid, _len);
 
                           _messageController.clear();
-                          setState(() {
-                            increaseTotalMessageDB(messageSession.msid, 1);
-                            updateMSViewCount(messageSession.msid, _len);
+                          setState(() async {
+                            await increaseTotalMessageDB(messageSession.msid, 1);
+                            await updateMSViewCount(messageSession.msid, _len);
                           });
                         },
                       ),

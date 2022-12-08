@@ -417,7 +417,7 @@ void createViewCountDB(String msid, List<String> uids) async {
 
 // Updates UserViewCount as well
 // Update == increase the num_messages
-void updateMSViewCountDB(String msid, String uid, int addingAmount) async {
+Future<void> updateMSViewCountDB(String msid, String uid, int addingAmount) async {
   print("Updating view count for session: $addingAmount");
   await FirebaseFirestore.instance
       .collection('msViewCount')
@@ -436,8 +436,8 @@ void updateMSViewCountDB(String msid, String uid, int addingAmount) async {
   }, SetOptions(merge: true));
 }
 //
-void increaseTotalMessageDB(String msid, int addingAmount){
-  FirebaseFirestore.instance
+Future<void> increaseTotalMessageDB(String msid, int addingAmount)async {
+  await FirebaseFirestore.instance
       .collection('msViewCount')
       .doc(msid)
       .set(<String, dynamic>{
@@ -485,14 +485,14 @@ Future<int> getUserDiffMSViewCount(String uid) async {
   return curCount - prevCount;
 }
 
-void updateMSViewCount(String msid, int newLen) async {
+Future<void> updateMSViewCount(String msid, int newLen) async {
   String uid = getUid();
   // HreUser hreUser = await getUserFromDB(uid);
 
   int prevViewCount = await getMSViewCountDB(msid, uid);
   if( prevViewCount != newLen){
-    print(" viewCount: $prevViewCount, $newLen");
-    updateMSViewCountDB(msid, uid, newLen - prevViewCount);
+    print("..viewCount: $newLen, $prevViewCount");
+    await updateMSViewCountDB(msid, uid, newLen - prevViewCount);
   }
 }
 
@@ -511,3 +511,4 @@ class Content {
   final String title;
   final Timestamp upload_time;
 }
+

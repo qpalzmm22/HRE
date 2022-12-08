@@ -13,6 +13,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'appState.dart';
 
+
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
@@ -22,6 +23,22 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
+  bool _isBottomNavIdxChanged = false;
+
+  // @override
+  // void initState() {
+  //   super.initState();
+  //
+  //   int argPageNum = ModalRoute.of(context)!.settings.arguments as int;
+  //   _selectedIndex = argPageNum;
+  //
+  //   // MessageSession newMessageSession = await getMessageSession(messageSessions[idx].msid);
+  //   // await updateMSViewCount(messageSessions[idx].msid, newMessageSession.messages.length);
+  // }
+
+
+
+
   TextEditingController searchBarController = TextEditingController();
   CollectionReference houseCollectionReference =
       FirebaseFirestore.instance.collection('houses');
@@ -39,12 +56,16 @@ class _HomePageState extends State<HomePage> {
 
   }
 
+
   @override
   Widget build(BuildContext context) {
+
+    int argPageNum = ModalRoute.of(context)!.settings.arguments as int;
+    _selectedIndex = _isBottomNavIdxChanged? _selectedIndex : argPageNum;
+
     var cart = context.watch<AppState>();
 
     final ThemeData theme = Theme.of(context);
-    // _isNewMessage = awgetUserDiffMSViewCount(uid) > 0;
 
     Profile profilePage = Profile();
     Bookmark bookmarkPage = Bookmark();
@@ -100,7 +121,7 @@ class _HomePageState extends State<HomePage> {
       } else if (_selectedIndex == 1) {
         return bookmarkPage.getBookmarkPage(context);
       } else if (_selectedIndex == 2) {
-        return messageSessionPage.getMessageSession();
+        return messageSessionPage.getMessageSessionPage();
       } else {
         return profilePage
             .getProfile(FirebaseAuth.instance.currentUser as User);
@@ -290,6 +311,7 @@ class _HomePageState extends State<HomePage> {
         currentIndex: _selectedIndex,
         onTap: (ind) {
           setState(() {
+            _isBottomNavIdxChanged = true;
             _selectedIndex = ind;
           });
         },
