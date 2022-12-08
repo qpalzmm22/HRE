@@ -277,7 +277,7 @@ class _DetailPageState extends State<DetailPage> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start ,
                 children: [
-                  Text("  ${numberFormat.format(house.deposit)}만원 | ${numberFormat.format(house.monthlyPay)}원"),
+                  Text("  ${numberFormat.format(house.deposit)} 만원 | ${numberFormat.format(house.monthlyPay)} 만원"),
                   iconLocation(house.address), // TODO
                 ],
               ),
@@ -312,28 +312,54 @@ class _DetailPageState extends State<DetailPage> {
               ),
             ],
           ),
+          const Divider(height: 10,),
+          Padding(
+            padding: EdgeInsets.only(left:30, right:30),
+            child: Text("설명: ${house.description}"),
+          ),
+          const Divider(height: 10,),
           Padding(
             padding: EdgeInsets.only(left:30, right:30),
             child: availableOptionCards.length != 0 ?
               Text("Available Options") : Text("No Option Available"),
           ),
-          SizedBox(
-            height: 100,
-            child : ListView.builder(
-                scrollDirection: Axis.horizontal,
-                padding: EdgeInsets.all(8),
-                itemCount: availableOptionCards.length,
-                itemBuilder: (context, idx ){
-                  return Container(
-                    width: 100,
-                    child : availableOptionCards[idx]
+          // SizedBox(
+          //   height: 100,
+          //   child : ListView.builder(
+          //       scrollDirection: Axis.horizontal,
+          //       padding: EdgeInsets.all(8),
+          //       itemCount: availableOptionCards.length,
+          //       itemBuilder: (context, idx ){
+          //         return Container(
+          //           width: 100,
+          //           child : availableOptionCards[idx]
+          //       );
+          //     }
+          //   )
+          // ),
+          Expanded(
+            child: GridView.builder(
+              padding: EdgeInsets.only(left:30, right:30),
+              // crossAxisCount : 4,
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 5, //1 개의 행에 보여줄 item 개수
+                childAspectRatio: 4 / 1, //item 의 가로 1, 세로 2 의 비율
+                mainAxisSpacing: 5, //수평 Padding
+                crossAxisSpacing: 5, //수직 Padding
+              ),
+              itemBuilder: (context, index) {
+                return Container(
+                  decoration: const BoxDecoration(
+                    color: Colors.cyan,
+                    borderRadius:
+                    BorderRadius.all(Radius.circular(10.0)),
+                  ),
+                  child: Center(child: Text(house.tags[index])),
                 );
-              }
-            )
-          ),
-          Padding(
-            padding: EdgeInsets.only(left:30, right:30),
-            child: Text(house.description),
+              },
+              // separatorBuilder: (context, index) => const Divider(),
+              itemCount: house.tags.length,
+            ),
           ),
         ],
       ),

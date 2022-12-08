@@ -410,6 +410,7 @@ class _HomePageState extends State<HomePage> {
       GeoPoint gps = document['location'];
 
       House house = House(
+        hid : document['hid'],
         thumbnail: document['thumbnail'],
         name: document['name'],
         address: document['address'],
@@ -422,6 +423,7 @@ class _HomePageState extends State<HomePage> {
         location: LatLng(gps.latitude, gps.longitude),
         imageLinks: List.from(document['imagelinks']),
         views: document['views'],
+        tags: List.from(document['tags']),
       );
 
       var cart = context.watch<AppState>();
@@ -514,7 +516,7 @@ class _HomePageState extends State<HomePage> {
                           ),
                           const Divider(height: 8),
                           Text(
-                            "보증금 ${numberFormat.format(house.deposit)} / 월 ${numberFormat.format(house.monthlyPay)}", //document['monthlyPay']),
+                            "보증금 ${numberFormat.format(house.deposit)} 만원 / 월 ${numberFormat.format(house.monthlyPay)} 만원", //document['monthlyPay']),
                             style: const TextStyle(
                               fontSize: 11,
                             ),

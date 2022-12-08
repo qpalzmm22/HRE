@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:filter_list/filter_list.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -93,9 +93,36 @@ class _EditPageState extends State<EditPage> {
     kakaoLatitude = house.location.latitude;
     kakaoLongitude = house.location.longitude;
 
+    List<String> selectedTagList = house.tags;
 
-    // default : false
-    //List<bool> options_value = List.generate(_options.length, (index) => false);
+    Future<void> _openFilterDialog() async {
+      await FilterListDialog.display<String>(
+        context,
+        hideSelectedTextCount: true,
+        themeData: FilterListThemeData(context),
+        headlineText: 'Select Tags',
+        height: 500,
+        listData: tagList,
+        selectedListData: selectedTagList,
+        choiceChipLabel: (item) => item,//item!.name,
+        validateSelectedItem: (list, val) => list!.contains(val),
+        controlButtons: [ControlButtonType.All, ControlButtonType.Reset],
+        onItemSearch: (tag, query) {
+          /// When search query change in search bar then this method will be called
+          ///
+          /// Check if items contains query
+          return tag.toLowerCase().contains(query.toLowerCase());
+        },
+
+        onApplyButtonClick: (list) {
+          setState(() {
+            selectedTagList = List.from(list!);
+          });
+          Navigator.pop(context);
+        },
+      );
+    }
+
 
     return Scaffold(
       appBar: AppBar(
@@ -116,6 +143,7 @@ class _EditPageState extends State<EditPage> {
                   }
                 }
                 House newHouse = House(
+                  hid : house.documentId,
                   thumbnail: _thumbnail,
                   name: _houseNameController.text,
                   monthlyPay: int.parse(_houseMonthlyController.text),
@@ -128,8 +156,9 @@ class _EditPageState extends State<EditPage> {
                   location: LatLng(kakaoLatitude ,kakaoLongitude),
                   imageLinks: isFileUploaded? uploadedImageUrls : _existImages,
                   views: house.views,
+                  tags : selectedTagList,
                 );
-                setHouseToDB(house.documentId, newHouse);
+                updateHouseToDB(newHouse);
                 Navigator.pushReplacementNamed(context, '/home', arguments: 0);
               },
               child: const Text(
@@ -257,35 +286,42 @@ class _EditPageState extends State<EditPage> {
                   const SizedBox(
                     height: 10,
                   ),
-                  Container(
-                    width: 400,
-                    height: 700,
-                    child: GridView.count(
-                      shrinkWrap: true,
-                      crossAxisCount: 3,
-                      //padding: const EdgeInsets.all(4.0),
-                      //childAspectRatio: 16.0 / 19.0,
-                      children: List.generate(_options.length, (idx) {
-                        return Card(
-                          child: Column(
-                            children: [
-                              Text(
-                                _options[idx],
-                                //style: TextStyle(fontSize: 10),
-                              ),
-                              GFCheckbox(
-                                size: GFSize.SMALL,
-                                onChanged: (value) {
-                                  setState(() {
-                                    options_value[idx] = value;
-                                  });
-                                },
-                                value: options_value[idx],
-                              ),
-                            ],
+                  TextButton(
+                    child: const Text(
+                      '태그 추가',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    onPressed: _openFilterDialog,
+                    style: ButtonStyle(
+                        backgroundColor:
+                        MaterialStateProperty.all<Color>(Colors.blue)),
+
+                    // style: ButtonStyle(
+                    //   backgroundColor: MaterialStateProperty.all(Colors.blue),
+                    // ),
+                  ),
+                  SizedBox(
+                    height: 500,
+                    child: GridView.builder(
+                      // crossAxisCount : 4,
+                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 5, //1 개의 행에 보여줄 item 개수
+                        childAspectRatio: 3 / 1, //item 의 가로 1, 세로 2 의 비율
+                        mainAxisSpacing: 5, //수평 Padding
+                        crossAxisSpacing: 5, //수직 Padding
+                      ),
+                      itemBuilder: (context, index) {
+                        return Container(
+                          decoration: const BoxDecoration(
+                            color: Colors.cyan,
+                            borderRadius:
+                            BorderRadius.all(Radius.circular(10.0)),
                           ),
+                          child: Center(child: Text(selectedTagList![index])),
                         );
-                      }),
+                      },
+                      // separatorBuilder: (context, index) => const Divider(),
+                      itemCount: selectedTagList!.length,
                     ),
                   ),
                 ],
