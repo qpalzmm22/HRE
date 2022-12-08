@@ -133,6 +133,7 @@ class Profile {
                           GeoPoint gps = data[idx]['location'];
 
                           House house = House(
+                            hid : data[idx]['hid'],
                             thumbnail: data[idx]['thumbnail'],
                             name: data[idx]['name'],
                             address: data[idx]['address'],
@@ -145,6 +146,7 @@ class Profile {
                             location: LatLng(gps.latitude, gps.longitude),
                             imageLinks: List.from(data[idx]['imagelinks']),
                             views: data[idx]['views'],
+                            tags: List.from(data[idx]['tags']),
                           );
 
                           return Card(

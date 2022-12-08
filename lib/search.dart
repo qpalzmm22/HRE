@@ -65,7 +65,7 @@ class _SearchPage extends State<SearchPage> {
     } else return null;
   }
 
-  List<String> selectedTagList = [];
+  List<String> selectedTagList = ["원룸", "투룸", "미니투룸", "Wi-Fi",]; // default value
 
 
   Future<void> _openFilterDialog() async {
@@ -117,62 +117,16 @@ class _SearchPage extends State<SearchPage> {
                   _monthlySliderEndValue,
                   selectedTagList);
 
-
               // double _depositSliderStartValue = 0.0;
               // double _depositSliderEndValue = 300.0;
               // double _monthlySliderStartValue = 0.0;
               // double _monthlySliderEndValue = 50.0;
 
-              Navigator.pushNamed(context, '/queryList');
+              Navigator.pushNamed(context, '/searchResultList', arguments: houses);
             },
           ),
         ],
       ),
-      // body : ,
-      // bottomNavigationBar: Padding(
-      //   padding: const EdgeInsets.only(bottom: 30),
-      //   child: Row(
-      //     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      //     children: <Widget>[
-      //       TextButton(
-      //         onPressed: () async {
-      //           final list = await Navigator.push(
-      //             context,
-      //             MaterialPageRoute(
-      //               builder: (context) => FilterPage(
-      //                 allTextList: userList,
-      //                 selectedUserList: selectedUserList,
-      //               ),
-      //             ),
-      //           );
-      //           if (list != null) {
-      //             setState(() {
-      //               selectedUserList = List.from(list);
-      //             });
-      //           }
-      //         },
-      //         style: ButtonStyle(
-      //           backgroundColor: MaterialStateProperty.all(Colors.blue),
-      //         ),
-      //         child: const Text(
-      //           "Filter Page",
-      //           style: TextStyle(color: Colors.white),
-      //         ),
-      //       ),
-      //       TextButton(
-      //         onPressed: openFilterDelegate,
-      //         style: ButtonStyle(
-      //           backgroundColor: MaterialStateProperty.all(Colors.blue),
-      //         ),
-      //         child: const Text(
-      //           "Filter Delegate",
-      //           style: TextStyle(color: Colors.white),
-      //         ),
-      //         // color: Colors.blue,
-      //       ),
-      //     ],
-      //   ),
-      // ),
       body: Column(
         children: <Widget>[
           SizedBox(height : 10),
@@ -216,18 +170,8 @@ class _SearchPage extends State<SearchPage> {
                   // inputFormatters: [FilteringTextInputFormatter.allow('')],
                   controller: _depositMinTextFieldController,
                   decoration: InputDecoration(
-                    // bor  der: InputBorder.none,
-                      hintText: '0 ~ 1000',
-                      labelText: "최소 보증금"),
-                  // onChanged: (value){
-                  //   setState((){
-                  //     double newVal = double.parse(_depositMinTextFieldController.text);
-                  //     // if(newVal >= _depositMin && newVal <= _depositMax && newVal >= double.parse(_depositMinTextFieldController.text)) {
-                  //       _depositMinTextFieldController.text = newVal.toString();
-                  //       _depositSliderStartValue = newVal;
-                  //     // }
-                  //   });
-                  // },
+                    hintText: '0 ~ 1000',
+                    labelText: "최소 보증금"),
                 ),
               ),
               Flexible(
@@ -236,19 +180,8 @@ class _SearchPage extends State<SearchPage> {
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   controller: _depositMaxTextFieldController,
                   decoration: InputDecoration(
-                    // border: InputBorder.none,
-                      hintText: '0 ~ 1000',
-                      labelText: "최대 보증금"),
-                  // onChanged: (value){
-                  //   setState((){
-                  //     double newVal = double.parse(_depositMaxTextFieldController.text);
-                  //     // if(newVal >= _depositMin && newVal <= _depositMax && newVal <= double.parse(_depositMaxTextFieldController.text)) {
-                  //       _depositMaxTextFieldController.text = newVal.toString();
-                  //       _depositSliderEndValue = newVal;
-                  //     // }
-                  //     // _depositSliderEndValue = int.parse(_depositMaxTextFieldController.text);
-                  //   });
-                  // },
+                    hintText: '0 ~ 1000',
+                    labelText: "최대 보증금"),
                 ),
               ),
             ],
@@ -317,16 +250,7 @@ class _SearchPage extends State<SearchPage> {
                   decoration: InputDecoration(
                     // border: InputBorder.none,
                       hintText: '0 ~ 300',
-                      labelText: "최대 월세"),
-                  // onChanged: (value){
-                  //   setState((){
-                  //     double newVal = double.parse(_monthlyMaxTextFieldController.text);
-                  //     if(newVal >= _monthlyMin && newVal <= _monthlyMax && newVal <= double.parse(_monthlyMaxTextFieldController.text)) {
-                  //       _monthlyMaxTextFieldController.text = newVal.toString();
-                  //       _monthlySliderEndValue = newVal;
-                  //     }
-                  //   });
-                  // },
+                      labelText: "최대 월세")
                 ),
               ),
             ],
@@ -346,13 +270,25 @@ class _SearchPage extends State<SearchPage> {
             ), // TODO : better looking
           ),
           Expanded(
-            child: ListView.separated(
+            child: GridView.builder(
+              // crossAxisCount : 4,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 5, //1 개의 행에 보여줄 item 개수
+                childAspectRatio: 4 / 1, //item 의 가로 1, 세로 2 의 비율
+                mainAxisSpacing: 5, //수평 Padding
+                crossAxisSpacing: 5, //수직 Padding
+              ),
               itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text(selectedTagList![index]),
+                return Container(
+                  decoration: BoxDecoration(
+                    color: Colors.cyan,
+                    borderRadius:
+                    BorderRadius.all(Radius.circular(10.0)),
+                  ),
+                  child: Center(child: Text(selectedTagList![index])),
                 );
               },
-              separatorBuilder: (context, index) => const Divider(),
+              // separatorBuilder: (context, index) => const Divider(),
               itemCount: selectedTagList!.length,
             ),
           ),

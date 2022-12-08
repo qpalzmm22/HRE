@@ -15,6 +15,7 @@ class RoomInfo {
 }
 
 class House {
+  final String hid;
   final String thumbnail;
   final String name;
   final String address;
@@ -24,10 +25,12 @@ class House {
   final int monthlyPay;
   final int deposit;
   final LatLng location;
-  final List<bool> optionList;
+  final List<bool> optionList; // TODO : DEPRECATED
   final List<String> imageLinks;
   final int views;
+  final List<String> tags;
   House({
+    required this.hid,
     required this.location,
     required this.thumbnail,
     required this.name,
@@ -40,6 +43,7 @@ class House {
     required this.optionList,
     required this.imageLinks,
     required this.views,
+    required this.tags,
   });
 }
 

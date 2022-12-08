@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:filter_list/filter_list.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -49,20 +50,22 @@ class _AddHousePageState extends State<AddHousePage> {
   double kakaoLatitude = 0.0;
   double kakaoLongitude = 0.0;
 
-  static List<String> _options = [
-    "싱크대",
-    "Wi-Fi",
-    "침대",
-    "가스 레인지",
-    "냉장고",
-    "에어콘",
-    "장롱",
-    "세탁기",
-    "의자",
-    "신발장",
-    "배란다"
+  static const List<String> _options = [
+    "싱크대", // 0
+    "Wi-Fi", // 1
+    "침대",   // 2
+    "가스 레인지", // 3
+    "냉장고",   // 4
+    "에어콘",  //5
+    "장롱",  // 6
+    "세탁기", // 7
+    "의자",  // 8
+    "신발장",  // 9
+    "배란다" // 10
   ]; // "채상"
 
+  // List<String> _tags = [];
+  List<String> selectedTagList = [];
   //List<String> get options => _options;
   final _formKey = GlobalKey<FormState>();
   final _addressKey = GlobalKey<FormState>();
@@ -74,6 +77,35 @@ class _AddHousePageState extends State<AddHousePage> {
   Widget build(BuildContext context) {
     // default : false
     //List<bool> options_value = List.generate(_options.length, (index) => false);
+    Future<void> _openFilterDialog() async {
+      await FilterListDialog.display<String>(
+        context,
+        hideSelectedTextCount: true,
+        themeData: FilterListThemeData(context),
+        headlineText: 'Select Tags',
+        height: 500,
+        listData: tagList,
+        selectedListData: selectedTagList,
+        choiceChipLabel: (item) => item,//item!.name,
+        validateSelectedItem: (list, val) => list!.contains(val),
+        controlButtons: [ControlButtonType.All, ControlButtonType.Reset],
+        onItemSearch: (tag, query) {
+          /// When search query change in search bar then this method will be called
+          ///
+          /// Check if items contains query
+          return tag.toLowerCase().contains(query.toLowerCase());
+        },
+
+        onApplyButtonClick: (list) {
+          setState(() {
+            selectedTagList = List.from(list!);
+          });
+          Navigator.pop(context);
+        },
+      );
+    }
+
+
 
     return Scaffold(
       appBar: AppBar(
@@ -93,24 +125,30 @@ class _AddHousePageState extends State<AddHousePage> {
                       if (i == 0) thumbnail = imageUrl;
                     }
                   }
-                  House house = House(
-                    thumbnail: thumbnail,
-                    name: _houseNameController.text,
-                    monthlyPay: int.parse(_houseMonthlyController.text),
-                    deposit: int.parse(_houseDepositController.text),
-                    address: _houseAddressController.text,
-                    description: _houseDescriptionController.text,
-                    ownerId: user.uid,
-                    documentId: "",
-                    optionList: options_value,
-                    location: LatLng(kakaoLatitude, kakaoLongitude),
-                    imageLinks: uploadedImageUrls,
-                    views: 0,
-                  );
-                  addHouseToDB(house);
-                  Navigator.pushReplacementNamed(
-                      context, '/home', arguments: 0);
                 }
+
+
+                String hid = FirebaseFirestore.instance
+                    .collection('houses').doc().id;
+                House house = House(
+                  hid : hid,
+                  thumbnail: thumbnail,
+                  name: _houseNameController.text,
+                  monthlyPay: int.parse(_houseMonthlyController.text),
+                  deposit: int.parse(_houseDepositController.text),
+                  address: _houseAddressController.text,
+                  description: _houseDescriptionController.text,
+                  ownerId: user.uid,
+                  documentId: "",
+                  optionList: options_value,
+                  location: LatLng(kakaoLatitude, kakaoLongitude),
+                  imageLinks: uploadedImageUrls,
+                  views: 0,
+                  tags : selectedTagList,
+                );
+                addHouseToDB(house);
+                Navigator.pushReplacementNamed(context, '/home', arguments: 0);
+
               },
               child: const Text(
                 "Save",
@@ -124,7 +162,7 @@ class _AddHousePageState extends State<AddHousePage> {
             CarouselSlider(
               options: CarouselOptions(
                 height: 200,
-                aspectRatio: 16/9,
+                aspectRatio: 16 / 9,
                 viewportFraction: 0.8,
                 initialPage: 0,
                 enableInfiniteScroll: true,
@@ -135,7 +173,6 @@ class _AddHousePageState extends State<AddHousePage> {
                 enlargeCenterPage: true,
                 // onPageChanged: callbackFunction,
                 scrollDirection: Axis.horizontal,
-
               ),
               items: _images.map((i) {
                 return Builder(
@@ -161,14 +198,15 @@ class _AddHousePageState extends State<AddHousePage> {
                             }
                           });
                         },
-                        child: isFileUploaded ? Image.file(
-                          File(i.path),
-                          fit: BoxFit.fitHeight,
-                        ) :
-                        Image.network(
-                          i.path,
-                          fit: BoxFit.fitHeight,
-                        ),
+                        child: isFileUploaded
+                            ? Image.file(
+                                File(i.path),
+                                fit: BoxFit.fitHeight,
+                              )
+                            : Image.network(
+                                i.path,
+                                fit: BoxFit.fitHeight,
+                              ),
                       ),
                     );
                   },
@@ -251,6 +289,52 @@ class _AddHousePageState extends State<AddHousePage> {
                         const SizedBox(
                           width: 10,
                         ),
+                     // ),
+                   // ],
+                  //),
+                  
+                  const SizedBox(
+                    height: 10,
+                  ),
+                
+                  TextButton(
+                    child: const Text(
+                      '태그 추가',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    onPressed: _openFilterDialog,
+                    style: ButtonStyle(
+                        backgroundColor:
+                        MaterialStateProperty.all<Color>(Colors.blue)),
+
+                    // style: ButtonStyle(
+                    //   backgroundColor: MaterialStateProperty.all(Colors.blue),
+                    // ),
+                  ),
+          
+                  SizedBox(
+                    height: 500,
+                    child: GridView.builder(
+                      // crossAxisCount : 4,
+                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 5, //1 개의 행에 보여줄 item 개수
+                        childAspectRatio: 3 / 1, //item 의 가로 1, 세로 2 의 비율
+                        mainAxisSpacing: 5, //수평 Padding
+                        crossAxisSpacing: 5, //수직 Padding
+                      ),
+                      itemBuilder: (context, index) {
+                        return Container(
+                          decoration: const BoxDecoration(
+                            color: Colors.cyan,
+                            borderRadius:
+                            BorderRadius.all(Radius.circular(10.0)),
+                          ),
+                          child: Center(child: Text(selectedTagList![index])),
+                        );
+                      },
+                      // separatorBuilder: (context, index) => const Divider(),
+                      itemCount: selectedTagList!.length,
+//=======
                         Expanded(
                           child: TextFormField(
                             readOnly: true,
@@ -266,6 +350,7 @@ class _AddHousePageState extends State<AddHousePage> {
                           ),
                         ),
                       ],
+//>>>>>>> main
                     ),
                     TextFormField(
                       controller: _houseNameController,

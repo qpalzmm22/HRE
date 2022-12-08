@@ -75,10 +75,44 @@ bool isUserExist(User? user){
   return false;
 }
 
+List<String> tagList = [
+  "그할마",
+  "커피유야",
+  "법원",
+  "양덕 주차장",
+  "다이소(양덕",
+
+  "원룸",
+  "미니투룸",
+  "투룸",
+  "쉐어하우스",
+  "싱크대",
+
+  "Wi-Fi",
+  "침대",
+  "가스 레인지",
+  "냉장고",
+  "에어콘",
+
+  "장롱",
+  "세탁기",
+  "의자",
+  "신발장",
+  "배란다",
+];
+
+
+
+
+
 void addHouseToDB(House house){
+      String hid = FirebaseFirestore.instance
+          .collection('houses').doc().id;
+
       FirebaseFirestore.instance
         .collection('houses')
         .add(<String, dynamic>{
+      'hid' : hid,
       'name': house.name,
       'deposit': house.deposit,
       'monthlyPay': house.monthlyPay,
@@ -95,14 +129,16 @@ void addHouseToDB(House house){
       'options' : house.optionList,
       'location' : GeoPoint(house.location.latitude, house.location.longitude),
       'views' : house.views,
+      'tags' : house.tags,
     });
 }
 
-void setHouseToDB(String hid, House house){
+void updateHouseToDB(House house){
   FirebaseFirestore.instance
       .collection('houses')
-      .doc(hid)
+      .doc(house.hid)
       .set(<String, dynamic>{
+    'hid' : house.hid,
     'name': house.name,
     'deposit': house.deposit,
     'monthlyPay': house.monthlyPay,
@@ -119,39 +155,72 @@ void setHouseToDB(String hid, House house){
     'options' : house.optionList,
     'location' : GeoPoint(house.location.latitude, house.location.longitude),
     'views' : house.views,
+    'tags' : house.tags,
   });
 }
 
+void deleteHouse(String hid){
+  CollectionReference myHouses = FirebaseFirestore.instance.collection("houses");
+  myHouses.doc(hid).delete(); // could be async
+}
 
+House helperDocToHouse(QueryDocumentSnapshot document){
+  GeoPoint gps = document['location'];
+
+  return House(
+    hid : document['hid'],
+    thumbnail: document['thumbnail'],
+    name: document['name'],
+    address: document['address'],
+    documentId: document.id,
+    ownerId: document['userId'],
+    description: document['description'] as String,
+    monthlyPay: document['monthlyPay'] as int,
+    deposit: document['deposit'],
+    optionList: List<bool>.from(document['options']),
+    location: LatLng(gps.latitude, gps.longitude),
+    imageLinks: List.from( document['imagelinks']),
+    views: document['views'],
+    tags : List.from(document['tags']),
+  );
+}
+
+
+// (Deposit || Monthly) && (Tag)
 Future<List<House>> getQueriedHouses(double ds, double de, double ms, double me, List<String> tags) async {
+  Set<String> houses_id = {};
   List<House> houses = [];
-  FirebaseFirestore.instance
+
+  await FirebaseFirestore.instance
     .collection('houses')
     .where('tags', arrayContainsAny: tags)
     .where('deposit', isGreaterThanOrEqualTo: ds)
-    .where('deposit', isGreaterThanOrEqualTo: de)
+    .where('deposit', isLessThanOrEqualTo: de)
     .get()
     .then((value) {
+      print("size of query result ${value.size}");
       for( var document in value.docs){
-        GeoPoint gps = document['location'];
-        House(
-          thumbnail: document['thumbnail'],
-          name: document['name'],
-          address: document['address'],
-          documentId: document.id,
-          ownerId: document['userId'],
-          description: document['description'] as String,
-          monthlyPay: document['monthlyPay'] as int,
-          deposit: document['deposit'],
-          optionList: List<bool>.from(document['options']),
-          location: LatLng(gps.latitude, gps.longitude),
-          imageLinks: List.from( document['imagelinks']),
-          views: document['views'],
-        );
+        houses_id.add(document['hid']);
+        houses.add(helperDocToHouse(document));
       }
     });
 
-  return houses;
+  await FirebaseFirestore.instance
+      .collection('houses')
+      .where('tags', arrayContainsAny: tags)
+      .where('monthlyPay', isGreaterThanOrEqualTo: ms)
+      .where('monthlyPay', isLessThanOrEqualTo: me)
+      .get()
+      .then((value) {
+    print("size of query result ${value.size}");
+    for( var document in value.docs){
+      if(!houses_id.contains(document['hid'])) {
+        houses.add(helperDocToHouse(document));
+      }
+    }
+  });
+
+  return houses.toList();
 }
 
 
@@ -188,7 +257,6 @@ Future<HreUser> getUserFromDB(String uid) async {
     );
   });
 }
-
 
 Future<String> uploadFile (File? file) async {
   User? user = FirebaseAuth.instance.currentUser;
@@ -514,7 +582,7 @@ Future<int> getUserDiffMSViewCount(String uid) async {
   });
 
   // MessageSessionDB
-  print("user diff : $curCount , $prevCount");
+  // print("user diff : $curCount , $prevCount");
   return curCount - prevCount;
 }
 
@@ -544,4 +612,5 @@ class Content {
   final String title;
   final Timestamp upload_time;
 }
+
 
