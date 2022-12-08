@@ -304,7 +304,7 @@ class _DetailPageState extends State<DetailPage> {
                             Navigator.pushNamed(context, '/detail', arguments: house);
                           }
                       ));
-                      Navigator.pushNamed(context, '/map', arguments: MapPoint(name: house.name, center: house.location, zoom: 19.5, markers: markers ),);
+                      Navigator.pushNamed(context, '/map', arguments: MapPoint(name: house.name, center: house.location, zoom: 19.0, markers: markers ),);
                     },
                     child : const Text("지도에서 열기"),
                   ),
