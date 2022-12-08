@@ -346,7 +346,7 @@ class _HomePageState extends State<HomePage> {
                       arguments: MapPoint(
                         name: "양덕동 근처 매물",
                         center: const LatLng(36.081809, 129.39697),
-                        zoom: 14,
+                        zoom: 14.5,
                         markers: markers,
                       ));
                 },
@@ -449,6 +449,9 @@ class _HomePageState extends State<HomePage> {
               .then((value) {
             if (value == true) {
               houseCollectionReference.doc(document.id).delete();
+              setState(() {
+                _selectedIndex = _selectedIndex;
+              });
             }
           });
         },

@@ -59,7 +59,7 @@ class _MessagePageState extends State<MessagePage> {
                             reverse: true,
                             itemCount : len,
                             itemBuilder: (BuildContext ctx, int idx) {
-                              if(snapshot.data!.docs[idx].exists){ // not working...
+                              if(snapshot.data!.docs[idx]['timestamp'] != null){
                                 var document = snapshot.data!.docs[idx];
 
                                 Message message = Message(
@@ -115,7 +115,7 @@ class _MessagePageState extends State<MessagePage> {
                 height: 100,
                 child : Row(
                     children : [
-                      SizedBox(width:10),
+                      const SizedBox(width:10),
                       Expanded(
                         child: TextField(
                           controller: _messageController,
@@ -127,15 +127,14 @@ class _MessagePageState extends State<MessagePage> {
                       TextButton(
                         child : Text("submit"),
                         onPressed: () async {
-
                           await addMessage(messageSession.msid, uid, _messageController.text);
                           // increaseTotalMessageDB(messageSession.msid, 1);
                           // updateMSViewCount(messageSession.msid, _len);
                           _messageController.clear();
-                          setState(() async {
+                          // setState(() async {
                             await increaseTotalMessageDB(messageSession.msid, 1);
                             await updateMSViewCount(messageSession.msid, _len);
-                          });
+                          // });
                         },
                       ),
                     ]
