@@ -13,7 +13,6 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'appState.dart';
 
-
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
@@ -36,9 +35,6 @@ class _HomePageState extends State<HomePage> {
   //   // await updateMSViewCount(messageSessions[idx].msid, newMessageSession.messages.length);
   // }
 
-
-
-
   TextEditingController searchBarController = TextEditingController();
   CollectionReference houseCollectionReference =
       FirebaseFirestore.instance.collection('houses');
@@ -50,9 +46,8 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-
     int argPageNum = ModalRoute.of(context)!.settings.arguments as int;
-    _selectedIndex = _isBottomNavIdxChanged? _selectedIndex : argPageNum;
+    _selectedIndex = _isBottomNavIdxChanged ? _selectedIndex : argPageNum;
 
     var cart = context.watch<AppState>();
 
@@ -68,7 +63,7 @@ class _HomePageState extends State<HomePage> {
             Navigator.pushNamed(context, '/detail', arguments: house);
           });
 
-       cart.addMarker(marker);
+      cart.addMarker(marker);
     }
 
     Widget homeScreen() {
@@ -104,7 +99,6 @@ class _HomePageState extends State<HomePage> {
     }
 
     Widget buildBody(BuildContext context) {
-
       if (_selectedIndex == 0) {
         return homeScreen();
       } else if (_selectedIndex == 1) {
@@ -112,8 +106,8 @@ class _HomePageState extends State<HomePage> {
       } else if (_selectedIndex == 2) {
         return messageSessionPage.getMessageSessionPage();
       } else {
-        return profilePage
-            .getProfile(context, FirebaseAuth.instance.currentUser as User);
+        return profilePage.getProfile(
+            context, FirebaseAuth.instance.currentUser as User);
       }
     }
 
@@ -165,7 +159,6 @@ class _HomePageState extends State<HomePage> {
         return FloatingActionButton(
           backgroundColor: Colors.pink,
           onPressed: () {
-
             Navigator.pushNamed(context, '/addHouse');
           },
           child: const Icon(Icons.add),
@@ -272,7 +265,7 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
-        items:  <BottomNavigationBarItem>[
+        items: <BottomNavigationBarItem>[
           const BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: 'home',
@@ -283,19 +276,20 @@ class _HomePageState extends State<HomePage> {
           ),
           BottomNavigationBarItem(
             icon: FutureBuilder(
-              future : getUserDiffMSViewCount(getUid()),
-              builder: (context, snapshot){
-                if(snapshot.hasData){
-                  return snapshot.data! > 0 ?
-                  Badge(
-                    badgeContent: Text(snapshot.data.toString()), // To mae
-                    child: const Icon(Icons.message),
-                  ) :
-                  const Icon(Icons.message);
-                } else {
-                  return const Icon(Icons.message);
-                }
-              }),
+                future: getUserDiffMSViewCount(getUid()),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return snapshot.data! > 0
+                        ? Badge(
+                            badgeContent:
+                                Text(snapshot.data.toString()), // To mae
+                            child: const Icon(Icons.message),
+                          )
+                        : const Icon(Icons.message);
+                  } else {
+                    return const Icon(Icons.message);
+                  }
+                }),
             label: 'message',
           ),
           const BottomNavigationBarItem(
@@ -316,7 +310,6 @@ class _HomePageState extends State<HomePage> {
   }
 
   SizedBox _locationCard(Icon icon, MapPoint location) {
-
     return SizedBox(
       child: Card(
           shape: RoundedRectangleBorder(
@@ -363,11 +356,11 @@ class _HomePageState extends State<HomePage> {
               TextButton(
                 onPressed: () {
                   Navigator.pushNamed(context, '/map',
-                    arguments: MapPoint(
-                      name: "양덕동 근처 매물",
-                      center: const LatLng(36.081809, 129.39697),
-                      zoom: 14,
-                    ));
+                      arguments: MapPoint(
+                        name: "양덕동 근처 매물",
+                        center: const LatLng(36.081809, 129.39697),
+                        zoom: 14,
+                      ));
                 },
                 child: const Text(
                   "View ALL",
@@ -432,17 +425,16 @@ class _HomePageState extends State<HomePage> {
         deposit: document['deposit'],
         optionList: List<bool>.from(document['options']),
         location: LatLng(gps.latitude, gps.longitude),
-        imageLinks: List.from( document['imagelinks']),
+        imageLinks: List.from(document['imagelinks']),
         views: document['views'],
       );
 
-        markers.add(Marker(
-            markerId: MarkerId(house.name),
-            position: house.location,
-            onTap: () {
-              Navigator.pushNamed(context, '/detail', arguments: house);
-            }));
-
+      markers.add(Marker(
+          markerId: MarkerId(house.name),
+          position: house.location,
+          onTap: () {
+            Navigator.pushNamed(context, '/detail', arguments: house);
+          }));
 
       var isInCart = context.select<AppState, bool>(
         (cart) => cart.bookmarked
@@ -455,12 +447,12 @@ class _HomePageState extends State<HomePage> {
         borderRadius: BorderRadius.circular(50),
         onTap: () async {
           increaseHouseViewCount(house.documentId);
-          await Navigator.pushNamed(context, '/detail', arguments: house).then(
-                  (value) {
-                    if(value == true){
-                      houseCollectionReference.doc(document.id).delete();
-                    }
-                  });
+          await Navigator.pushNamed(context, '/detail', arguments: house)
+              .then((value) {
+            if (value == true) {
+              houseCollectionReference.doc(document.id).delete();
+            }
+          });
         },
         child: Column(
           //crossAxisAlignment: CrossAxisAlignment.start,
