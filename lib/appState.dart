@@ -84,5 +84,8 @@ class AppState extends ChangeNotifier {
     _recentlyView.add(house);
     notifyListeners();
   }
-
 }
+
+// class Home2MSArgs<MEs>{
+//   final T
+// }

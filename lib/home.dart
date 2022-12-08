@@ -23,6 +23,22 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
+  bool _isBottomNavIdxChanged = false;
+
+  // @override
+  // void initState() {
+  //   super.initState();
+  //
+  //   int argPageNum = ModalRoute.of(context)!.settings.arguments as int;
+  //   _selectedIndex = argPageNum;
+  //
+  //   // MessageSession newMessageSession = await getMessageSession(messageSessions[idx].msid);
+  //   // await updateMSViewCount(messageSessions[idx].msid, newMessageSession.messages.length);
+  // }
+
+
+
+
   TextEditingController searchBarController = TextEditingController();
   CollectionReference houseCollectionReference =
       FirebaseFirestore.instance.collection('houses');
@@ -31,11 +47,15 @@ class _HomePageState extends State<HomePage> {
   // bool _isNewMessage = false;
   List<House> houseList = [];
 
+
   @override
   Widget build(BuildContext context) {
+
+    int argPageNum = ModalRoute.of(context)!.settings.arguments as int;
+    _selectedIndex = _isBottomNavIdxChanged? _selectedIndex : argPageNum;
+
     var cart = context.watch<AppState>();
     final ThemeData theme = Theme.of(context);
-    // _isNewMessage = awgetUserDiffMSViewCount(uid) > 0;
 
     Profile profilePage = Profile();
     Bookmark bookmarkPage = Bookmark();
@@ -50,6 +70,8 @@ class _HomePageState extends State<HomePage> {
     //       });
     //   cart.addMarker(marker);
     // }
+    print("arg : $_selectedIndex");
+
 
     Widget homeScreen() {
       return Column(
@@ -279,6 +301,7 @@ class _HomePageState extends State<HomePage> {
         currentIndex: _selectedIndex,
         onTap: (ind) {
           setState(() {
+            _isBottomNavIdxChanged = true;
             _selectedIndex = ind;
           });
         },

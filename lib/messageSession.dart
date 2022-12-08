@@ -49,13 +49,13 @@ class MessageSessionPage {
                                 future : getDiffMSViewCount(messageSessions[idx].msid, getUid()),
                                 builder: (context, snapshot){
                                   if(snapshot.hasData && snapshot.data! > 0 ){
-                                    print("snapshot has data :  ${snapshot.data.toString()}");
+                                    // print("snapshot has data :  ${snapshot.data.toString()}");
                                     return Badge(
                                       badgeContent: Text(snapshot.data.toString()), // To mae
                                       child: Image.network(messageSessionProfileImage),
                                     );
                                   } else {
-                                    print("snapshot doesn't data :  ${snapshot.data.toString()}");
+                                    // print("snapshot doesn't data :  ${snapshot.data.toString()}");
                                     return Image.network(messageSessionProfileImage);
                                   }
                               }),
@@ -63,17 +63,10 @@ class MessageSessionPage {
                             ),
                             title: InkWell(
                               onTap: () {
-                                // setState(){
-                                  //updateMSViewCount(messageSessions[idx].msid, messageSessions[idx].messages.length);
-                                // }
-                                // Navigator.pushNamed(context, '/messagePage',
-                                //     arguments: messageSessions[idx]);
-
-                                  Navigator.pushNamed(context, '/messagePage', arguments: messageSessions[idx]).then((_) async {
+                                  Navigator.pushReplacementNamed(context, '/messagePage', arguments: messageSessions[idx]).then((_) async {
                                     MessageSession newMessageSession = await getMessageSession(messageSessions[idx].msid);
                                     await updateMSViewCount(messageSessions[idx].msid, newMessageSession.messages.length);
                                   });
-
                               },
                               child :Text(messageSessions[idx].sessionName),
                             )

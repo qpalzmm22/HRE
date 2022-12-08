@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_profile_picture/flutter_profile_picture.dart';
@@ -6,14 +7,14 @@ import 'package:intl/intl.dart';
 
 import 'dbutility.dart';
 
-class ComunityPage extends StatefulWidget {
-  const ComunityPage({Key? key}) : super(key: key);
+class CommunityPage extends StatefulWidget {
+  const CommunityPage({Key? key}) : super(key: key);
 
   @override
-  _ComunityPageState createState() => _ComunityPageState();
+  _CommunityPageState createState() => _CommunityPageState();
 }
 
-class _ComunityPageState extends State<ComunityPage> {
+class _CommunityPageState extends State<CommunityPage> {
   int _selectedIndex = 0;
   User currentUser = FirebaseAuth.instance.currentUser as User;
 
@@ -27,29 +28,29 @@ class _ComunityPageState extends State<ComunityPage> {
 
     return SafeArea(
         child: Container(
-      alignment: Alignment.center,
-      padding: const EdgeInsets.symmetric(horizontal: 30.0),
-      child: Column(
-        children: [
-          const SizedBox(
-            height: 10,
-          ),
-          Expanded(
-            child: FutureBuilder(
-                future: page.orderBy('upload_time', descending: true).get(),
-                builder: (context, snapshot) {
-                  List data = snapshot.data == null ? [] : snapshot.data!.docs;
-                  int len =
-                      snapshot.data == null ? 0 : snapshot.data!.docs.length;
-                  print("length : $len");
+          alignment: Alignment.center,
+          padding: const EdgeInsets.symmetric(horizontal: 30.0),
+          child: Column(
+            children: [
+              const SizedBox(
+                height: 10,
+              ),
+              Expanded(
+                child: FutureBuilder(
+                  future: page.orderBy('upload_time', descending: true).get(),
+                  builder: (context, snapshot) {
+                    List data = snapshot.data == null ? [] : snapshot.data!.docs;
+                    int len =
+                        snapshot.data == null ? 0 : snapshot.data!.docs.length;
+                    print("length : $len");
 
-                  return ListView.builder(
-                      itemCount: len,
-                      itemBuilder: (BuildContext context, int idx) {
-                        DateTime createdTime = DateTime.parse(
-                            data[idx]['upload_time'].toDate().toString());
+                    return ListView.builder(
+                        itemCount: len,
+                        itemBuilder: (BuildContext context, int idx) {
+                          DateTime createdTime = DateTime.parse(
+                              data[idx]['upload_time'].toDate().toString());
 
-                        return ListTile(
+                            return ListTile(
                             title: InkWell(
                               onTap: () {
                                 Navigator.pushNamed(context, '/roommateDetail',
@@ -89,7 +90,6 @@ class _ComunityPageState extends State<ComunityPage> {
                       });
                 }),
           ),
-
         ],
       ),
     ));

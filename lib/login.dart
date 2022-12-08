@@ -40,16 +40,10 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
   var cart = context.watch<AppState>();
     return SignInScreen(
-      // headerBuilder: (context, constr, ss){
-      //   return Text("hello");
-      // },
-      // footerBuilder: (context, auth){
-      //   return Text("hello2");
-      // },
       actions: [
         AuthStateChangeAction<SignedIn>((context, state) {
           addUser(FirebaseAuth.instance.currentUser);
-          Navigator.pushReplacementNamed(context, '/home');
+          Navigator.pushReplacementNamed(context, '/home', arguments: 0);
         }),
       ],
     );
