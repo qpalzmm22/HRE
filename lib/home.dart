@@ -64,8 +64,6 @@ class _HomePageState extends State<HomePage> {
 
     var cart = context.watch<AppState>();
 
-    final ThemeData theme = Theme.of(context);
-
     Profile profilePage = Profile();
     Bookmark bookmarkPage = Bookmark();
     MessageSessionPage messageSessionPage = MessageSessionPage();
@@ -465,9 +463,9 @@ class _HomePageState extends State<HomePage> {
       return Card(
           child: InkWell(
         borderRadius: BorderRadius.circular(50),
-        onTap: () {
+        onTap: () async {
           increaseHouseViewCount(house.documentId);
-          Navigator.pushNamed(context, '/detail', arguments: house).then(
+          await Navigator.pushNamed(context, '/detail', arguments: house).then(
                   (value) {
                     if(value == true){
                       houseCollectionReference.doc(document.id).delete();

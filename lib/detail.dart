@@ -192,7 +192,12 @@ class _DetailPageState extends State<DetailPage> {
             },
               icon: Icon(Icons.edit),
           ),
-          BookmarkIcon()
+          IconButton(
+            onPressed: (){
+              Navigator.pop(context, true);
+            },
+            icon: const Icon(Icons.delete),
+          ),
         ] :
         [BookmarkIcon()],
       ),

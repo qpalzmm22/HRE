@@ -2,8 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:intl/intl.dart';
-
 import 'appState.dart';
 
 class ProfileMessage {
@@ -83,7 +81,6 @@ class Profile {
   Widget getProfile(BuildContext context, User user) {
     CollectionReference myHouses =
         FirebaseFirestore.instance.collection("houses");
-    final ThemeData theme = Theme.of(context);
 
     return SafeArea(
       child: Container(
@@ -129,9 +126,7 @@ class Profile {
                         snapshot.data == null ? [] : snapshot.data!.docs;
                     int len =
                         snapshot.data == null ? 0 : snapshot.data!.docs.length;
-                    print("uid : ${user.uid}");
-                    final NumberFormat numberFormat =
-                        NumberFormat.simpleCurrency(locale: "ko_KR");
+
                     return ListView.builder(
                         itemCount: len,
                         itemBuilder: (BuildContext context, int idx) {
@@ -162,7 +157,7 @@ class Profile {
                                     arguments: house);
                               },
                               child: Padding(
-                                padding: EdgeInsets.only(top: 10, bottom: 10),
+                                padding: const EdgeInsets.only(top: 10, bottom: 10),
                                 child: ListTile(
                                     leading: AspectRatio(
                                       aspectRatio: 16 / 9,
@@ -177,7 +172,7 @@ class Profile {
                                       children: [
                                         Text(
                                           house.name,
-                                          style: TextStyle(
+                                          style: const TextStyle(
                                             fontSize: 16,
                                             fontWeight: FontWeight.bold,
                                           ),
@@ -185,14 +180,14 @@ class Profile {
                                         ),
                                         Row(
                                           children: [
-                                            Icon(Icons.location_on),
-                                            SizedBox(
+                                            const Icon(Icons.location_on),
+                                            const SizedBox(
                                               width: 10,
                                             ),
                                             Expanded(
                                               child: Text(
                                                 house.address,
-                                                style: TextStyle(
+                                                style: const TextStyle(
                                                   fontSize: 12,
                                                   color: Colors.grey,
                                                 ),
