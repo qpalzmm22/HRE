@@ -57,8 +57,8 @@ class HreApp extends StatelessWidget {
         // '/edit': (BuildContext context) => const UpdateProduct(),
         '/map': (BuildContext context) =>  Map(),
         '/messagePage': (BuildContext context) => const MessagePage(),
-        '/communityPage' : (BuildContext context) => const CommunityPage(),
-        '/searchPage': (BuildContext context) => PlacePicker(),
+        '/communityPage' : (BuildContext context) => const ComunityPage(),
+        '/searchPage': (BuildContext context) => SearchPage(),
         '/postPage' : (BuildContext context) => const PostPage(),
         '/roommateDetail' : (BuildContext context)  => const RoommateDetail(),
         '/profile': (context) {
@@ -70,13 +70,14 @@ class HreApp extends StatelessWidget {
               // no providerConfigs property here as well
               actions: [
                 SignedOutAction((context) {
+                  Navigator.pop(context);
                   Navigator.pushReplacementNamed(context, '/');
                 }),
               ],
             ),
           );
         },
-        //'/messageSessions'
+        //'ssions'
         // '/wishlist': (BuildContext context) => const Wishlist(),
       },
       theme: ThemeData(

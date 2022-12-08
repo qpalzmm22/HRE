@@ -46,6 +46,15 @@ class _HomePageState extends State<HomePage> {
   String uid = getUid();
   // bool _isNewMessage = false;
   List<House> houseList = [];
+  List<Marker> markers = [];
+
+  @override
+  void initState() {
+    super.initState();
+    print("hello");
+
+
+  }
 
 
   @override
@@ -55,23 +64,23 @@ class _HomePageState extends State<HomePage> {
     _selectedIndex = _isBottomNavIdxChanged? _selectedIndex : argPageNum;
 
     var cart = context.watch<AppState>();
+
     final ThemeData theme = Theme.of(context);
 
     Profile profilePage = Profile();
     Bookmark bookmarkPage = Bookmark();
     MessageSessionPage messageSessionPage = MessageSessionPage();
 
-    // for (House house in houseList) {
-    //   Marker marker = Marker(
-    //       markerId: MarkerId(house.name),
-    //       position: house.location,
-    //       onTap: () {
-    //         Navigator.pushNamed(context, '/detail', arguments: house);
-    //       });
-    //   cart.addMarker(marker);
-    // }
-    print("arg : $_selectedIndex");
+    for (House house in houseList) {
+      Marker marker = Marker(
+          markerId: MarkerId(house.name),
+          position: house.location,
+          onTap: () {
+            Navigator.pushNamed(context, '/detail', arguments: house);
+          });
 
+       cart.addMarker(marker);
+    }
 
     Widget homeScreen() {
       return Column(
@@ -100,13 +109,13 @@ class _HomePageState extends State<HomePage> {
               ),
             ],
           ),
-
           buildHouseCard(),
         ],
       );
     }
 
     Widget buildBody() {
+
       if (_selectedIndex == 0) {
         return homeScreen();
       } else if (_selectedIndex == 1) {
@@ -260,6 +269,7 @@ class _HomePageState extends State<HomePage> {
               ),
               onTap: () {
                 FirebaseAuth.instance.signOut();
+                Navigator.pop(context);
                 Navigator.pushReplacementNamed(context, '/');
               },
             ),
@@ -311,6 +321,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   SizedBox _locationCard(Icon icon, MapPoint location) {
+
     return SizedBox(
       child: Card(
           shape: RoundedRectangleBorder(
@@ -426,11 +437,17 @@ class _HomePageState extends State<HomePage> {
         deposit: document['deposit'],
         optionList: List<bool>.from(document['options']),
         location: LatLng(gps.latitude, gps.longitude),
-        imageLinks: List.from(document['imagelinks']),
+        imageLinks: List.from( document['imagelinks']),
         views: document['views'],
       );
 
-      houseList.add(house);
+        markers.add(Marker(
+            markerId: MarkerId(house.name),
+            position: house.location,
+            onTap: () {
+              Navigator.pushNamed(context, '/detail', arguments: house);
+            }));
+
 
       var isInCart = context.select<AppState, bool>(
         (cart) => cart.bookmarked
