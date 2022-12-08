@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dropdown_search/dropdown_search.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_profile_picture/flutter_profile_picture.dart';
@@ -449,4 +449,137 @@ class _RoommateDetailState extends State<RoommateDetail> {
 class AlwaysDisabledFocusNode extends FocusNode {
   @override
   bool get hasFocus => false;
+}
+
+class MyPost extends StatefulWidget{
+  const MyPost({super.key});
+
+  _MyPost createState() => _MyPost();
+}
+
+class _MyPost extends State <MyPost>{
+
+  final List<String> pageList = ["룸메이트 구해요","단기양도","장터","같이카"];
+  late int _selectedPageIndex = 0;
+
+  User currentUser = FirebaseAuth.instance.currentUser as User;
+
+  Widget buildBody(){
+    CollectionReference page;
+
+    if(_selectedPageIndex == 0){
+      page = FirebaseFirestore.instance.collection('roommates');
+    } else if(_selectedPageIndex == 1){
+      page = FirebaseFirestore.instance.collection('단기양도');
+    } else if(_selectedPageIndex == 2){
+      page = FirebaseFirestore.instance.collection('market');
+    } else{
+      page = FirebaseFirestore.instance.collection('taxi');
+    }
+
+    return Container(
+      alignment: Alignment.center,
+      padding: const EdgeInsets.symmetric(horizontal: 30.0),
+      child: Column(
+        children: [
+          const SizedBox(
+            height: 10,
+          ),
+          Expanded(
+            child: FutureBuilder(
+                future: page.where('uid', isEqualTo: currentUser.uid).get(),
+                builder: (context, snapshot) {
+                  List data = snapshot.data == null ? [] : snapshot.data!.docs;
+                  int len =
+                  snapshot.data == null ? 0 : snapshot.data!.docs.length;
+                  print("length : $len");
+
+                  return ListView.builder(
+                      itemCount: len,
+                      itemBuilder: (BuildContext context, int idx) {
+                        DateTime createdTime = DateTime.parse(
+                            data[idx]['upload_time'].toDate().toString());
+
+                        return ListTile(
+                          title: InkWell(
+                            onTap: () {
+                              Navigator.pushNamed(context, '/roommateDetail',
+                                  arguments: data[idx]);
+                            },
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(data[idx]['title']),
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: Text(
+                                        "작성자: ${data[idx]['author']}",
+                                        style: const TextStyle(
+                                          fontSize: 12,
+                                          color: Colors.grey,
+                                        ),
+                                      ),
+                                    ),
+                                    Text(
+                                      '${DateFormat('yy').format(createdTime)}.${createdTime.month}.${createdTime.day} ${createdTime.hour}:${createdTime.minute}:${createdTime.second} created',
+                                      style: const TextStyle(
+                                          fontSize: 10, color: Colors.grey),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(
+                                  height: 12,
+                                  width: double.infinity,
+                                  child: Divider(color: Colors.black, thickness: 0.5),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      });
+                }),
+          ),
+        ],
+      ),
+    );
+
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("작성한 글"),
+      ),
+      body: Column(
+        children: [
+          Padding(
+            padding: EdgeInsets.symmetric(vertical: 10, horizontal: 30),
+            child: DropdownSearch<String>(
+              popupProps: PopupProps.menu(
+                showSelectedItems: true,
+                disabledItemFn: (String s) => s.startsWith('I'),
+              ),
+              items: pageList,
+              dropdownDecoratorProps: const DropDownDecoratorProps(
+                dropdownSearchDecoration: InputDecoration(
+                  labelText: "게시판",
+                  hintText: "게시판을 선택해주세요.",
+                ),
+              ),
+              onChanged: (data) {
+                setState(() {
+                  _selectedPageIndex = pageList.indexOf(data!);
+                });
+              },
+              selectedItem: pageList[0],
+            ),
+          ),
+
+          Expanded(child: buildBody()),
+        ],
+      ),
+    );
+  }
 }

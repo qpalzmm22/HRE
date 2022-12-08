@@ -199,7 +199,7 @@ class _HomePageState extends State<HomePage> {
           children: [
             const DrawerHeader(
               decoration: BoxDecoration(
-                color: Colors.blue,
+                color: Colors.deepPurpleAccent,
               ),
               child: Center(
                 child: Text(
@@ -252,6 +252,14 @@ class _HomePageState extends State<HomePage> {
                 await Navigator.pushNamed(context, '/communityPage',
                     arguments: PageInfo(
                         pageTitle: "택시", collectionName: 'taxi', pageIndex: 3));
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.library_books_rounded),
+              title: const Text('작성한 글'),
+              onTap: () async {
+                Navigator.pop(context);
+                await Navigator.pushNamed(context, '/myPost');
               },
             ),
             const Expanded(child: Text("")),
