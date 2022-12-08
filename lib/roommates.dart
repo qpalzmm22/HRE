@@ -52,9 +52,17 @@ class _CommunityPageState extends State<CommunityPage> {
 
                             return ListTile(
                             title: InkWell(
-                              onTap: () {
-                                Navigator.pushNamed(context, '/roommateDetail',
-                                    arguments: data[idx]);
+                              onTap: () async{
+                                await Navigator.pushNamed(context, '/roommateDetail',
+                                    arguments: data[idx]).then(
+                                        (value) {
+                                      if(value == true){
+                                        FirebaseFirestore.instance.collection(collectionName).doc(data[idx].id).delete();
+                                      }
+                                    });
+                                setState(() {
+                                  _selectedIndex = _selectedIndex;
+                                });
                               },
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -313,7 +321,7 @@ class _PostPageState extends State<PostPage> {
               Expanded(
                   child: TextField(
                     controller: _contentController,
-                    maxLines: 20,
+                    maxLines: 500,
                     decoration: const InputDecoration(
                         hintText:
                         "내용을 입력해주세요. (ex: 룸메이트 구합니다. 비흡연자, 남자 원합니다. \n가격은 월 20만원씩 입니다.",
@@ -362,8 +370,9 @@ class _RoommateDetailState extends State<RoommateDetail> {
 
               },
                 icon: Icon(Icons.edit)),
-              IconButton(onPressed: (){
-
+              IconButton(
+                  onPressed: () {
+                    Navigator.pop(context, true);
               }, icon: Icon(Icons.delete))]
             : [],
           ),
@@ -377,14 +386,14 @@ class _RoommateDetailState extends State<RoommateDetail> {
                     child: TextField(
                       focusNode: AlwaysDisabledFocusNode(),
                       controller: _contentController,
-                      maxLines: 20,
+                      maxLines: 500,
                       decoration: const InputDecoration(
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.all(Radius.circular(10)),
                             borderSide: BorderSide(color: Colors.blue),
                           )),
                     )),
-                SizedBox(height: 20,),
+                const SizedBox(height: 20,),
                 Card(
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
@@ -421,7 +430,6 @@ class _RoommateDetailState extends State<RoommateDetail> {
                               String uid = getUid();
 
                               List<String> participants = [data['uid'], uid];
-
                               String msid = "";
                               await isMessageSessionExist(participants)
                                   ? msid = await getMessageSessionIDbyuids(
@@ -439,7 +447,6 @@ class _RoommateDetailState extends State<RoommateDetail> {
                     ),
                   ),
                 ),
-
               ],
             ),
           ));
@@ -465,18 +472,20 @@ class _MyPost extends State <MyPost>{
   User currentUser = FirebaseAuth.instance.currentUser as User;
 
   Widget buildBody(){
-    CollectionReference page;
+    
+    String collectionName;
 
     if(_selectedPageIndex == 0){
-      page = FirebaseFirestore.instance.collection('roommates');
+      collectionName = 'roommates';
     } else if(_selectedPageIndex == 1){
-      page = FirebaseFirestore.instance.collection('단기양도');
+      collectionName = '단기양도';
     } else if(_selectedPageIndex == 2){
-      page = FirebaseFirestore.instance.collection('market');
+      collectionName = 'market';
     } else{
-      page = FirebaseFirestore.instance.collection('taxi');
+      collectionName = 'taxi';
     }
 
+    CollectionReference page = FirebaseFirestore.instance.collection(collectionName);
     return Container(
       alignment: Alignment.center,
       padding: const EdgeInsets.symmetric(horizontal: 30.0),
@@ -502,9 +511,17 @@ class _MyPost extends State <MyPost>{
 
                         return ListTile(
                           title: InkWell(
-                            onTap: () {
-                              Navigator.pushNamed(context, '/roommateDetail',
-                                  arguments: data[idx]);
+                            onTap: () async {
+                              await Navigator.pushNamed(context, '/roommateDetail',
+                                  arguments: data[idx]).then(
+                                      (value) {
+                                    if(value == true){
+                                      FirebaseFirestore.instance.collection(collectionName).doc(data[idx].id).delete();
+                                    }
+                                  });
+                              setState(() {
+                                _selectedPageIndex = _selectedPageIndex;
+                              });
                             },
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -543,7 +560,6 @@ class _MyPost extends State <MyPost>{
         ],
       ),
     );
-
   }
 
   @override

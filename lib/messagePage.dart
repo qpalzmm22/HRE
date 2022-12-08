@@ -75,6 +75,8 @@ class _MessagePageState extends State<MessagePage> {
                                 }
 
                                 String str_TimeSent = DateFormat("hh:mm:ss yyyy-MM-dd").format(DateTime.fromMillisecondsSinceEpoch(message.timestamp.millisecondsSinceEpoch));
+
+
                                 return Padding(
                                     padding : EdgeInsets.all(10),
                                     child : ClipPath(
@@ -129,7 +131,6 @@ class _MessagePageState extends State<MessagePage> {
                           await addMessage(messageSession.msid, uid, _messageController.text);
                           // increaseTotalMessageDB(messageSession.msid, 1);
                           // updateMSViewCount(messageSession.msid, _len);
-
                           _messageController.clear();
                           setState(() async {
                             await increaseTotalMessageDB(messageSession.msid, 1);

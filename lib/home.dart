@@ -467,7 +467,12 @@ class _HomePageState extends State<HomePage> {
         borderRadius: BorderRadius.circular(50),
         onTap: () {
           increaseHouseViewCount(house.documentId);
-          Navigator.pushNamed(context, '/detail', arguments: house);
+          Navigator.pushNamed(context, '/detail', arguments: house).then(
+                  (value) {
+                    if(value == true){
+                      houseCollectionReference.doc(document.id).delete();
+                    }
+                  });
         },
         child: Column(
           //crossAxisAlignment: CrossAxisAlignment.start,
