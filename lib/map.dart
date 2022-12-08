@@ -38,6 +38,7 @@ class _Map extends State<Map> {
   @override
   Widget build(BuildContext context) {
     MapPoint location = ModalRoute.of(context)!.settings.arguments as MapPoint;
+
     var cart = context.read<AppState>();
     Widget buildMap(){
       return GoogleMap(
@@ -48,7 +49,7 @@ class _Map extends State<Map> {
         ),
         myLocationEnabled: false,
         myLocationButtonEnabled: false,
-        markers: Set.from(cart.markers),
+        markers: Set.from(location.markers),
       );
     }
 

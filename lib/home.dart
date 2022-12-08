@@ -40,8 +40,6 @@ class _HomePageState extends State<HomePage> {
       FirebaseFirestore.instance.collection('houses');
 
   String uid = getUid();
-  // bool _isNewMessage = false;
-  List<House> houseList = [];
   List<Marker> markers = [];
 
   @override
@@ -49,22 +47,11 @@ class _HomePageState extends State<HomePage> {
     int argPageNum = ModalRoute.of(context)!.settings.arguments as int;
     _selectedIndex = _isBottomNavIdxChanged ? _selectedIndex : argPageNum;
 
-    var cart = context.watch<AppState>();
+    // var cart = context.watch<AppState>();
 
     Profile profilePage = Profile();
     Bookmark bookmarkPage = Bookmark();
     MessageSessionPage messageSessionPage = MessageSessionPage();
-
-    for (House house in houseList) {
-      Marker marker = Marker(
-          markerId: MarkerId(house.name),
-          position: house.location,
-          onTap: () {
-            Navigator.pushNamed(context, '/detail', arguments: house);
-          });
-
-      cart.addMarker(marker);
-    }
 
     Widget homeScreen() {
       return Column(
@@ -360,6 +347,7 @@ class _HomePageState extends State<HomePage> {
                         name: "양덕동 근처 매물",
                         center: const LatLng(36.081809, 129.39697),
                         zoom: 14,
+                        markers: markers,
                       ));
                 },
                 child: const Text(
@@ -379,25 +367,32 @@ class _HomePageState extends State<HomePage> {
                     MapPoint(
                         name: "그할마 ",
                         center: const LatLng(36.079753, 129.394197),
-                        zoom: 17)),
+                        zoom: 17,
+                        markers: markers)),
                 _locationCard(
                     const Icon(Icons.shopping_cart),
                     MapPoint(
                         name: "다이소(양덕)",
                         center: const LatLng(36.084206, 129.396543),
-                        zoom: 17)),
+                        zoom: 17,
+                        markers: markers,
+                    ),),
                 _locationCard(
                     const Icon(Icons.house_outlined),
                     MapPoint(
                         name: "법원",
                         center: const LatLng(36.08925, 129.387588),
-                        zoom: 17)),
+                        zoom: 17,
+                    markers: markers,
+                    )),
                 _locationCard(
                     const Icon(Icons.coffee),
                     MapPoint(
                         name: "커피유야",
                         center: const LatLng(36.080508, 129.399658),
-                        zoom: 17)),
+                        zoom: 17,
+                      markers: markers,
+                    )),
               ],
             ),
           ),
@@ -429,12 +424,15 @@ class _HomePageState extends State<HomePage> {
         views: document['views'],
       );
 
+      var cart = context.watch<AppState>();
+
+
       markers.add(Marker(
-          markerId: MarkerId(house.name),
-          position: house.location,
-          onTap: () {
-            Navigator.pushNamed(context, '/detail', arguments: house);
-          }));
+              markerId: MarkerId(house.name),
+              position: house.location,
+              onTap: () {
+                Navigator.pushNamed(context, '/detail', arguments: house);
+              }));
 
       var isInCart = context.select<AppState, bool>(
         (cart) => cart.bookmarked
@@ -539,10 +537,8 @@ class _HomePageState extends State<HomePage> {
 
   Widget buildHouseCard() {
     return Expanded(
-      child: StreamBuilder<QuerySnapshot>(
-        stream: houseCollectionReference
-            .orderBy('monthlyPay', descending: true)
-            .snapshots(),
+      child: FutureBuilder (
+        future: houseCollectionReference.get(),
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
@@ -570,5 +566,6 @@ class MapPoint {
   final String name;
   final LatLng center;
   final double zoom;
-  MapPoint({required this.name, required this.center, required this.zoom});
+  final List<Marker> markers;
+  MapPoint({required this.markers, required this.name, required this.center, required this.zoom});
 }
