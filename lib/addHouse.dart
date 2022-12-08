@@ -64,19 +64,14 @@ class _AddHousePageState extends State<AddHousePage> {
     "배란다" // 10
   ]; // "채상"
 
-  // List<String> _tags = [];
   List<String> selectedTagList = [];
-  //List<String> get options => _options;
   final _formKey = GlobalKey<FormState>();
-  final _addressKey = GlobalKey<FormState>();
-  final _depositKey = GlobalKey<FormState>();
 
   List<bool> options_value = List.generate(_options.length, (index) => false);
   User user = FirebaseAuth.instance.currentUser as User;
   @override
   Widget build(BuildContext context) {
     // default : false
-    //List<bool> options_value = List.generate(_options.length, (index) => false);
     Future<void> _openFilterDialog() async {
       await FilterListDialog.display<String>(
         context,
@@ -113,7 +108,7 @@ class _AddHousePageState extends State<AddHousePage> {
         actions: [
           TextButton(
               onPressed: () async {
-                if (_formKey.currentState!.validate()) {
+                if (_formKey.currentState!.validate() && _images.length > 3) {
                   String thumbnail = '';
                   List<String> uploadedImageUrls = [];
                   if (isFileUploaded) {
@@ -143,6 +138,15 @@ class _AddHousePageState extends State<AddHousePage> {
                   );
                   addHouseToDB(house);
                   Navigator.pushReplacementNamed(context, '/home', arguments: 0);
+                }
+                else if(_images.length <=3){
+                  const snackBar = SnackBar(
+                    content: Text('사진은 최소 4장 이상 넣어주세요.'),
+                  );
+
+// Find the ScaffoldMessenger in the widget tree
+// and use it to show a SnackBar.
+                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
                 }
               },
               child: const Text(
@@ -207,17 +211,6 @@ class _AddHousePageState extends State<AddHousePage> {
               );
             }).toList(),
           ),
-          // HorizontalCardPager(
-          //   initialPage: 2, // default value is 2
-          //   onPageChanged: (page) {},
-          //   onSelectedItem: (page) {},
-          //   items: List<ImageCarditem>.generate(_images.length, (index) {
-          //     return ImageCarditem(
-          //         image: isFileUploaded
-          //             ? Image.file(File(_images[index].path))
-          //             : Image.network(_images[index].path));
-          //   }),
-          // ),
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
@@ -276,7 +269,7 @@ class _AddHousePageState extends State<AddHousePage> {
                       style: ButtonStyle(
                           backgroundColor:
                               MaterialStateProperty.all<Color>(Colors.blue)),
-                      child: Text(
+                      child: const Text(
                         '주소검색',
                         style: TextStyle(color: Colors.white),
                       ),
