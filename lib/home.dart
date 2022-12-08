@@ -49,14 +49,6 @@ class _HomePageState extends State<HomePage> {
   List<Marker> markers = [];
 
   @override
-  void initState() {
-    super.initState();
-    print("hello");
-
-
-  }
-
-  @override
   Widget build(BuildContext context) {
 
     int argPageNum = ModalRoute.of(context)!.settings.arguments as int;
@@ -143,14 +135,12 @@ class _HomePageState extends State<HomePage> {
         return AppBar(
           leading: null,
           title: const Text("Bookmarked"),
-          actions: [],
         );
       }
       if (_selectedIndex == 2) {
         return AppBar(
           leading: null,
           title: const Text("Message"),
-          actions: [],
         );
       }
       if (_selectedIndex == 3) {
@@ -178,10 +168,10 @@ class _HomePageState extends State<HomePage> {
 
             Navigator.pushNamed(context, '/addHouse');
           },
-          child: Icon(Icons.add),
+          child: const Icon(Icons.add),
         );
       } else {
-        return Text("");
+        return const Text("");
       }
     }
 
@@ -207,7 +197,7 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             ListTile(
-              leading: Icon(Icons.person_search),
+              leading: const Icon(Icons.person_search),
               title: const Text('룸메이트 구해요'),
               onTap: () async {
                 Navigator.pop(context);
@@ -219,7 +209,7 @@ class _HomePageState extends State<HomePage> {
               },
             ),
             ListTile(
-              leading: Icon(Icons.house),
+              leading: const Icon(Icons.house),
               title: const Text('단기양도'),
               onTap: () async {
                 Navigator.pop(context);
@@ -231,7 +221,7 @@ class _HomePageState extends State<HomePage> {
               },
             ),
             ListTile(
-              leading: Icon(Icons.shopping_cart),
+              leading: const Icon(Icons.shopping_cart),
               title: const Text('장터'),
               onTap: () async {
                 Navigator.pop(context);
@@ -243,7 +233,7 @@ class _HomePageState extends State<HomePage> {
               },
             ),
             ListTile(
-              leading: Icon(Icons.local_taxi),
+              leading: const Icon(Icons.local_taxi),
               title: const Text('같이카'),
               onTap: () async {
                 Navigator.pop(context);
@@ -253,7 +243,7 @@ class _HomePageState extends State<HomePage> {
               },
             ),
             ListTile(
-              leading: Icon(Icons.library_books_rounded),
+              leading: const Icon(Icons.library_books_rounded),
               title: const Text('작성한 글'),
               onTap: () async {
                 Navigator.pop(context);
@@ -283,11 +273,11 @@ class _HomePageState extends State<HomePage> {
       ),
       bottomNavigationBar: BottomNavigationBar(
         items:  <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
+          const BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: 'home',
           ),
-          BottomNavigationBarItem(
+          const BottomNavigationBarItem(
             icon: Icon(Icons.bookmark),
             label: 'bookmark',
           ),
@@ -299,11 +289,11 @@ class _HomePageState extends State<HomePage> {
                   return snapshot.data! > 0 ?
                   Badge(
                     badgeContent: Text(snapshot.data.toString()), // To mae
-                    child: Icon(Icons.message),
+                    child: const Icon(Icons.message),
                   ) :
-                  Icon(Icons.message);
+                  const Icon(Icons.message);
                 } else {
-                  return Icon(Icons.message);
+                  return const Icon(Icons.message);
                 }
               }),
             label: 'message',
@@ -521,10 +511,10 @@ class _HomePageState extends State<HomePage> {
                           ),
                           Row(
                             children: [
-                              Icon(Icons.location_on),
+                              const Icon(Icons.location_on),
                               Expanded(
                                   child: Text(
-                                "${house.address}",
+                                house.address,
                                 style: const TextStyle(
                                   fontSize: 13,
                                   fontWeight: FontWeight.bold,
