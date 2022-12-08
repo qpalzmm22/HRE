@@ -45,32 +45,15 @@ class House {
 
 class AppState extends ChangeNotifier {
   final List<House> _bookmarked = [];
-  final List<House> _recentlyView = [];
-  late List<Marker> _markers = [];
 
   bool isNeedToBeUpdated = false;
   List<House> get bookmarked => _bookmarked;
-  List<House> get recentlyView => _recentlyView;
-  List<Marker> get markers => _markers;
 
   House? _curHouse;
   House? get curHouse => _curHouse;
 
-  init(){
-    _markers = [];
-  }
-
   void add(House house) {
     _bookmarked.add(house);
-    notifyListeners();
-  }
-
-  void addMarker(Marker marker) {
-    _markers.add(marker);
-    notifyListeners();
-  }
-
-  void setNotifyListener(){
     notifyListeners();
   }
 
@@ -84,12 +67,5 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  void addRecentlyView(House house) {
-    _recentlyView.add(house);
-    notifyListeners();
-  }
-}
 
-// class Home2MSArgs<MEs>{
-//   final T
-// }
+}
