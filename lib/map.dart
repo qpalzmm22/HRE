@@ -28,6 +28,7 @@ class _Map extends State<Map> {
     mapController = mapController;
   }
 
+
   Future<void> getAddress(LatLng location) async{
     String url = 'https://maps.googleapis.com/maps/api/geocode/json?latlng=${location.latitude},${location.longitude}&key=AIzaSyBCizThefGgFPIwkUjYe2JiZkzdMQyJiRs';
     final response = await http.get(Uri.parse(url));
@@ -37,11 +38,8 @@ class _Map extends State<Map> {
   @override
   Widget build(BuildContext context) {
     MapPoint location = ModalRoute.of(context)!.settings.arguments as MapPoint;
-
     var cart = context.read<AppState>();
-
     Widget buildMap(){
-
       return GoogleMap(
         onMapCreated: _onMapCreated,
         initialCameraPosition: CameraPosition(

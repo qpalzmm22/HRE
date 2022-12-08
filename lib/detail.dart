@@ -87,63 +87,71 @@ class _DetailPageState extends State<DetailPage> {
       }
     }
 
-    Widget buildFloatActionButton() {
+    Widget buildFloatActionButton()  {
+
+
       return FutureBuilder(
           future: getUserFromDB(house.ownerId),
-          builder: (BuildContext buildContext, AsyncSnapshot<HreUser> snapshot){
+          builder: (BuildContext buildContext, AsyncSnapshot<HreUser> snapshot)  {
+            HreUser? owner =  snapshot.data;
 
             if(snapshot.hasData){
-              HreUser? owner = snapshot.data;
-              return Container(
-                width:250,
-                height: 90,
-                child:
-                Card(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                  child: InkWell(
-                    onTap: () async {
-                      String uid = getUid();
-
-                      List<String> participants = [house.ownerId, uid];
-
-                      String msid = "";
-                      await isMessageSessionExist(participants)
-                          ? msid = await getMessageSessionIDbyuids(
-                          participants)
-                          : msid =
-                      await makeMessageSession(participants);
-
-                      MessageSession messageSession =
-                      await getMessageSession(msid);
-                      print("i sent : ${messageSession.messages.length}");
-                      Navigator.pushNamed(context, '/messagePage', arguments: messageSession);
-                    },
+              return SizedBox(
+                  width: 300,
+                  height: 100,
+                  child:Card(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                       child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           ProfilePicture(
-                            name: 'ss',
-                            radius: 30,
-                            fontsize: 15,
-                            img: owner!.profileImage,
+                                  name: 'ss',
+                                  radius: 30,
+                                  fontsize: 15,
+                                  img: owner!.profileImage,
+                                ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text("작성자: ${owner!.name}"),
+                              Text(
+                                owner.email,
+                                style: const TextStyle(
+                                    fontSize: 10, color: Colors.grey),
+                              ),
+                            ],
                           ),
-                          const SizedBox(width: 10,),
-                          Text(
-                            "Owner: ${owner!.name}",
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 13,
-                            ),),
+                          IconButton(
+                              onPressed: () async {
+                                String uid = getUid();
+
+                                List<String> participants = [owner.uid, uid];
+
+                                String msid = "";
+                                await isMessageSessionExist(participants)
+                                    ? msid = await getMessageSessionIDbyuids(
+                                    participants)
+                                    : msid =
+                                await makeMessageSession(participants);
+
+                                MessageSession messageSession =
+                                await getMessageSession(msid);
+                                print("i sent : ${messageSession.messages.length}");
+                                Navigator.pushNamed(context, '/messagePage', arguments: messageSession);
+                              },
+                              icon: const Icon(Icons.message))
                         ],
                       ),
                     ),
                   ),
+                );
 
-                ),
-              );
             } else{
               return CircularProgressIndicator();
             }

@@ -64,8 +64,11 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  void addMarker(Marker marker){
+  void addMarker(Marker marker) {
     _markers.add(marker);
+  }
+
+  void setNotifyListener(){
     notifyListeners();
   }
 

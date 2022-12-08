@@ -246,7 +246,6 @@ class _PostPageState extends State<PostPage> {
   Widget build(BuildContext context) {
     PageInfo pageInfo = ModalRoute.of(context)!.settings.arguments as PageInfo;
 
-    if(pageInfo.pageIndex == 1){
       return Scaffold(
         appBar: AppBar(
           title: Text("글쓰기"),
@@ -330,92 +329,7 @@ class _PostPageState extends State<PostPage> {
           ),
         ),
       );
-    }
-    else{
-      return Scaffold(
-        appBar: AppBar(
-          title: Text("글쓰기"),
-          actions: [
-            IconButton(
-              onPressed: () async {
-                await FirebaseFirestore.instance
-                    .collection(pageInfo.collectionName)
-                    .add(<String, dynamic>{
-                  'author': currentUser.displayName,
-                  'uid': currentUser.uid,
-                  'title': _titleController.text,
-                  'content': _contentController.text,
-                  'upload_time': FieldValue.serverTimestamp(),
-                });
-                Navigator.pop(context);
-                Navigator.pushReplacementNamed(context, '/communityPage',
-                    arguments: PageInfo(
-                      pageTitle: pageInfo.pageTitle,
-                      pageIndex: pageInfo.pageIndex,
-                      collectionName: pageInfo.collectionName,
-                    ));
-              },
-              icon: const Icon(Icons.save),
-            ),
-          ],
-        ),
-        body: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 30),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                "제목",
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              TextField(
-                decoration: const InputDecoration(
-                    hintText: "제목을 입력해주세요.",
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(10)),
-                      borderSide: BorderSide(color: Colors.blue),
-                    )),
-                controller: _titleController,
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              const Text(
-                "내용",
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              Expanded(
-                  child: TextField(
-                    controller: _contentController,
-                    maxLines: 20,
-                    decoration: const InputDecoration(
-                        hintText:
-                        "내용을 입력해주세요. (ex: 룸메이트 구합니다. 비흡연자, 남자 원합니다. \n가격은 월 20만원씩 입니다.",
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(10)),
-                          borderSide: BorderSide(color: Colors.blue),
-                        )),
-                  )),
-              const SizedBox(
-                height: 20,
-              ),
-            ],
-          ),
-        ),
-      );
-    }
+
 
   }
 }
@@ -450,7 +364,7 @@ class _RoommateDetailState extends State<RoommateDetail> {
                 icon: Icon(Icons.edit)),
               IconButton(onPressed: (){
 
-              }, icon: Icon(Icons.delete),)]
+              }, icon: Icon(Icons.delete))]
             : [],
           ),
           body: Padding(
@@ -483,7 +397,7 @@ class _RoommateDetailState extends State<RoommateDetail> {
                         FutureBuilder(
                             future: userReference.doc(data["uid"]).get(),
                             builder: (context, snapshot) {
-                              String profileImage = snapshot.data == null ? "" : snapshot.data!["profileImage"];
+                              String profileImage = snapshot.data == null ? "https://firebasestorage.googleapis.com/v0/b/handong-real-estate.appspot.com/o/default_profile_img.jpg?alt=media&token=2d767ac3-f972-421d-814e-1e3deb86f0a5" : snapshot.data!["profileImage"];
                               return ProfilePicture(
                                 name: 'ss',
                                 radius: 30,
