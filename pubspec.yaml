@@ -69,6 +69,7 @@ dependencies:
   flutter_profile_picture: ^2.0.0
   badges: ^2.0.3
   carousel_slider: ^4.1.1
+  dropdown_search: ^5.0.5
 
 dev_dependencies:
   flutter_test:

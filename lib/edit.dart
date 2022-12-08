@@ -130,7 +130,7 @@ class _EditPageState extends State<EditPage> {
                   views: house.views,
                 );
                 setHouseToDB(house.documentId, newHouse);
-                Navigator.pushReplacementNamed(context, '/home');
+                Navigator.pushReplacementNamed(context, '/home', arguments: 0);
               },
               child: const Text(
                 "Save",
@@ -207,7 +207,7 @@ class _EditPageState extends State<EditPage> {
                         style: ButtonStyle(
                             backgroundColor:
                             MaterialStateProperty.all<Color>(Colors.blue)),
-                        child: Text(
+                        child: const Text(
                           '주소검색',
                           style: TextStyle(color: Colors.white),
                         ),
