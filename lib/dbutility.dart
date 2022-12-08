@@ -8,6 +8,7 @@ import 'package:path/path.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -119,6 +120,38 @@ void setHouseToDB(String hid, House house){
     'location' : GeoPoint(house.location.latitude, house.location.longitude),
     'views' : house.views,
   });
+}
+
+
+Future<List<House>> getQueriedHouses(double ds, double de, double ms, double me, List<String> tags) async {
+  List<House> houses = [];
+  FirebaseFirestore.instance
+    .collection('houses')
+    .where('tags', arrayContainsAny: tags)
+    .where('deposit', isGreaterThanOrEqualTo: ds)
+    .where('deposit', isGreaterThanOrEqualTo: de)
+    .get()
+    .then((value) {
+      for( var document in value.docs){
+        GeoPoint gps = document['location'];
+        House(
+          thumbnail: document['thumbnail'],
+          name: document['name'],
+          address: document['address'],
+          documentId: document.id,
+          ownerId: document['userId'],
+          description: document['description'] as String,
+          monthlyPay: document['monthlyPay'] as int,
+          deposit: document['deposit'],
+          optionList: List<bool>.from(document['options']),
+          location: LatLng(gps.latitude, gps.longitude),
+          imageLinks: List.from( document['imagelinks']),
+          views: document['views'],
+        );
+      }
+    });
+
+  return houses;
 }
 
 
