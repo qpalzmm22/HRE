@@ -152,9 +152,14 @@ class Profile {
                               borderRadius: BorderRadius.circular(10),
                             ),
                             child: InkWell(
-                              onTap: () {
-                                Navigator.pushNamed(context, '/detail',
-                                    arguments: house);
+                              onTap: () async{
+                                await Navigator.pushNamed(context, '/detail',
+                                    arguments: house).then((value){
+                                  if(value == true){
+                                    myHouses.doc(data[idx].id).delete();
+                                  }
+                                });
+                                Navigator.pushReplacementNamed(context, '/home', arguments: 3);
                               },
                               child: Padding(
                                 padding: const EdgeInsets.only(top: 10, bottom: 10),
