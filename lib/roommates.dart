@@ -55,7 +55,7 @@ class _CommunityPageState extends State<CommunityPage> {
                             onTap: () async {
                               await Navigator.pushNamed(
                                       context, '/roommateDetail',
-                                      arguments: data[idx])
+                                      arguments: DetailInfo(data: data[idx], collectionName: collectionName),)
                                   .then((value) {
                                 if (value == true) {
                                   FirebaseFirestore.instance
@@ -157,9 +157,9 @@ class _CommunityPageState extends State<CommunityPage> {
           PageInfo pageInfo = PageInfo(
               pageTitle: '룸메이트 찾기', collectionName: 'roommates', pageIndex: 0);
           pageInfo.hintTitle = "제목을 입력해주세요. (ex: 그할마인근 투룸 남자 룸메이트 구합니다.)";
-          pageInfo.hintContent = "내용을 입력해주세요. \n(ex: 1인당 월세 20만원, 필요한 물건은 다 있으니 몸만 오시면 됩니다. 비흡연자 선호합니다. 입주는 20xx년 xx월 xx일부터 가능합니다. 연락주세요.)";
-          Navigator.pushNamed(context, '/postPage',
-              arguments: pageInfo);
+          pageInfo.hintContent =
+              "내용을 입력해주세요. \n(ex: 1인당 월세 20만원, 필요한 물건은 다 있으니 몸만 오시면 됩니다. 비흡연자 선호합니다. 입주는 20xx년 xx월 xx일부터 가능합니다. 연락주세요.)";
+          Navigator.pushNamed(context, '/postPage', arguments: pageInfo);
         },
         child: const Icon(Icons.add),
       );
@@ -167,12 +167,12 @@ class _CommunityPageState extends State<CommunityPage> {
       return FloatingActionButton(
         backgroundColor: Colors.pink,
         onPressed: () {
-          PageInfo pageInfo = PageInfo(
-              pageTitle: '단기양도', collectionName: '단기양도', pageIndex: 1);
+          PageInfo pageInfo =
+              PageInfo(pageTitle: '단기양도', collectionName: '단기양도', pageIndex: 1);
           pageInfo.hintTitle = "제목을 입력해주세요. (ex: 단기양도 합니다 / 단기양도 구합니다.)";
-          pageInfo.hintContent = "내용을 입력해주세요. \n(ex: 종강 후부터 개강 전까지 양도 받으실분/해주실분 구합니다. 위치는 커피유야 부근이고, 월 30만원에 관리비 5만원정도 있습니다. 연락주세요. )";
-          Navigator.pushNamed(context, '/postPage',
-              arguments: pageInfo);
+          pageInfo.hintContent =
+              "내용을 입력해주세요. \n(ex: 종강 후부터 개강 전까지 양도 받으실분/해주실분 구합니다. 위치는 커피유야 부근이고, 월 30만원에 관리비 5만원정도 있습니다. 연락주세요. )";
+          Navigator.pushNamed(context, '/postPage', arguments: pageInfo);
         },
         child: const Icon(Icons.add),
       );
@@ -180,12 +180,12 @@ class _CommunityPageState extends State<CommunityPage> {
       return FloatingActionButton(
         backgroundColor: Colors.pink,
         onPressed: () {
-          PageInfo pageInfo = PageInfo(
-              pageTitle: '장터', collectionName: 'market', pageIndex: 2);
+          PageInfo pageInfo =
+              PageInfo(pageTitle: '장터', collectionName: 'market', pageIndex: 2);
           pageInfo.hintTitle = "제목을 입력해주세요. (ex: 외부거주 물품 판매/구매합니다.)";
-          pageInfo.hintContent = "내용을 입력해주세요. \n(ex: 1. 책상 - 5만원 \n2. 의자: 3만원\n3.전자레인지: 4만원\n거래는 양덕동 다이소 인근에서 가능합니다.)";
-          Navigator.pushNamed(context, '/postPage',
-              arguments: pageInfo);
+          pageInfo.hintContent =
+              "내용을 입력해주세요. \n(ex: 1. 책상 - 5만원 \n2. 의자: 3만원\n3.전자레인지: 4만원\n거래는 양덕동 다이소 인근에서 가능합니다.)";
+          Navigator.pushNamed(context, '/postPage', arguments: pageInfo);
         },
         child: const Icon(Icons.add),
       );
@@ -193,9 +193,10 @@ class _CommunityPageState extends State<CommunityPage> {
       return FloatingActionButton(
         backgroundColor: Colors.pink,
         onPressed: () {
-          PageInfo pageInfo = PageInfo(
-              pageTitle: '같이카', collectionName: 'taxi', pageIndex: 3);
-          pageInfo.hintTitle = "제목을 입력해주세요. (ex: 12/8 (목) 포항역 -> 기숙사 택시 010xxxxxxxx)";
+          PageInfo pageInfo =
+              PageInfo(pageTitle: '같이카', collectionName: 'taxi', pageIndex: 3);
+          pageInfo.hintTitle =
+              "제목을 입력해주세요. (ex: 12/8 (목) 포항역 -> 기숙사 택시 010xxxxxxxx)";
           pageInfo.hintContent = "내용을 입력해주세요. \n(ex: 택시같이타실분 연락주세요.)";
 
           Navigator.pushNamed(context, '/postPage', arguments: pageInfo);
@@ -277,10 +278,10 @@ class _PostPageState extends State<PostPage> {
   Widget build(BuildContext context) {
     PageInfo pageInfo = ModalRoute.of(context)!.settings.arguments as PageInfo;
 
-    if(pageInfo.title.isNotEmpty){
+    if (pageInfo.title.isNotEmpty) {
       _titleController.text = pageInfo.title;
     }
-    if(pageInfo.content.isNotEmpty){
+    if (pageInfo.content.isNotEmpty) {
       _contentController.text = pageInfo.content;
     }
 
@@ -353,8 +354,7 @@ class _PostPageState extends State<PostPage> {
               controller: _contentController,
               maxLines: 500,
               decoration: InputDecoration(
-                  hintText:
-                      pageInfo.hintContent,
+                  hintText: pageInfo.hintContent,
                   enabledBorder: const OutlineInputBorder(
                     borderRadius: BorderRadius.all(Radius.circular(10)),
                     borderSide: BorderSide(color: Colors.blue),
@@ -382,26 +382,36 @@ class _RoommateDetailState extends State<RoommateDetail> {
       FirebaseFirestore.instance.collection('users');
 
   final _contentController = TextEditingController();
+  late String title;
 
   @override
   Widget build(BuildContext context) {
-    DocumentSnapshot data =
-        ModalRoute.of(context)!.settings.arguments as DocumentSnapshot;
+    DetailInfo detailInfo =
+        ModalRoute.of(context)!.settings.arguments as DetailInfo;
+    DocumentSnapshot data = detailInfo.data;
+    String collectionName = detailInfo.collectionName;
+
     _contentController.text = data['content'];
     DateTime createdTime =
         DateTime.parse(data['upload_time'].toDate().toString());
+    title = data['title'];
+
     return Scaffold(
         appBar: AppBar(
-          title: Text(data["title"]),
+          title: Text(title),
           actions: currentUser.uid == data['uid']
               ? [
                   IconButton(
-                      onPressed: () {
-                            Navigator.pushNamed(context, '/communityEditPage', arguments: UpdateInfo(documentId: data.id, title: data['title'], content: data['content'], collectionName: "roommates"));
-                          setState(() {
-
-                          });
-                      }, icon: const Icon(Icons.edit)),
+                      onPressed: () async {
+                        await Navigator.pushNamed(context, '/communityEditPage',
+                            arguments: UpdateInfo(
+                                documentId: data.id,
+                                title: data['title'],
+                                content: data['content'],
+                                collectionName: collectionName));
+                        Navigator.pop(context);
+                      },
+                      icon: const Icon(Icons.edit)),
                   IconButton(
                       onPressed: () {
                         Navigator.pop(context, true);
@@ -554,7 +564,7 @@ class _MyPost extends State<MyPost> {
                             onTap: () async {
                               await Navigator.pushNamed(
                                       context, '/roommateDetail',
-                                      arguments: data[idx])
+                                      arguments: DetailInfo(data: data[idx], collectionName: collectionName),)
                                   .then((value) {
                                 if (value == true) {
                                   FirebaseFirestore.instance
@@ -652,14 +662,14 @@ class CommunityEditPage extends StatefulWidget {
 }
 
 class _CommunityEditPageState extends State<CommunityEditPage> {
-
   final _titleController = TextEditingController();
   final _contentController = TextEditingController();
   User currentUser = FirebaseAuth.instance.currentUser as User;
 
   @override
   Widget build(BuildContext context) {
-    UpdateInfo updateInfo =  ModalRoute.of(context)!.settings.arguments as UpdateInfo;
+    UpdateInfo updateInfo =
+        ModalRoute.of(context)!.settings.arguments as UpdateInfo;
 
     _titleController.text = updateInfo.title;
     _contentController.text = updateInfo.content;
@@ -672,19 +682,19 @@ class _CommunityEditPageState extends State<CommunityEditPage> {
             onPressed: () async {
               await FirebaseFirestore.instance
                   .collection(updateInfo.collectionName)
-                  .doc(updateInfo.documentId).update({
+                  .doc(updateInfo.documentId)
+                  .update({
                 'author': currentUser.displayName,
                 'uid': currentUser.uid,
                 'title': _titleController.text,
                 'content': _contentController.text,
                 'upload_time': FieldValue.serverTimestamp(),
               });
-              Navigator.pop(context);
+              Navigator.pop(context, updateInfo);
             },
             icon: const Icon(Icons.save),
           ),
         ],
-
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 30),
@@ -725,16 +735,15 @@ class _CommunityEditPageState extends State<CommunityEditPage> {
             ),
             Expanded(
                 child: TextField(
-                  controller: _contentController,
-                  maxLines: 500,
-                  decoration: InputDecoration(
-                      hintText:
-                      updateInfo.content,
-                      enabledBorder: const OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(10)),
-                        borderSide: BorderSide(color: Colors.blue),
-                      )),
-                )),
+              controller: _contentController,
+              maxLines: 500,
+              decoration: InputDecoration(
+                  hintText: updateInfo.content,
+                  enabledBorder: const OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(10)),
+                    borderSide: BorderSide(color: Colors.blue),
+                  )),
+            )),
             const SizedBox(
               height: 20,
             ),
@@ -751,5 +760,15 @@ class UpdateInfo {
   final String title;
   final String content;
 
-  UpdateInfo({required this.documentId, required this.title, required this.content, required this.collectionName});
+  UpdateInfo(
+      {required this.documentId,
+      required this.title,
+      required this.content,
+      required this.collectionName});
+}
+
+class DetailInfo {
+  final String collectionName;
+  DocumentSnapshot data;
+  DetailInfo({required this.collectionName, required this.data});
 }

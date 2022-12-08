@@ -64,6 +64,9 @@ class _AddHousePageState extends State<AddHousePage> {
   ]; // "채상"
 
   //List<String> get options => _options;
+  final _formKey = GlobalKey<FormState>();
+  final _addressKey = GlobalKey<FormState>();
+  final _depositKey = GlobalKey<FormState>();
 
   List<bool> options_value = List.generate(_options.length, (index) => false);
   User user = FirebaseAuth.instance.currentUser as User;
@@ -80,31 +83,34 @@ class _AddHousePageState extends State<AddHousePage> {
         actions: [
           TextButton(
               onPressed: () async {
-                String thumbnail = '';
-                List<String> uploadedImageUrls = [];
-                if (isFileUploaded) {
-                  for (int i = 0; i < _images.length; i++) {
-                    String imageUrl = await uploadFile(File(_images[i].path));
-                    uploadedImageUrls.add(imageUrl);
-                    if (i == 0) thumbnail = imageUrl;
+                if(_formKey.currentState!.validate()) {
+                  String thumbnail = '';
+                  List<String> uploadedImageUrls = [];
+                  if (isFileUploaded) {
+                    for (int i = 0; i < _images.length; i++) {
+                      String imageUrl = await uploadFile(File(_images[i].path));
+                      uploadedImageUrls.add(imageUrl);
+                      if (i == 0) thumbnail = imageUrl;
+                    }
                   }
-                }
-                House house = House(
+                  House house = House(
                     thumbnail: thumbnail,
-                    name: _houseNameController.text, 
-                    monthlyPay: int.parse(_houseMonthlyController.text), 
-                    deposit: int.parse(_houseDepositController.text), 
+                    name: _houseNameController.text,
+                    monthlyPay: int.parse(_houseMonthlyController.text),
+                    deposit: int.parse(_houseDepositController.text),
                     address: _houseAddressController.text,
                     description: _houseDescriptionController.text,
                     ownerId: user.uid,
                     documentId: "",
                     optionList: options_value,
-                    location: LatLng(kakaoLatitude ,kakaoLongitude),
+                    location: LatLng(kakaoLatitude, kakaoLongitude),
                     imageLinks: uploadedImageUrls,
                     views: 0,
-                );
-                addHouseToDB(house);
-                Navigator.pushReplacementNamed(context, '/home', arguments: 0);
+                  );
+                  addHouseToDB(house);
+                  Navigator.pushReplacementNamed(
+                      context, '/home', arguments: 0);
+                }
               },
               child: const Text(
                 "Save",
@@ -205,120 +211,153 @@ class _AddHousePageState extends State<AddHousePage> {
                 ),
               ],
             ),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Column(
-                children: [
-                  Row(
-                    children: [
-                      TextButton(
-                        onPressed: () async {
-                          await Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => KpostalView(
-                                kakaoKey: 'cabdb067deb0d93614b6e47dff96ada3',
-                                useLocalServer: false,
-                                callback: (Kpostal result) {
-                                  print(result);
-                                  setState(() {
-                                    roadAddress = result.address;
-                                    kakaoLatitude = result.kakaoLatitude as double;
-                                    kakaoLongitude = result.kakaoLongitude as double;
-                                  });
-                                },
+            Form(
+              key: _formKey,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        TextButton(
+                          onPressed: () async {
+                            await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => KpostalView(
+                                  kakaoKey: 'cabdb067deb0d93614b6e47dff96ada3',
+                                  useLocalServer: false,
+                                  callback: (Kpostal result) {
+                                    print(result);
+                                    setState(() {
+                                      roadAddress = result.address;
+                                      kakaoLatitude = result.kakaoLatitude as double;
+                                      kakaoLongitude = result.kakaoLongitude as double;
+                                    });
+                                  },
+                                ),
                               ),
+                            );
+                            _houseAddressController.text = roadAddress.toString();
+                          },
+                          style: ButtonStyle(
+                              backgroundColor:
+                              MaterialStateProperty.all<Color>(Colors.blue)),
+                          child: Text(
+                            '주소검색',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        Expanded(
+                          child: TextFormField(
+                            readOnly: true,
+                            controller: _houseAddressController,
+                            decoration: const InputDecoration(
+                                filled: false, labelText: '주소'),
+                            validator: (value) {
+                              if(value == null || value.isEmpty){
+                                return ("주소를 입력해주세요");
+                              }
+                              return null;
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                    TextFormField(
+                      controller: _houseNameController,
+                      decoration: const InputDecoration(
+                          filled: false, labelText: 'House Name'),
+                      validator: (value){
+                        if(value == null || value.isEmpty){
+                          return ("건물 이름을 입력해 주세요");
+                        }
+                      },
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+
+                    TextFormField(
+                      controller: _houseDepositController,
+                      decoration: const InputDecoration(
+                          filled: false, labelText: 'Deposit'),
+                      validator: (value){
+                        if(value == null || value.isEmpty){
+                          return ("보증금을 입력해주세요");
+                        }
+                      },
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    TextFormField(
+                      controller: _houseMonthlyController,
+                      decoration: const InputDecoration(
+                          filled: false, labelText: 'Monthly Pay'),
+                      validator: (value){
+                        if(value == null || value.isEmpty){
+                          return "월세를 입력해주세요.";
+                        }
+                      },
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    TextFormField(
+                      controller: _houseDescriptionController,
+                      decoration: const InputDecoration(
+                          filled: false, labelText: 'Description'),
+                      validator: (value){
+                        if(value == null || value.isEmpty){
+                          return "설명을 입력해주세요.";
+                        } else if(value.length < 10){
+                          return "10자 이상으로 작성해 주세요.";
+                        }
+                      },
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Container(
+                      width: 400,
+                      height: 700,
+                      child: GridView.count(
+                        shrinkWrap: true,
+                        crossAxisCount: 3,
+                        //padding: const EdgeInsets.all(4.0),
+                        //childAspectRatio: 16.0 / 19.0,
+                        children: List.generate(_options.length, (idx) {
+                          return Card(
+                            child: Column(
+                              children: [
+                                Text(
+                                  _options[idx],
+                                  //style: TextStyle(fontSize: 10),
+                                ),
+                                GFCheckbox(
+                                  size: GFSize.SMALL,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      options_value[idx] = value;
+                                    });
+                                  },
+                                  value: options_value[idx],
+                                ),
+                              ],
                             ),
                           );
-                          _houseAddressController.text = roadAddress.toString();
-                        },
-                        style: ButtonStyle(
-                            backgroundColor:
-                                MaterialStateProperty.all<Color>(Colors.blue)),
-                        child: Text(
-                          '주소검색',
-                          style: TextStyle(color: Colors.white),
-                        ),
+                        }),
                       ),
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      Expanded(
-                        child: TextField(
-                          readOnly: true,
-                          controller: _houseAddressController,
-                          decoration: const InputDecoration(
-                              filled: false, labelText: '주소'),
-                        ),
-                      ),
-                    ],
-                  ),
-                  TextField(
-                    controller: _houseNameController,
-                    decoration: const InputDecoration(
-                        filled: false, labelText: 'House Name'),
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  TextField(
-                    controller: _houseDepositController,
-                    decoration: const InputDecoration(
-                        filled: false, labelText: 'Deposit'),
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  TextField(
-                    controller: _houseMonthlyController,
-                    decoration: const InputDecoration(
-                        filled: false, labelText: 'Monthly Pay'),
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  TextField(
-                    controller: _houseDescriptionController,
-                    decoration: const InputDecoration(
-                        filled: false, labelText: 'Description'),
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  Container(
-                    width: 400,
-                    height: 700,
-                    child: GridView.count(
-                      shrinkWrap: true,
-                      crossAxisCount: 3,
-                      //padding: const EdgeInsets.all(4.0),
-                      //childAspectRatio: 16.0 / 19.0,
-                      children: List.generate(_options.length, (idx) {
-                        return Card(
-                          child: Column(
-                            children: [
-                              Text(
-                                _options[idx],
-                                //style: TextStyle(fontSize: 10),
-                              ),
-                              GFCheckbox(
-                                size: GFSize.SMALL,
-                                onChanged: (value) {
-                                  setState(() {
-                                    options_value[idx] = value;
-                                  });
-                                },
-                                value: options_value[idx],
-                              ),
-                            ],
-                          ),
-                        );
-                      }),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            )
+            ),
+
           ],
         ),
       ),
