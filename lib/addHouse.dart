@@ -50,18 +50,18 @@ class _AddHousePageState extends State<AddHousePage> {
   double kakaoLongitude = 0.0;
 
   static List<String> _options = [
-    "sink",
-    "wifi",
-    "bed",
-    "gas_stove",
-    "refrigerator",
-    "airconditioner",
-    "closet",
-    "washing_machine",
-    "chair",
-    "shoe_closet",
-    "veranda"
-  ];
+    "싱크대",
+    "Wi-Fi",
+    "침대",
+    "가스 레인지",
+    "냉장고",
+    "에어콘",
+    "장롱",
+    "세탁기",
+    "의자",
+    "신발장",
+    "배란다"
+  ]; // "채상"
 
   //List<String> get options => _options;
 

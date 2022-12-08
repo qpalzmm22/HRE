@@ -56,7 +56,8 @@ class HreApp extends StatelessWidget {
         '/map': (BuildContext context) =>  const Map(),
         '/messagePage': (BuildContext context) => const MessagePage(),
         '/communityPage' : (BuildContext context) => const CommunityPage(),
-        '/searchPage': (BuildContext context) => const SearchPage(),
+        '/searchPage': (BuildContext context) => SearchPage(),
+
         '/postPage' : (BuildContext context) => const PostPage(),
         '/roommateDetail' : (BuildContext context)  => const RoommateDetail(),
         '/myPost' : (BuildContext context)  => const MyPost(),

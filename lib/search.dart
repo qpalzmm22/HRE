@@ -1,5 +1,8 @@
 import 'package:filter_list/filter_list.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
+import 'dbutility.dart';
+import 'appState.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({Key? key, this.title}) : super(key: key);
@@ -9,312 +12,352 @@ class SearchPage extends StatefulWidget {
   _SearchPage createState() => _SearchPage();
 }
 
-class _SearchPage extends State<SearchPage> {
-  List<User>? selectedUserList = [];
 
-  Future<void> openFilterDelegate() async {
-    await FilterListDelegate.show<User>(
-      context: context,
-      list: userList,
-      selectedListData: selectedUserList,
-      theme: FilterListDelegateThemeData(
-        listTileTheme: ListTileThemeData(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-          tileColor: Colors.white,
-          selectedColor: Colors.red,
-          selectedTileColor: const Color(0xFF649BEC).withOpacity(.5),
-          textColor: Colors.blue,
-        ),
-      ),
-      // enableOnlySingleSelection: true,
-      onItemSearch: (user, query) {
-        return user.name!.toLowerCase().contains(query.toLowerCase());
-      },
-      tileLabel: (user) => user!.name,
-      emptySearchChild: const Center(child: Text('No user found')),
-      // enableOnlySingleSelection: true,
-      searchFieldHint: 'Search Here..',
-      /*suggestionBuilder: (context, user, isSelected) {
-        return ListTile(
-          title: Text(user.name!),
-          leading: const CircleAvatar(
-            backgroundColor: Colors.blue,
-          ),
-          selected: isSelected,
-        );
-      },*/
-      onApplyButtonClick: (list) {
-        setState(() {
-          selectedUserList = list;
-        });
-      },
-    );
+/// Creating a global list for example purpose.
+/// Generally it should be within data class or where ever you want
+List<String> tagList = [
+  "그할마",
+  "커피유야",
+  "법원",
+  "양덕 주차장",
+  "다이소(양덕",
+
+  "원룸",
+  "미니투룸",
+  "투룸",
+  "쉐어하우스",
+  "싱크대",
+
+  "Wi-Fi",
+  "침대",
+  "가스 레인지",
+  "냉장고",
+  "에어콘",
+
+  "장롱",
+  "세탁기",
+  "의자",
+  "신발장",
+  "배란다",
+
+];
+
+class _SearchPage extends State<SearchPage> {
+
+  double _depositSliderStartValue = 0.0;
+  double _depositSliderEndValue = 300.0;
+  double _monthlySliderStartValue = 0.0;
+  double _monthlySliderEndValue = 50.0;
+
+  final double _depositMin = 0.0;
+  final double _depositMax = 1000.0;
+  final double _monthlyMin = 0.0;
+  final double _monthlyMax = 300.0;
+
+  final _depositMinTextFieldController = TextEditingController();
+  final _depositMaxTextFieldController = TextEditingController();
+  final _monthlyMinTextFieldController = TextEditingController();
+  final _monthlyMaxTextFieldController = TextEditingController();
+
+  String? _numVerifier(value) {
+    if (value !=  null && int.tryParse(value) != null) {
+      return 'Input msut be int';
+    } else return null;
   }
 
+  List<String> selectedTagList = [];
+
+
   Future<void> _openFilterDialog() async {
-    await FilterListDialog.display<User>(
+    await FilterListDialog.display<String>(
       context,
       hideSelectedTextCount: true,
       themeData: FilterListThemeData(context),
-      headlineText: 'Select Users',
+      headlineText: 'Select Tags',
       height: 500,
-      listData: userList,
-      selectedListData: selectedUserList,
-      choiceChipLabel: (item) => item!.name,
+      listData: tagList,
+      selectedListData: selectedTagList,
+      choiceChipLabel: (item) => item,//item!.name,
       validateSelectedItem: (list, val) => list!.contains(val),
       controlButtons: [ControlButtonType.All, ControlButtonType.Reset],
-      onItemSearch: (user, query) {
+      onItemSearch: (tag, query) {
         /// When search query change in search bar then this method will be called
         ///
         /// Check if items contains query
-        return user.name!.toLowerCase().contains(query.toLowerCase());
+        return tag.toLowerCase().contains(query.toLowerCase());
       },
 
       onApplyButtonClick: (list) {
         setState(() {
-          selectedUserList = List.from(list!);
+          selectedTagList = List.from(list!);
         });
         Navigator.pop(context);
       },
-
-      /// uncomment below code to create custom choice chip
-      /* choiceChipBuilder: (context, item, isSelected) {
-        return Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-          decoration: BoxDecoration(
-              border: Border.all(
-            color: isSelected! ? Colors.blue[300]! : Colors.grey[300]!,
-          )),
-          child: Text(
-            item.name,
-            style: TextStyle(
-                color: isSelected ? Colors.blue[300] : Colors.grey[500]),
-          ),
-        );
-      }, */
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    // var mytheme = Theme.of(context);
+
     return Scaffold(
       appBar: AppBar(
-        title: Text("widget.title!"),
+        title: Text("Filter"),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.search, color: Colors.blue,),
+            onPressed: () async {
+
+
+              // SEARCH QUERY
+              List<House> houses = await getQueriedHouses(
+                  _depositSliderStartValue,
+                  _depositSliderEndValue,
+                  _monthlySliderStartValue,
+                  _monthlySliderEndValue,
+                  selectedTagList);
+
+
+              // double _depositSliderStartValue = 0.0;
+              // double _depositSliderEndValue = 300.0;
+              // double _monthlySliderStartValue = 0.0;
+              // double _monthlySliderEndValue = 50.0;
+
+              Navigator.pushNamed(context, '/queryList');
+            },
+          ),
+        ],
       ),
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.only(bottom: 30),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: <Widget>[
-            TextButton(
-              onPressed: () async {
-                final list = await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => FilterPage(
-                      allTextList: userList,
-                      selectedUserList: selectedUserList,
-                    ),
-                  ),
-                );
-                if (list != null) {
-                  setState(() {
-                    selectedUserList = List.from(list);
-                  });
-                }
-              },
-              style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all(Colors.blue),
-              ),
-              child: const Text(
-                "Filter Page",
-                style: TextStyle(color: Colors.white),
-              ),
-            ),
-            TextButton(
-              onPressed: _openFilterDialog,
-              style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all(Colors.blue),
-              ),
-              child: const Text(
-                "Filter Dialog",
-                style: TextStyle(color: Colors.white),
-              ),
-              // color: Colors.blue,
-            ),
-            TextButton(
-              onPressed: openFilterDelegate,
-              style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all(Colors.blue),
-              ),
-              child: const Text(
-                "Filter Delegate",
-                style: TextStyle(color: Colors.white),
-              ),
-              // color: Colors.blue,
-            ),
-          ],
-        ),
-      ),
+      // body : ,
+      // bottomNavigationBar: Padding(
+      //   padding: const EdgeInsets.only(bottom: 30),
+      //   child: Row(
+      //     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      //     children: <Widget>[
+      //       TextButton(
+      //         onPressed: () async {
+      //           final list = await Navigator.push(
+      //             context,
+      //             MaterialPageRoute(
+      //               builder: (context) => FilterPage(
+      //                 allTextList: userList,
+      //                 selectedUserList: selectedUserList,
+      //               ),
+      //             ),
+      //           );
+      //           if (list != null) {
+      //             setState(() {
+      //               selectedUserList = List.from(list);
+      //             });
+      //           }
+      //         },
+      //         style: ButtonStyle(
+      //           backgroundColor: MaterialStateProperty.all(Colors.blue),
+      //         ),
+      //         child: const Text(
+      //           "Filter Page",
+      //           style: TextStyle(color: Colors.white),
+      //         ),
+      //       ),
+      //       TextButton(
+      //         onPressed: openFilterDelegate,
+      //         style: ButtonStyle(
+      //           backgroundColor: MaterialStateProperty.all(Colors.blue),
+      //         ),
+      //         child: const Text(
+      //           "Filter Delegate",
+      //           style: TextStyle(color: Colors.white),
+      //         ),
+      //         // color: Colors.blue,
+      //       ),
+      //     ],
+      //   ),
+      // ),
       body: Column(
         children: <Widget>[
-          if (selectedUserList == null || selectedUserList!.isEmpty)
-            const Expanded(
-              child: Center(
-                child: Text('No user selected'),
-              ),
-            )
-          else
-            Expanded(
-              child: ListView.separated(
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    title: Text(selectedUserList![index].name!),
-                  );
-                },
-                separatorBuilder: (context, index) => const Divider(),
-                itemCount: selectedUserList!.length,
-              ),
+          SizedBox(height : 10),
+          Text("보증금",
+            style: Theme.of(context).textTheme.headline5,
+          ),
+          RangeSlider(
+            min: _depositMin,
+            max: _depositMax,
+            values: RangeValues(_depositSliderStartValue, _depositSliderEndValue),
+            labels: RangeLabels(
+              _depositSliderStartValue.toString(),
+              _depositSliderEndValue.toString(),
             ),
+            divisions: (_depositMax - _depositMin)~/10,
+            // values: RangeValues(double.tryParse((_depositMinTextFieldController.text), double.parse(_depositMaxTextFieldController.text)),
+            onChanged: (values) {
+              setState(() {
+                _depositSliderStartValue = values.start;
+                _depositSliderEndValue = values.end;
+                _depositMinTextFieldController.text = values.start.toInt().toString();
+                _depositMaxTextFieldController.text = values.end.toInt().toString();
+              });
+            },
+          ),
+          Padding(
+            padding: EdgeInsets.fromLTRB(20, 5, 20, 5),
+            child : Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(_depositMin.toString()),
+              Text(_depositMax.toString()),
+            ],
+            ),
+          ),
+          Row(
+            children :[
+              Flexible(
+                child: TextField(
+                  readOnly: true,
+                  // inputFormatters: [FilteringTextInputFormatter.allow('')],
+                  controller: _depositMinTextFieldController,
+                  decoration: InputDecoration(
+                    // bor  der: InputBorder.none,
+                      hintText: '0 ~ 1000',
+                      labelText: "최소 보증금"),
+                  // onChanged: (value){
+                  //   setState((){
+                  //     double newVal = double.parse(_depositMinTextFieldController.text);
+                  //     // if(newVal >= _depositMin && newVal <= _depositMax && newVal >= double.parse(_depositMinTextFieldController.text)) {
+                  //       _depositMinTextFieldController.text = newVal.toString();
+                  //       _depositSliderStartValue = newVal;
+                  //     // }
+                  //   });
+                  // },
+                ),
+              ),
+              Flexible(
+                child:TextField(
+                  readOnly: true,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  controller: _depositMaxTextFieldController,
+                  decoration: InputDecoration(
+                    // border: InputBorder.none,
+                      hintText: '0 ~ 1000',
+                      labelText: "최대 보증금"),
+                  // onChanged: (value){
+                  //   setState((){
+                  //     double newVal = double.parse(_depositMaxTextFieldController.text);
+                  //     // if(newVal >= _depositMin && newVal <= _depositMax && newVal <= double.parse(_depositMaxTextFieldController.text)) {
+                  //       _depositMaxTextFieldController.text = newVal.toString();
+                  //       _depositSliderEndValue = newVal;
+                  //     // }
+                  //     // _depositSliderEndValue = int.parse(_depositMaxTextFieldController.text);
+                  //   });
+                  // },
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height : 10),
+          Text("월세",
+            style: Theme.of(context).textTheme.headline5,
+          ),
+          RangeSlider(
+            min: _monthlyMin.toDouble(),
+            max: _monthlyMax.toDouble(),
+            values: RangeValues(_monthlySliderStartValue, _monthlySliderEndValue),
+            labels: RangeLabels(
+              _monthlySliderStartValue.toString(),
+              _monthlySliderEndValue.toString(),
+            ),
+            divisions: (_monthlyMax - _monthlyMin)~/10,
+            // values: RangeValues(double.parse(_monthlyMinTextFieldController.text), double.parse(_monthlyMinTextFieldController.text)),
+            onChanged: (values) {
+              setState(() {
+                _monthlySliderStartValue = values.start;
+                _monthlySliderEndValue = values.end;
+                _monthlyMinTextFieldController.text = values.start.toInt().toString();
+                _monthlyMaxTextFieldController.text = values.end.toInt().toString();
+              });
+            },
+          ),
+          Padding(
+            padding: EdgeInsets.fromLTRB(20, 5, 20, 5),
+            child : Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(_monthlyMin.toString()),
+                Text(_monthlyMax.toString())
+              ],
+            ),
+          ),
+
+          Row(
+            children :[
+              Flexible(
+                child: TextField(
+                  readOnly: true,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  controller: _monthlyMinTextFieldController,
+                  decoration: InputDecoration(
+                    // border: InputBorder.none,
+                      hintText: '0 ~ 300',
+                      labelText: "최소 월세"),
+                  // onChanged: (value){
+                  //   setState((){
+                  //     double newVal = double.parse(_monthlyMinTextFieldController.text);
+                  //     if(newVal >= _monthlyMin && newVal <= _monthlyMax && newVal >= double.parse(_monthlyMinTextFieldController.text)) {
+                  //       _monthlyMinTextFieldController.text = newVal.toString();
+                  //       _monthlySliderStartValue = newVal;
+                  //     }
+                  //   });
+                  // },
+                ),
+              ),
+              Flexible(
+                child : TextField(
+                  readOnly: true,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  controller: _monthlyMaxTextFieldController,
+                  decoration: InputDecoration(
+                    // border: InputBorder.none,
+                      hintText: '0 ~ 300',
+                      labelText: "최대 월세"),
+                  // onChanged: (value){
+                  //   setState((){
+                  //     double newVal = double.parse(_monthlyMaxTextFieldController.text);
+                  //     if(newVal >= _monthlyMin && newVal <= _monthlyMax && newVal <= double.parse(_monthlyMaxTextFieldController.text)) {
+                  //       _monthlyMaxTextFieldController.text = newVal.toString();
+                  //       _monthlySliderEndValue = newVal;
+                  //     }
+                  //   });
+                  // },
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height : 10),
+          Text("태그 필터",
+            style: Theme.of(context).textTheme.headline5,
+          ),
+          IconButton(
+            color: Colors.blue,
+            onPressed: _openFilterDialog,
+            // style: ButtonStyle(
+            //   backgroundColor: MaterialStateProperty.all(Colors.blue),
+            // ),
+            icon: Icon(Icons.add,
+              color: Colors.blue,
+            ), // TODO : better looking
+          ),
+          Expanded(
+            child: ListView.separated(
+              itemBuilder: (context, index) {
+                return ListTile(
+                  title: Text(selectedTagList![index]),
+                );
+              },
+              separatorBuilder: (context, index) => const Divider(),
+              itemCount: selectedTagList!.length,
+            ),
+          ),
         ],
       ),
     );
   }
 }
-
-class FilterPage extends StatelessWidget {
-  const FilterPage({Key? key, this.allTextList, this.selectedUserList})
-      : super(key: key);
-  final List<User>? allTextList;
-  final List<User>? selectedUserList;
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Filter list Page"),
-      ),
-      body: SafeArea(
-        child: FilterListWidget<User>(
-          themeData: FilterListThemeData(context),
-          hideSelectedTextCount: true,
-          listData: userList,
-          selectedListData: selectedUserList,
-          onApplyButtonClick: (list) {
-            Navigator.pop(context, list);
-          },
-          choiceChipLabel: (item) {
-            /// Used to print text on chip
-            return item!.name;
-          },
-          // choiceChipBuilder: (context, item, isSelected) {
-          //   return Container(
-          //     padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          //     margin: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-          //     decoration: BoxDecoration(
-          //         border: Border.all(
-          //       color: isSelected! ? Colors.blue[300]! : Colors.grey[300]!,
-          //     )),
-          //     child: Text(item.name),
-          //   );
-          // },
-          validateSelectedItem: (list, val) {
-            ///  identify if item is selected or not
-            return list!.contains(val);
-          },
-          onItemSearch: (user, query) {
-            /// When search query change in search bar then this method will be called
-            ///
-            /// Check if items contains query
-            return user.name!.toLowerCase().contains(query.toLowerCase());
-          },
-        ),
-      ),
-    );
-  }
-}
-
-class User {
-  final String? name;
-  final String? avatar;
-  User({this.name, this.avatar});
-}
-
-/// Creating a global list for example purpose.
-/// Generally it should be within data class or where ever you want
-List<User> userList = [
-  User(name: "Abigail", avatar: "user.png"),
-  User(name: "Audrey", avatar: "user.png"),
-  User(name: "Ava", avatar: "user.png"),
-  User(name: "Bella", avatar: "user.png"),
-  User(name: "Bernadette", avatar: "user.png"),
-  User(name: "Carol", avatar: "user.png"),
-  User(name: "Claire", avatar: "user.png"),
-  User(name: "Deirdre", avatar: "user.png"),
-  User(name: "Donna", avatar: "user.png"),
-  User(name: "Dorothy", avatar: "user.png"),
-  User(name: "Faith", avatar: "user.png"),
-  User(name: "Gabrielle", avatar: "user.png"),
-  User(name: "Grace", avatar: "user.png"),
-  User(name: "Hannah", avatar: "user.png"),
-  User(name: "Heather", avatar: "user.png"),
-  User(name: "Irene", avatar: "user.png"),
-  User(name: "Jan", avatar: "user.png"),
-  User(name: "Jane", avatar: "user.png"),
-  User(name: "Julia", avatar: "user.png"),
-  User(name: "Kylie", avatar: "user.png"),
-  User(name: "Lauren", avatar: "user.png"),
-  User(name: "Leah", avatar: "user.png"),
-  User(name: "Lisa", avatar: "user.png"),
-  User(name: "Melanie", avatar: "user.png"),
-  User(name: "Natalie", avatar: "user.png"),
-  User(name: "Olivia", avatar: "user.png"),
-  User(name: "Penelope", avatar: "user.png"),
-  User(name: "Rachel", avatar: "user.png"),
-  User(name: "Ruth", avatar: "user.png"),
-  User(name: "Sally", avatar: "user.png"),
-  User(name: "Samantha", avatar: "user.png"),
-  User(name: "Sarah", avatar: "user.png"),
-  User(name: "Theresa", avatar: "user.png"),
-  User(name: "Una", avatar: "user.png"),
-  User(name: "Vanessa", avatar: "user.png"),
-  User(name: "Victoria", avatar: "user.png"),
-  User(name: "Wanda", avatar: "user.png"),
-  User(name: "Wendy", avatar: "user.png"),
-  User(name: "Yvonne", avatar: "user.png"),
-  User(name: "Zoe", avatar: "user.png"),
-];
-/// Another example of [FilterListWidget] to filter list of strings
-/*
- FilterListWidget<String>(
-    listData: [
-      "One",
-      "Two",
-      "Three",
-      "Four",
-      "five",
-      "Six",
-      "Seven",
-      "Eight",
-      "Nine",
-      "Ten"
-    ],
-    selectedListData: ["One", "Three", "Four", "Eight", "Nine"],
-    onApplyButtonClick: (list) {
-      Navigator.pop(context, list);
-    },
-    choiceChipLabel: (item) {
-      /// Used to print text on chip
-      return item;
-    },
-    validateSelectedItem: (list, val) {
-      ///  identify if item is selected or not
-      return list!.contains(val);
-    },
-    onItemSearch: (text, query) {
-      return text.toLowerCase().contains(query.toLowerCase());
-    },
-  )
-*/
