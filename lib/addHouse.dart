@@ -53,14 +53,14 @@ class _AddHousePageState extends State<AddHousePage> {
   static const List<String> _options = [
     "싱크대", // 0
     "Wi-Fi", // 1
-    "침대",   // 2
+    "침대", // 2
     "가스 레인지", // 3
-    "냉장고",   // 4
-    "에어콘",  //5
-    "장롱",  // 6
+    "냉장고", // 4
+    "에어콘", //5
+    "장롱", // 6
     "세탁기", // 7
-    "의자",  // 8
-    "신발장",  // 9
+    "의자", // 8
+    "신발장", // 9
     "배란다" // 10
   ]; // "채상"
 
@@ -86,7 +86,7 @@ class _AddHousePageState extends State<AddHousePage> {
         height: 500,
         listData: tagList,
         selectedListData: selectedTagList,
-        choiceChipLabel: (item) => item,//item!.name,
+        choiceChipLabel: (item) => item, //item!.name,
         validateSelectedItem: (list, val) => list!.contains(val),
         controlButtons: [ControlButtonType.All, ControlButtonType.Reset],
         onItemSearch: (tag, query) {
@@ -105,8 +105,6 @@ class _AddHousePageState extends State<AddHousePage> {
       );
     }
 
-
-
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -115,7 +113,7 @@ class _AddHousePageState extends State<AddHousePage> {
         actions: [
           TextButton(
               onPressed: () async {
-                if(_formKey.currentState!.validate()) {
+                if (_formKey.currentState!.validate()) {
                   String thumbnail = '';
                   List<String> uploadedImageUrls = [];
                   if (isFileUploaded) {
@@ -125,30 +123,27 @@ class _AddHousePageState extends State<AddHousePage> {
                       if (i == 0) thumbnail = imageUrl;
                     }
                   }
+                  String hid =
+                      FirebaseFirestore.instance.collection('houses').doc().id;
+                  House house = House(
+                    hid: hid,
+                    thumbnail: thumbnail,
+                    name: _houseNameController.text,
+                    monthlyPay: int.parse(_houseMonthlyController.text),
+                    deposit: int.parse(_houseDepositController.text),
+                    address: _houseAddressController.text,
+                    description: _houseDescriptionController.text,
+                    ownerId: user.uid,
+                    documentId: "",
+                    optionList: options_value,
+                    location: LatLng(kakaoLatitude, kakaoLongitude),
+                    imageLinks: uploadedImageUrls,
+                    views: 0,
+                    tags: selectedTagList,
+                  );
+                  addHouseToDB(house);
+                  Navigator.pushReplacementNamed(context, '/home', arguments: 0);
                 }
-
-
-                String hid = FirebaseFirestore.instance
-                    .collection('houses').doc().id;
-                House house = House(
-                  hid : hid,
-                  thumbnail: thumbnail,
-                  name: _houseNameController.text,
-                  monthlyPay: int.parse(_houseMonthlyController.text),
-                  deposit: int.parse(_houseDepositController.text),
-                  address: _houseAddressController.text,
-                  description: _houseDescriptionController.text,
-                  ownerId: user.uid,
-                  documentId: "",
-                  optionList: options_value,
-                  location: LatLng(kakaoLatitude, kakaoLongitude),
-                  imageLinks: uploadedImageUrls,
-                  views: 0,
-                  tags : selectedTagList,
-                );
-                addHouseToDB(house);
-                Navigator.pushReplacementNamed(context, '/home', arguments: 0);
-
               },
               child: const Text(
                 "Save",
@@ -157,294 +152,260 @@ class _AddHousePageState extends State<AddHousePage> {
         ],
       ),
       body: SafeArea(
-        child: ListView(
-          children: [
-            CarouselSlider(
-              options: CarouselOptions(
-                height: 200,
-                aspectRatio: 16 / 9,
-                viewportFraction: 0.8,
-                initialPage: 0,
-                enableInfiniteScroll: true,
-                autoPlay: isFileUploaded,
-                autoPlayInterval: Duration(seconds: 3),
-                autoPlayAnimationDuration: Duration(milliseconds: 800),
-                autoPlayCurve: Curves.fastOutSlowIn,
-                enlargeCenterPage: true,
-                // onPageChanged: callbackFunction,
-                scrollDirection: Axis.horizontal,
-              ),
-              items: _images.map((i) {
-                return Builder(
-                  builder: (BuildContext context) {
-                    return Container(
-                      width: MediaQuery.of(context).size.width,
-                      margin: EdgeInsets.symmetric(horizontal: 5.0),
-                      // decoration: BoxDecoration(
-                      //     color: Colors.amber
-                      // ),
-                      child: InkWell(
-                        onDoubleTap: () async {
-                          // Pick an image
-                          final ImagePicker imagePicker = ImagePicker();
-                          //var image = await ImagePicker.platform.pickImage(source: ImageSource.gallery);
-                          final List<XFile> images =
-                              await imagePicker.pickMultiImage();
-                          //var images = await imagePicker.pickMultiImage();
-                          setState(() {
-                            if (images.isNotEmpty) {
-                              _images = images;
-                              isFileUploaded = true;
-                            }
-                          });
-                        },
-                        child: isFileUploaded
-                            ? Image.file(
-                                File(i.path),
-                                fit: BoxFit.fitHeight,
-                              )
-                            : Image.network(
-                                i.path,
-                                fit: BoxFit.fitHeight,
-                              ),
-                      ),
-                    );
-                  },
-                );
-              }).toList(),
+        child: ListView(children: [
+          CarouselSlider(
+            options: CarouselOptions(
+              height: 200,
+              aspectRatio: 16 / 9,
+              viewportFraction: 0.8,
+              initialPage: 0,
+              enableInfiniteScroll: true,
+              autoPlay: isFileUploaded,
+              autoPlayInterval: Duration(seconds: 3),
+              autoPlayAnimationDuration: Duration(milliseconds: 800),
+              autoPlayCurve: Curves.fastOutSlowIn,
+              enlargeCenterPage: true,
+              // onPageChanged: callbackFunction,
+              scrollDirection: Axis.horizontal,
             ),
-            // HorizontalCardPager(
-            //   initialPage: 2, // default value is 2
-            //   onPageChanged: (page) {},
-            //   onSelectedItem: (page) {},
-            //   items: List<ImageCarditem>.generate(_images.length, (index) {
-            //     return ImageCarditem(
-            //         image: isFileUploaded
-            //             ? Image.file(File(_images[index].path))
-            //             : Image.network(_images[index].path));
-            //   }),
-            // ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                IconButton(
-                  onPressed: () async {
-                    // Pick an image
-                    final ImagePicker imagePicker = ImagePicker();
-                    //var image = await ImagePicker.platform.pickImage(source: ImageSource.gallery);
-                    final List<XFile> images =
-                        await imagePicker.pickMultiImage();
-                    //var images = await imagePicker.pickMultiImage();
-                    setState(() {
-                      if (images.isNotEmpty) {
-                        _images = images;
-                        isFileUploaded = true;
-                      }
-                    });
-                  },
-                  icon: const Icon(
-                    Icons.camera_alt,
-                    color: Colors.black,
-                  ),
-                ),
-              ],
-            ),
-            Form(
-              key: _formKey,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        TextButton(
-                          onPressed: () async {
-                            await Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => KpostalView(
-                                  kakaoKey: 'cabdb067deb0d93614b6e47dff96ada3',
-                                  useLocalServer: false,
-                                  callback: (Kpostal result) {
-                                    print(result);
-                                    setState(() {
-                                      roadAddress = result.address;
-                                      kakaoLatitude = result.kakaoLatitude as double;
-                                      kakaoLongitude = result.kakaoLongitude as double;
-                                    });
-                                  },
-                                ),
-                              ),
-                            );
-                            _houseAddressController.text = roadAddress.toString();
-                          },
-                          style: ButtonStyle(
-                              backgroundColor:
-                              MaterialStateProperty.all<Color>(Colors.blue)),
-                          child: Text(
-                            '주소검색',
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        ),
-                        const SizedBox(
-                          width: 10,
-                        ),
-                     // ),
-                   // ],
-                  //),
-                  
-                  const SizedBox(
-                    height: 10,
-                  ),
-                
-                  TextButton(
-                    child: const Text(
-                      '태그 추가',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                    onPressed: _openFilterDialog,
-                    style: ButtonStyle(
-                        backgroundColor:
-                        MaterialStateProperty.all<Color>(Colors.blue)),
-
-                    // style: ButtonStyle(
-                    //   backgroundColor: MaterialStateProperty.all(Colors.blue),
+            items: _images.map((i) {
+              return Builder(
+                builder: (BuildContext context) {
+                  return Container(
+                    width: MediaQuery.of(context).size.width,
+                    margin: EdgeInsets.symmetric(horizontal: 5.0),
+                    // decoration: BoxDecoration(
+                    //     color: Colors.amber
                     // ),
-                  ),
-          
-                  SizedBox(
-                    height: 500,
-                    child: GridView.builder(
-                      // crossAxisCount : 4,
-                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 5, //1 개의 행에 보여줄 item 개수
-                        childAspectRatio: 3 / 1, //item 의 가로 1, 세로 2 의 비율
-                        mainAxisSpacing: 5, //수평 Padding
-                        crossAxisSpacing: 5, //수직 Padding
-                      ),
-                      itemBuilder: (context, index) {
-                        return Container(
-                          decoration: const BoxDecoration(
-                            color: Colors.cyan,
-                            borderRadius:
-                            BorderRadius.all(Radius.circular(10.0)),
-                          ),
-                          child: Center(child: Text(selectedTagList![index])),
-                        );
+                    child: InkWell(
+                      onDoubleTap: () async {
+                        // Pick an image
+                        final ImagePicker imagePicker = ImagePicker();
+                        //var image = await ImagePicker.platform.pickImage(source: ImageSource.gallery);
+                        final List<XFile> images =
+                            await imagePicker.pickMultiImage();
+                        //var images = await imagePicker.pickMultiImage();
+                        setState(() {
+                          if (images.isNotEmpty) {
+                            _images = images;
+                            isFileUploaded = true;
+                          }
+                        });
                       },
-                      // separatorBuilder: (context, index) => const Divider(),
-                      itemCount: selectedTagList!.length,
-//=======
-                        Expanded(
-                          child: TextFormField(
-                            readOnly: true,
-                            controller: _houseAddressController,
-                            decoration: const InputDecoration(
-                                filled: false, labelText: '주소'),
-                            validator: (value) {
-                              if(value == null || value.isEmpty){
-                                return ("주소를 입력해주세요");
-                              }
-                              return null;
-                            },
-                          ),
-                        ),
-                      ],
-//>>>>>>> main
+                      child: isFileUploaded
+                          ? Image.file(
+                              File(i.path),
+                              fit: BoxFit.fitHeight,
+                            )
+                          : Image.network(
+                              i.path,
+                              fit: BoxFit.fitHeight,
+                            ),
                     ),
-                    TextFormField(
-                      controller: _houseNameController,
-                      decoration: const InputDecoration(
-                          filled: false, labelText: 'House Name'),
-                      validator: (value){
-                        if(value == null || value.isEmpty){
-                          return ("건물 이름을 입력해 주세요");
-                        }
+                  );
+                },
+              );
+            }).toList(),
+          ),
+          // HorizontalCardPager(
+          //   initialPage: 2, // default value is 2
+          //   onPageChanged: (page) {},
+          //   onSelectedItem: (page) {},
+          //   items: List<ImageCarditem>.generate(_images.length, (index) {
+          //     return ImageCarditem(
+          //         image: isFileUploaded
+          //             ? Image.file(File(_images[index].path))
+          //             : Image.network(_images[index].path));
+          //   }),
+          // ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              IconButton(
+                onPressed: () async {
+                  // Pick an image
+                  final ImagePicker imagePicker = ImagePicker();
+                  //var image = await ImagePicker.platform.pickImage(source: ImageSource.gallery);
+                  final List<XFile> images = await imagePicker.pickMultiImage();
+                  //var images = await imagePicker.pickMultiImage();
+                  setState(() {
+                    if (images.isNotEmpty) {
+                      _images = images;
+                      isFileUploaded = true;
+                    }
+                  });
+                },
+                icon: const Icon(
+                  Icons.camera_alt,
+                  color: Colors.black,
+                ),
+              ),
+            ],
+          ),
+          Form(
+            key: _formKey,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Column(
+                  children: [
+                Row(
+                  children: [
+                    TextButton(
+                      onPressed: () async {
+                        await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => KpostalView(
+                              kakaoKey: 'cabdb067deb0d93614b6e47dff96ada3',
+                              useLocalServer: false,
+                              callback: (Kpostal result) {
+                                print(result);
+                                setState(() {
+                                  roadAddress = result.address;
+                                  kakaoLatitude =
+                                      result.kakaoLatitude as double;
+                                  kakaoLongitude =
+                                      result.kakaoLongitude as double;
+                                });
+                              },
+                            ),
+                          ),
+                        );
+                        _houseAddressController.text = roadAddress.toString();
                       },
+                      style: ButtonStyle(
+                          backgroundColor:
+                              MaterialStateProperty.all<Color>(Colors.blue)),
+                      child: Text(
+                        '주소검색',
+                        style: TextStyle(color: Colors.white),
+                      ),
                     ),
                     const SizedBox(
-                      height: 10,
+                      width: 10,
+                    ),
+                    Expanded(
+                      child: TextFormField(
+                        readOnly: true,
+                        controller: _houseAddressController,
+                        decoration: const InputDecoration(
+                            filled: false, labelText: '주소'),
+                        validator: (value) {
+                          if(value == null || value.isEmpty){
+                            return ("주소를 입력해주세요");
+                          }
+                          return null;
+                        },
+                      ),
                     ),
 
-                    TextFormField(
-                      controller: _houseDepositController,
-                      decoration: const InputDecoration(
-                          filled: false, labelText: 'Deposit'),
-                      validator: (value){
-                        if(value == null || value.isEmpty){
-                          return ("보증금을 입력해주세요");
-                        }
-                      },
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    TextFormField(
-                      controller: _houseMonthlyController,
-                      decoration: const InputDecoration(
-                          filled: false, labelText: 'Monthly Pay'),
-                      validator: (value){
-                        if(value == null || value.isEmpty){
-                          return "월세를 입력해주세요.";
-                        }
-                      },
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    TextFormField(
-                      controller: _houseDescriptionController,
-                      decoration: const InputDecoration(
-                          filled: false, labelText: 'Description'),
-                      validator: (value){
-                        if(value == null || value.isEmpty){
-                          return "설명을 입력해주세요.";
-                        } else if(value.length < 10){
-                          return "10자 이상으로 작성해 주세요.";
-                        }
-                      },
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    Container(
-                      width: 400,
-                      height: 700,
-                      child: GridView.count(
-                        shrinkWrap: true,
-                        crossAxisCount: 3,
-                        //padding: const EdgeInsets.all(4.0),
-                        //childAspectRatio: 16.0 / 19.0,
-                        children: List.generate(_options.length, (idx) {
-                          return Card(
-                            child: Column(
-                              children: [
-                                Text(
-                                  _options[idx],
-                                  //style: TextStyle(fontSize: 10),
-                                ),
-                                GFCheckbox(
-                                  size: GFSize.SMALL,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      options_value[idx] = value;
-                                    });
-                                  },
-                                  value: options_value[idx],
-                                ),
-                              ],
-                            ),
-                          );
-                        }),
-                      ),
-                    ),
                   ],
                 ),
-              ),
-            ),
 
-          ],
-        ),
+                const SizedBox(
+                  height: 10,
+                ),
+//>>>>>>> main
+                TextFormField(
+                  controller: _houseNameController,
+                  decoration: const InputDecoration(
+                      filled: false, labelText: 'House Name'),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return ("건물 이름을 입력해 주세요");
+                    }
+                  },
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+
+                TextFormField(
+                  controller: _houseDepositController,
+                  decoration: const InputDecoration(
+                      filled: false, labelText: 'Deposit'),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return ("보증금을 입력해주세요");
+                    }
+                  },
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                TextFormField(
+                  controller: _houseMonthlyController,
+                  decoration: const InputDecoration(
+                      filled: false, labelText: 'Monthly Pay'),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "월세를 입력해주세요.";
+                    }
+                  },
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                TextFormField(
+                  controller: _houseDescriptionController,
+                  decoration: const InputDecoration(
+                      filled: false, labelText: 'Description'),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "설명을 입력해주세요.";
+                    } else if (value.length < 10) {
+                      return "10자 이상으로 작성해 주세요.";
+                    }
+                  },
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+
+                    TextButton(
+                      child: const Text(
+                        '태그 추가',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                      onPressed: _openFilterDialog,
+                      style: ButtonStyle(
+                          backgroundColor:
+                          MaterialStateProperty.all<Color>(Colors.blue)),
+
+                      // style: ButtonStyle(
+                      //   backgroundColor: MaterialStateProperty.all(Colors.blue),
+                      // ),
+                    ),
+
+                    SizedBox(
+                      height: 500,
+                      child: GridView.builder(
+                        // crossAxisCount : 4,
+                        gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 5, //1 개의 행에 보여줄 item 개수
+                          childAspectRatio: 3 / 1, //item 의 가로 1, 세로 2 의 비율
+                          mainAxisSpacing: 5, //수평 Padding
+                          crossAxisSpacing: 5, //수직 Padding
+                        ),
+                        itemBuilder: (context, index) {
+                          return Container(
+                            decoration: const BoxDecoration(
+                              color: Colors.cyan,
+                              borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                            ),
+                            child: Center(child: Text(selectedTagList![index])),
+                          );
+                        },
+                        // separatorBuilder: (context, index) => const Divider(),
+                        itemCount: selectedTagList!.length,
+//=======
+                      ),
+                    ),
+              ]),
+            ),
+          )
+        ]),
       ),
     );
   }
