@@ -30,16 +30,15 @@ class _Map extends State<Map> {
 
 
   Future<void> getAddress(LatLng location) async{
-    String url = 'https://maps.googleapis.com/maps/api/geocode/json?latlng=${location.latitude},${location.longitude}&key=AIzaSyBCizThefGgFPIwkUjYe2JiZkzdMQyJiRs';
-    final response = await http.get(Uri.parse(url));
-    print(jsonDecode(response.body)['results'][0]['formatted_address']);
+    // String url = 'https://maps.googleapis.com/maps/api/geocode/json?latlng=${location.latitude},${location.longitude}&key=AIzaSyBCizThefGgFPIwkUjYe2JiZkzdMQyJiRs';
+    // final response = await http.get(Uri.parse(url));
+    // print(jsonDecode(response.body)['results'][0]['formatted_address']);
   }
 
   @override
   Widget build(BuildContext context) {
     MapPoint location = ModalRoute.of(context)!.settings.arguments as MapPoint;
 
-    var cart = context.read<AppState>();
     Widget buildMap(){
       return GoogleMap(
         onMapCreated: _onMapCreated,
@@ -47,8 +46,8 @@ class _Map extends State<Map> {
           target: location.center,
           zoom: location.zoom,
         ),
-        myLocationEnabled: false,
-        myLocationButtonEnabled: false,
+        myLocationEnabled: true,
+        myLocationButtonEnabled: true,
         markers: Set.from(location.markers),
       );
     }
@@ -59,13 +58,6 @@ class _Map extends State<Map> {
           backgroundColor: Colors.green[700],
         ),
         body: buildMap(),
-        floatingActionButton: IconButton(
-          icon: const Icon(Icons.my_location),
-          onPressed: () {
-
-            },
-
-        ),
       );
   }
 }

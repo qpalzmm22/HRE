@@ -221,7 +221,7 @@ class _DetailPageState extends State<DetailPage> {
               // onPageChanged: callbackFunction,
               scrollDirection: Axis.horizontal,
             ),
-            items: house.imageLinks.map((i) {
+            items: house.imageLinks.map((image) {
               return Builder(
                 builder: (BuildContext context) {
                   return Container(
@@ -230,22 +230,10 @@ class _DetailPageState extends State<DetailPage> {
                     // decoration: BoxDecoration(
                     //     color: Colors.amber
                     // ),
-                    child: InkWell(
-                      onDoubleTap: (){
-                        setState(() {
-                          var cart = context.read<AppState>();
-                          if(isBookmarked){
-                            cart.remove(house);
-                          } else{
-                            cart.add(house);
-                          }
-                        });
-                      },
-                      child: Image.network(
-                        i,
+                    child: Image.network(
+                        image,
                         fit: BoxFit.fitHeight,
                       ) ,
-                    ),
                   );
                 },
               );
