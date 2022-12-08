@@ -36,7 +36,6 @@ class _BookmarkedList extends StatelessWidget{
 
 
       final ThemeData theme = Theme.of(context);
-
       return  SizedBox(
           height: 130,
           child: Card(

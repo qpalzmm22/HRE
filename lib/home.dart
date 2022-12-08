@@ -13,7 +13,6 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'appState.dart';
 
-
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
@@ -36,51 +35,23 @@ class _HomePageState extends State<HomePage> {
   //   // await updateMSViewCount(messageSessions[idx].msid, newMessageSession.messages.length);
   // }
 
-
-
-
   TextEditingController searchBarController = TextEditingController();
   CollectionReference houseCollectionReference =
       FirebaseFirestore.instance.collection('houses');
 
   String uid = getUid();
-  // bool _isNewMessage = false;
-  List<House> houseList = [];
   List<Marker> markers = [];
 
   @override
-  void initState() {
-    super.initState();
-    print("hello");
-
-
-  }
-
-
-  @override
   Widget build(BuildContext context) {
-
     int argPageNum = ModalRoute.of(context)!.settings.arguments as int;
-    _selectedIndex = _isBottomNavIdxChanged? _selectedIndex : argPageNum;
+    _selectedIndex = _isBottomNavIdxChanged ? _selectedIndex : argPageNum;
 
-    var cart = context.watch<AppState>();
-
-    final ThemeData theme = Theme.of(context);
+    // var cart = context.watch<AppState>();
 
     Profile profilePage = Profile();
     Bookmark bookmarkPage = Bookmark();
     MessageSessionPage messageSessionPage = MessageSessionPage();
-
-    for (House house in houseList) {
-      Marker marker = Marker(
-          markerId: MarkerId(house.name),
-          position: house.location,
-          onTap: () {
-            Navigator.pushNamed(context, '/detail', arguments: house);
-          });
-
-       cart.addMarker(marker);
-    }
 
     Widget homeScreen() {
       return Column(
@@ -114,8 +85,7 @@ class _HomePageState extends State<HomePage> {
       );
     }
 
-    Widget buildBody() {
-
+    Widget buildBody(BuildContext context) {
       if (_selectedIndex == 0) {
         return homeScreen();
       } else if (_selectedIndex == 1) {
@@ -123,8 +93,8 @@ class _HomePageState extends State<HomePage> {
       } else if (_selectedIndex == 2) {
         return messageSessionPage.getMessageSessionPage();
       } else {
-        return profilePage
-            .getProfile(FirebaseAuth.instance.currentUser as User);
+        return profilePage.getProfile(
+            context, FirebaseAuth.instance.currentUser as User);
       }
     }
 
@@ -146,14 +116,12 @@ class _HomePageState extends State<HomePage> {
         return AppBar(
           leading: null,
           title: const Text("Bookmarked"),
-          actions: [],
         );
       }
       if (_selectedIndex == 2) {
         return AppBar(
           leading: null,
           title: const Text("Message"),
-          actions: [],
         );
       }
       if (_selectedIndex == 3) {
@@ -178,20 +146,19 @@ class _HomePageState extends State<HomePage> {
         return FloatingActionButton(
           backgroundColor: Colors.pink,
           onPressed: () {
-
             Navigator.pushNamed(context, '/addHouse');
           },
-          child: Icon(Icons.add),
+          child: const Icon(Icons.add),
         );
       } else {
-        return Text("");
+        return const Text("");
       }
     }
 
     return Scaffold(
       appBar: buildAppBar(),
       body: SafeArea(
-        child: buildBody(),
+        child: buildBody(context),
       ),
       drawer: Drawer(
         child: Column(
@@ -200,7 +167,7 @@ class _HomePageState extends State<HomePage> {
           children: [
             const DrawerHeader(
               decoration: BoxDecoration(
-                color: Colors.blue,
+                color: Colors.deepPurpleAccent,
               ),
               child: Center(
                 child: Text(
@@ -210,7 +177,7 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             ListTile(
-              leading: Icon(Icons.person_search),
+              leading: const Icon(Icons.person_search),
               title: const Text('룸메이트 구해요'),
               onTap: () async {
                 Navigator.pop(context);
@@ -222,7 +189,7 @@ class _HomePageState extends State<HomePage> {
               },
             ),
             ListTile(
-              leading: Icon(Icons.house),
+              leading: const Icon(Icons.house),
               title: const Text('단기양도'),
               onTap: () async {
                 Navigator.pop(context);
@@ -234,7 +201,7 @@ class _HomePageState extends State<HomePage> {
               },
             ),
             ListTile(
-              leading: Icon(Icons.shopping_cart),
+              leading: const Icon(Icons.shopping_cart),
               title: const Text('장터'),
               onTap: () async {
                 Navigator.pop(context);
@@ -246,13 +213,21 @@ class _HomePageState extends State<HomePage> {
               },
             ),
             ListTile(
-              leading: Icon(Icons.local_taxi),
+              leading: const Icon(Icons.local_taxi),
               title: const Text('같이카'),
               onTap: () async {
                 Navigator.pop(context);
                 await Navigator.pushNamed(context, '/communityPage',
                     arguments: PageInfo(
                         pageTitle: "택시", collectionName: 'taxi', pageIndex: 3));
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.library_books_rounded),
+              title: const Text('작성한 글'),
+              onTap: () async {
+                Navigator.pop(context);
+                await Navigator.pushNamed(context, '/myPost');
               },
             ),
             const Expanded(child: Text("")),
@@ -267,8 +242,8 @@ class _HomePageState extends State<HomePage> {
                   color: Colors.red,
                 ),
               ),
-              onTap: () {
-                FirebaseAuth.instance.signOut();
+              onTap: () async {
+                await FirebaseAuth.instance.signOut();
                 Navigator.pop(context);
                 Navigator.pushReplacementNamed(context, '/');
               },
@@ -277,33 +252,34 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
-        items:  <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
+        items: <BottomNavigationBarItem>[
+          const BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: 'home',
           ),
-          BottomNavigationBarItem(
+          const BottomNavigationBarItem(
             icon: Icon(Icons.bookmark),
             label: 'bookmark',
           ),
           BottomNavigationBarItem(
             icon: FutureBuilder(
-              future : getUserDiffMSViewCount(getUid()),
-              builder: (context, snapshot){
-                if(snapshot.hasData){
-                  return snapshot.data! > 0 ?
-                  Badge(
-                    badgeContent: Text(snapshot.data.toString()), // To mae
-                    child: Icon(Icons.message),
-                  ) :
-                  Icon(Icons.message);
-                } else {
-                  return Icon(Icons.message);
-                }
-              }),
+                future: getUserDiffMSViewCount(getUid()),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return snapshot.data! > 0
+                        ? Badge(
+                            badgeContent:
+                                Text(snapshot.data.toString()), // To mae
+                            child: const Icon(Icons.message),
+                          )
+                        : const Icon(Icons.message);
+                  } else {
+                    return const Icon(Icons.message);
+                  }
+                }),
             label: 'message',
           ),
-          BottomNavigationBarItem(
+          const BottomNavigationBarItem(
             icon: Icon(Icons.account_circle),
             label: 'profile',
           ),
@@ -321,7 +297,6 @@ class _HomePageState extends State<HomePage> {
   }
 
   SizedBox _locationCard(Icon icon, MapPoint location) {
-
     return SizedBox(
       child: Card(
           shape: RoundedRectangleBorder(
@@ -368,11 +343,12 @@ class _HomePageState extends State<HomePage> {
               TextButton(
                 onPressed: () {
                   Navigator.pushNamed(context, '/map',
-                    arguments: MapPoint(
-                      name: "양덕동 근처 매물",
-                      center: const LatLng(36.081809, 129.39697),
-                      zoom: 14,
-                    ));
+                      arguments: MapPoint(
+                        name: "양덕동 근처 매물",
+                        center: const LatLng(36.081809, 129.39697),
+                        zoom: 14,
+                        markers: markers,
+                      ));
                 },
                 child: const Text(
                   "View ALL",
@@ -391,25 +367,32 @@ class _HomePageState extends State<HomePage> {
                     MapPoint(
                         name: "그할마 ",
                         center: const LatLng(36.079753, 129.394197),
-                        zoom: 17)),
+                        zoom: 17,
+                        markers: markers)),
                 _locationCard(
                     const Icon(Icons.shopping_cart),
                     MapPoint(
                         name: "다이소(양덕)",
                         center: const LatLng(36.084206, 129.396543),
-                        zoom: 17)),
+                        zoom: 17,
+                        markers: markers,
+                    ),),
                 _locationCard(
                     const Icon(Icons.house_outlined),
                     MapPoint(
                         name: "법원",
                         center: const LatLng(36.08925, 129.387588),
-                        zoom: 17)),
+                        zoom: 17,
+                    markers: markers,
+                    )),
                 _locationCard(
                     const Icon(Icons.coffee),
                     MapPoint(
                         name: "커피유야",
                         center: const LatLng(36.080508, 129.399658),
-                        zoom: 17)),
+                        zoom: 17,
+                      markers: markers,
+                    )),
               ],
             ),
           ),
@@ -437,17 +420,19 @@ class _HomePageState extends State<HomePage> {
         deposit: document['deposit'],
         optionList: List<bool>.from(document['options']),
         location: LatLng(gps.latitude, gps.longitude),
-        imageLinks: List.from( document['imagelinks']),
+        imageLinks: List.from(document['imagelinks']),
         views: document['views'],
       );
 
-        markers.add(Marker(
-            markerId: MarkerId(house.name),
-            position: house.location,
-            onTap: () {
-              Navigator.pushNamed(context, '/detail', arguments: house);
-            }));
+      var cart = context.watch<AppState>();
 
+
+      markers.add(Marker(
+              markerId: MarkerId(house.name),
+              position: house.location,
+              onTap: () {
+                Navigator.pushNamed(context, '/detail', arguments: house);
+              }));
 
       var isInCart = context.select<AppState, bool>(
         (cart) => cart.bookmarked
@@ -458,9 +443,14 @@ class _HomePageState extends State<HomePage> {
       return Card(
           child: InkWell(
         borderRadius: BorderRadius.circular(50),
-        onTap: () {
+        onTap: () async {
           increaseHouseViewCount(house.documentId);
-          Navigator.pushNamed(context, '/detail', arguments: house);
+          await Navigator.pushNamed(context, '/detail', arguments: house)
+              .then((value) {
+            if (value == true) {
+              houseCollectionReference.doc(document.id).delete();
+            }
+          });
         },
         child: Column(
           //crossAxisAlignment: CrossAxisAlignment.start,
@@ -511,10 +501,10 @@ class _HomePageState extends State<HomePage> {
                           ),
                           Row(
                             children: [
-                              Icon(Icons.location_on),
+                              const Icon(Icons.location_on),
                               Expanded(
                                   child: Text(
-                                "${house.address}",
+                                house.address,
                                 style: const TextStyle(
                                   fontSize: 13,
                                   fontWeight: FontWeight.bold,
@@ -522,7 +512,7 @@ class _HomePageState extends State<HomePage> {
                               )),
                             ],
                           ),
-                          Divider(height: 8),
+                          const Divider(height: 8),
                           Text(
                             "보증금 ${numberFormat.format(house.deposit)} / 월 ${numberFormat.format(house.monthlyPay)}", //document['monthlyPay']),
                             style: const TextStyle(
@@ -530,7 +520,7 @@ class _HomePageState extends State<HomePage> {
                             ),
                             maxLines: 2,
                           ),
-                          Divider(height: 8),
+                          const Divider(height: 8),
                           Text("설명 : ${house.description}"),
                         ],
                       ),
@@ -547,10 +537,8 @@ class _HomePageState extends State<HomePage> {
 
   Widget buildHouseCard() {
     return Expanded(
-      child: StreamBuilder<QuerySnapshot>(
-        stream: houseCollectionReference
-            .orderBy('monthlyPay', descending: true)
-            .snapshots(),
+      child: FutureBuilder (
+        future: houseCollectionReference.get(),
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
@@ -578,5 +566,6 @@ class MapPoint {
   final String name;
   final LatLng center;
   final double zoom;
-  MapPoint({required this.name, required this.center, required this.zoom});
+  final List<Marker> markers;
+  MapPoint({required this.markers, required this.name, required this.center, required this.zoom});
 }

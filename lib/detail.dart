@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:getwidget/getwidget.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:horizontal_card_pager/card_item.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -192,7 +193,12 @@ class _DetailPageState extends State<DetailPage> {
             },
               icon: Icon(Icons.edit),
           ),
-          BookmarkIcon()
+          IconButton(
+            onPressed: (){
+              Navigator.pop(context, true);
+            },
+            icon: const Icon(Icons.delete),
+          ),
         ] :
         [BookmarkIcon()],
       ),
@@ -290,7 +296,15 @@ class _DetailPageState extends State<DetailPage> {
                   ),
                   TextButton(
                     onPressed: (){
-                      Navigator.pushNamed(context, '/map', arguments: MapPoint(name: house.name, center: house.location, zoom: 19.5),);
+                      List<Marker> markers = [];
+                      markers.add(Marker(
+                        markerId: MarkerId(house.name,),
+                          position: house.location,
+                          onTap: () {
+                            Navigator.pushNamed(context, '/detail', arguments: house);
+                          }
+                      ));
+                      Navigator.pushNamed(context, '/map', arguments: MapPoint(name: house.name, center: house.location, zoom: 19.0, markers: markers ),);
                     },
                     child : const Text("지도에서 열기"),
                   ),
