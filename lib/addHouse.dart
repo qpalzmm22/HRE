@@ -104,7 +104,7 @@ class _AddHousePageState extends State<AddHousePage> {
                     views: 0,
                 );
                 addHouseToDB(house);
-                Navigator.pushReplacementNamed(context, '/home');
+                Navigator.pushReplacementNamed(context, '/home', arguments: 0);
               },
               child: const Text(
                 "Save",

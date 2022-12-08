@@ -56,7 +56,6 @@ class _HomePageState extends State<HomePage> {
 
   }
 
-
   @override
   Widget build(BuildContext context) {
 
@@ -114,7 +113,7 @@ class _HomePageState extends State<HomePage> {
       );
     }
 
-    Widget buildBody() {
+    Widget buildBody(BuildContext context) {
 
       if (_selectedIndex == 0) {
         return homeScreen();
@@ -124,7 +123,7 @@ class _HomePageState extends State<HomePage> {
         return messageSessionPage.getMessageSessionPage();
       } else {
         return profilePage
-            .getProfile(FirebaseAuth.instance.currentUser as User);
+            .getProfile(context, FirebaseAuth.instance.currentUser as User);
       }
     }
 
@@ -191,7 +190,7 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: buildAppBar(),
       body: SafeArea(
-        child: buildBody(),
+        child: buildBody(context),
       ),
       drawer: Drawer(
         child: Column(
@@ -267,8 +266,8 @@ class _HomePageState extends State<HomePage> {
                   color: Colors.red,
                 ),
               ),
-              onTap: () {
-                FirebaseAuth.instance.signOut();
+              onTap: () async {
+                await FirebaseAuth.instance.signOut();
                 Navigator.pop(context);
                 Navigator.pushReplacementNamed(context, '/');
               },
@@ -303,7 +302,7 @@ class _HomePageState extends State<HomePage> {
               }),
             label: 'message',
           ),
-          BottomNavigationBarItem(
+          const BottomNavigationBarItem(
             icon: Icon(Icons.account_circle),
             label: 'profile',
           ),
@@ -522,7 +521,7 @@ class _HomePageState extends State<HomePage> {
                               )),
                             ],
                           ),
-                          Divider(height: 8),
+                          const Divider(height: 8),
                           Text(
                             "보증금 ${numberFormat.format(house.deposit)} / 월 ${numberFormat.format(house.monthlyPay)}", //document['monthlyPay']),
                             style: const TextStyle(
@@ -530,7 +529,7 @@ class _HomePageState extends State<HomePage> {
                             ),
                             maxLines: 2,
                           ),
-                          Divider(height: 8),
+                          const Divider(height: 8),
                           Text("설명 : ${house.description}"),
                         ],
                       ),
