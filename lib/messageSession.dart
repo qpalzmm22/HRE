@@ -73,11 +73,15 @@ class MessageSessionPage {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Text(messageSessions[idx]["sessionName"]),
-                                  Text(messageSessions[idx]["recentMessage"],
+                                  Text(messageSessions[idx]["sessionName"],
+                                    overflow: TextOverflow.ellipsis,
                                     maxLines: 1,
+                                  ),
+                                  Text(messageSessions[idx]["recentMessage"],
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 2,
                                     style: TextStyle(
-                                      fontSize: 13,
+                                      fontSize: 11,
                                       color: Colors.grey
                                     ),
                                   )
