@@ -479,19 +479,10 @@ class _RoommateDetailState extends State<RoommateDetail> {
                       IconButton(
                           onPressed: () async {
                             String uid = getUid();
-
                             List<String> participants = [data['uid'], uid];
-                            String msid = "";
-                            await isMessageSessionExist(participants)
-                                ? msid = await getMessageSessionIDbyuids(
-                                    participants)
-                                : msid = await makeMessageSession(participants);
+                            participants.sort();
 
-                            MessageSession messageSession =
-                                await getMessageSession(msid);
-                            print("i sent : ${messageSession.messages.length}");
-                            Navigator.pushNamed(context, '/messagePage',
-                                arguments: messageSession);
+                            navigateToMessagePage(context, participants);
                           },
                           icon: const Icon(Icons.message))
                     ],

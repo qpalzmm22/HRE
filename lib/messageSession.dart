@@ -37,7 +37,7 @@ class MessageSessionPage {
 
                         String messageSessionProfileImage = messageSessions[idx]["profileImage"][0];
                         for(int i = 0; i < messageSessions[idx]["users"].length; i++){
-                          if(messageSessions[idx]["users"] != getUid()) messageSessionProfileImage = messageSessions[idx]["profileImage"][i];
+                          if(messageSessions[idx]["users"][i] != getUid()) messageSessionProfileImage = messageSessions[idx]["profileImage"][i];
                         }
                         print("Selected image : $messageSessionProfileImage");
                         return ListTile(
