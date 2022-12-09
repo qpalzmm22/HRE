@@ -154,7 +154,7 @@ class _DetailPageState extends State<DetailPage> {
                 );
 
             } else{
-              return CircularProgressIndicator();
+              return const CircularProgressIndicator();
             }
           });
     }

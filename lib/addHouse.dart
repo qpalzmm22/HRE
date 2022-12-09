@@ -141,7 +141,7 @@ class _AddHousePageState extends State<AddHousePage> {
                 }
                 else if(_images.length <=3){
                   const snackBar = SnackBar(
-                    content: Text('사진은 최소 4장 이상 넣어주세요.'),
+                    content: Text('사진은 4장 이상을 넣어주세요.'),
                   );
 
 // Find the ScaffoldMessenger in the widget tree

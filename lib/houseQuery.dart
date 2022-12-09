@@ -38,7 +38,7 @@ class _HouseQueryResultPageState extends State<HouseQueryResultPage> {
                       }
                     });
                       Navigator.pushReplacementNamed(context, '/home',
-                        arguments: 3);
+                        arguments: 0);
                   },
                   child: Padding(
                     padding: const EdgeInsets.only(top: 10, bottom: 10),
