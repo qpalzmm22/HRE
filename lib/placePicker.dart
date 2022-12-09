@@ -33,7 +33,6 @@ class _PlacePicker extends State<PlacePicker> {
                 await Navigator.push(context, MaterialPageRoute(
                   builder: (_) => KpostalView(
                     callback: (Kpostal result) {
-                      print(result.kakaoLatitude.toString());
                     },
                   ),
                 ));
@@ -49,7 +48,6 @@ class _PlacePicker extends State<PlacePicker> {
                     builder: (_) => KpostalView(
                       kakaoKey: 'cabdb067deb0d93614b6e47dff96ada3',
                       callback: (Kpostal result) {
-                        print(result);
                         setState(() {
                           this.postCode = result.postCode;
                           this.roadAddress = result.address;

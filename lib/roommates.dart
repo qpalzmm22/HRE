@@ -42,7 +42,6 @@ class _CommunityPageState extends State<CommunityPage> {
                   List data = snapshot.data == null ? [] : snapshot.data!.docs;
                   int len =
                       snapshot.data == null ? 0 : snapshot.data!.docs.length;
-                  print("length : $len");
 
                   return ListView.builder(
                       itemCount: len,
@@ -542,7 +541,6 @@ class _MyPost extends State<MyPost> {
                   List data = snapshot.data == null ? [] : snapshot.data!.docs;
                   int len =
                       snapshot.data == null ? 0 : snapshot.data!.docs.length;
-                  print("length : $len");
 
                   return ListView.builder(
                       itemCount: len,

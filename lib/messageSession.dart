@@ -39,7 +39,6 @@ class MessageSessionPage {
                         for(int i = 0; i < messageSessions[idx]["users"].length; i++){
                           if(messageSessions[idx]["users"][i] != getUid()) messageSessionProfileImage = messageSessions[idx]["profileImage"][i];
                         }
-                        print("Selected image : $messageSessionProfileImage");
                         return ListTile(
                             contentPadding: EdgeInsets.symmetric(vertical: 5,),
                             leading: AspectRatio(
@@ -48,13 +47,11 @@ class MessageSessionPage {
                                 future : getDiffMSViewCount(messageSessions[idx]["msid"], getUid()),
                                 builder: (context, snapshot){
                                   if(snapshot.hasData && snapshot.data! > 0 ){
-                                    // print("snapshot has data :  ${snapshot.data.toString()}");
                                     return Badge(
                                       badgeContent: Text(snapshot.data.toString()), // To mae
                                       child: Image.network(messageSessionProfileImage),
                                     );
                                   } else {
-                                    // print("snapshot doesn't data :  ${snapshot.data.toString()}");
                                     return Image.network(messageSessionProfileImage,
                                     fit: BoxFit.fitHeight,
                                     );

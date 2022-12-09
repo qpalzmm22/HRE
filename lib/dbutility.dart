@@ -18,8 +18,6 @@ import 'appState.dart';
 void addUser(User? user){
 
   if(user != null) {
-    print(user.uid);
-
     bool isUserExist = false;
     FirebaseFirestore.instance
         .collection('users')
@@ -48,7 +46,6 @@ void addUser(User? user){
 void addAnonymousUser(User? user){
 
   if(user != null) {
-    print(user.uid);
     FirebaseFirestore.instance
         .collection('users')
         .doc(user.uid)
@@ -200,7 +197,6 @@ Future<List<House>> getQueriedHouses(double ds, double de, double ms, double me,
     .where('deposit', isLessThanOrEqualTo: de)
     .get()
     .then((value) {
-      print("size of query result ${value.size}");
       for( var document in value.docs){
         houses_id.add(document['hid']);
         depositHouses.addAll({document['hid'] : helperDocToHouse(document)});
@@ -225,7 +221,6 @@ Future<List<House>> getQueriedHouses(double ds, double de, double ms, double me,
       houses.add(monthlyHouses[houses_id.elementAt(i)]!);
     }
   }
-  print("queried houses : ${houses.length}");
 
   return houses.toList();
 }
@@ -267,7 +262,6 @@ Future<HreUser> getUserFromDB(String uid) async {
 
 Future<String> uploadFile (File? file) async {
   User? user = FirebaseAuth.instance.currentUser;
-  print("uploading");
 
   String filelink = '';
   if(file != null && user != null) {
@@ -275,12 +269,11 @@ Future<String> uploadFile (File? file) async {
     final storageRef = FirebaseStorage.instance.ref();
     //$file
     String fullPath = "${user.uid}/${basename(file.path)}";
-    print("full path" + fullPath);
     final destRef = storageRef.child(fullPath);
     await destRef.putFile(file);
     filelink = await destRef.getDownloadURL();
   } else {
-    print("no file");
+    print("ERROR : no file when uploading File");
   }
   return filelink;
 }
@@ -328,35 +321,6 @@ Stream<QuerySnapshot<Map<String,dynamic>>> getMessageSessionStreambyuid(String u
       .snapshots();
 }
 
-
-
-// Future<List<MessageSession>> getMessageMutipleSessionsbyuid(String uid) async {
-//
-//   List<MessageSession> messageSessions = [];
-//   await FirebaseFirestore.instance
-//       .collection('messageSessions')
-//       .where('users', arrayContains: uid)
-//       .orderBy('timestamp', descending: true)
-//       .get()
-//       .then((snapshots) async {
-//         for (var doc in snapshots.docs) {
-//           messageSessions.add(MessageSession(
-//               users: List<String>.from(doc['users']),
-//               usersString: doc['usersString'],
-//               recentMessage: doc['recentMessage'],
-//               messages: await getMessages(doc['msid']),
-//               msid: doc['msid'],
-//               profileImage: List<String>.from(doc['profileImage']),
-//               timestamp: doc['timestamp'],
-//               sessionName: doc['sessionName'],
-//           ));
-//         }
-//     });
-//
-//   print("ins : ${messageSessions.length}");
-//   return messageSessions;
-// }
-
 Future<bool> isMessageSessionExist(List<String> uids) async {
   uids.sort();
   // concatenate uids(with seperator ',') and check if that string exist in "users"
@@ -369,7 +333,6 @@ Future<bool> isMessageSessionExist(List<String> uids) async {
       .then((value)  {
     ret = (value.size > 0);
   });
-  print("${uids.toString} exist is $ret");
   return ret;
 }
 
@@ -387,7 +350,6 @@ Future<String> getMessageSessionIDbyuids(List<String> uids) async {
 }
 
 Future<MessageSession> getMessageSession(String msid) async {
-  print("get Message Session for $msid");
 
   return FirebaseFirestore.instance
     .collection('messageSessions')
@@ -525,7 +487,6 @@ void createViewCountDB(String msid, List<String> uids) async {
 // Updates UserViewCount as well
 // Update == increase the num_messages
 Future<void> updateMSViewCountDB(String msid, String uid, int addingAmount) async {
-  print("Updating view count for session: $addingAmount");
   await FirebaseFirestore.instance
       .collection('msViewCount')
       .doc(msid)
@@ -534,7 +495,6 @@ Future<void> updateMSViewCountDB(String msid, String uid, int addingAmount) asyn
         // "numMessages" : FieldValue.increment(addingAmount),
   }, SetOptions(merge: true));
 
-  print("Updating view count for user: $addingAmount");
   await FirebaseFirestore.instance
     .collection('users')
     .doc(uid)
@@ -598,7 +558,6 @@ Future<void> updateMSViewCount(String msid, int newLen) async {
 
   int prevViewCount = await getMSViewCountDB(msid, uid);
   if( prevViewCount != newLen){
-    print("..viewCount: $newLen, $prevViewCount");
     await updateMSViewCountDB(msid, uid, newLen - prevViewCount);
   }
 }
