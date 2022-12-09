@@ -37,8 +37,8 @@ class _HouseQueryResultPageState extends State<HouseQueryResultPage> {
                         deleteHouse(house.hid);
                       }
                     });
-                      Navigator.pushReplacementNamed(context, '/home',
-                        arguments: 0);
+                      // Navigator.pushReplacementNamed(context, '/home',
+                      //   arguments: 0);
                   },
                   child: Padding(
                     padding: const EdgeInsets.only(top: 10, bottom: 10),
