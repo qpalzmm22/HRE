@@ -186,9 +186,11 @@ House helperDocToHouse(QueryDocumentSnapshot document){
 }
 
 
-// (Deposit || Monthly) && (Tag)
+// (Deposit && Monthly && Tag)
 Future<List<House>> getQueriedHouses(double ds, double de, double ms, double me, List<String> tags) async {
   Set<String> houses_id = {};
+  Map<String, House> depositHouses = {};
+  Map<String, House> monthlyHouses = {};
   List<House> houses = [];
 
   await FirebaseFirestore.instance
@@ -201,7 +203,7 @@ Future<List<House>> getQueriedHouses(double ds, double de, double ms, double me,
       print("size of query result ${value.size}");
       for( var document in value.docs){
         houses_id.add(document['hid']);
-        houses.add(helperDocToHouse(document));
+        depositHouses.addAll({document['hid'] : helperDocToHouse(document)});
       }
     });
 
@@ -212,13 +214,18 @@ Future<List<House>> getQueriedHouses(double ds, double de, double ms, double me,
       .where('monthlyPay', isLessThanOrEqualTo: me)
       .get()
       .then((value) {
-    print("size of query result ${value.size}");
     for( var document in value.docs){
-      if(!houses_id.contains(document['hid'])) {
-        houses.add(helperDocToHouse(document));
-      }
+      houses_id.add(document['hid']);
+      monthlyHouses.addAll({document['hid'] : helperDocToHouse(document)});
     }
   });
+
+  for(int i = 0 ; i < houses_id.length; i++){
+    if(depositHouses.containsKey(houses_id.elementAt(i)) && monthlyHouses.containsKey(houses_id.elementAt(i))){
+      houses.add(monthlyHouses[houses_id.elementAt(i)]!);
+    }
+  }
+  print("queried houses : ${houses.length}");
 
   return houses.toList();
 }
