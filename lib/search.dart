@@ -127,173 +127,177 @@ class _SearchPage extends State<SearchPage> {
           ),
         ],
       ),
-      body: Column(
-        children: <Widget>[
-          SizedBox(height : 10),
-          Text("보증금",
-            style: Theme.of(context).textTheme.headline5,
-          ),
-          RangeSlider(
-            min: _depositMin,
-            max: _depositMax,
-            values: RangeValues(_depositSliderStartValue, _depositSliderEndValue),
-            labels: RangeLabels(
-              _depositSliderStartValue.toString(),
-              _depositSliderEndValue.toString(),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 30,),
+        child: Column(
+          children: <Widget>[
+            SizedBox(height : 10),
+            Text("보증금",
+              style: Theme.of(context).textTheme.headline5,
             ),
-            divisions: (_depositMax - _depositMin)~/10,
-            // values: RangeValues(double.tryParse((_depositMinTextFieldController.text), double.parse(_depositMaxTextFieldController.text)),
-            onChanged: (values) {
-              setState(() {
-                _depositSliderStartValue = values.start;
-                _depositSliderEndValue = values.end;
-                _depositMinTextFieldController.text = values.start.toInt().toString();
-                _depositMaxTextFieldController.text = values.end.toInt().toString();
-              });
-            },
-          ),
-          Padding(
-            padding: EdgeInsets.fromLTRB(20, 5, 20, 5),
-            child : Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(_depositMin.toString()),
-              Text(_depositMax.toString()),
-            ],
-            ),
-          ),
-          Row(
-            children :[
-              Flexible(
-                child: TextField(
-                  readOnly: true,
-                  // inputFormatters: [FilteringTextInputFormatter.allow('')],
-                  controller: _depositMinTextFieldController,
-                  decoration: InputDecoration(
-                    hintText: '0 ~ 1000',
-                    labelText: "최소 보증금"),
-                ),
+            RangeSlider(
+              min: _depositMin,
+              max: _depositMax,
+              values: RangeValues(_depositSliderStartValue, _depositSliderEndValue),
+              labels: RangeLabels(
+                _depositSliderStartValue.toString(),
+                _depositSliderEndValue.toString(),
               ),
-              Flexible(
-                child:TextField(
-                  readOnly: true,
-                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                  controller: _depositMaxTextFieldController,
-                  decoration: InputDecoration(
-                    hintText: '0 ~ 1000',
-                    labelText: "최대 보증금"),
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height : 10),
-          Text("월세",
-            style: Theme.of(context).textTheme.headline5,
-          ),
-          RangeSlider(
-            min: _monthlyMin.toDouble(),
-            max: _monthlyMax.toDouble(),
-            values: RangeValues(_monthlySliderStartValue, _monthlySliderEndValue),
-            labels: RangeLabels(
-              _monthlySliderStartValue.toString(),
-              _monthlySliderEndValue.toString(),
+              divisions: (_depositMax - _depositMin)~/10,
+              // values: RangeValues(double.tryParse((_depositMinTextFieldController.text), double.parse(_depositMaxTextFieldController.text)),
+              onChanged: (values) {
+                setState(() {
+                  _depositSliderStartValue = values.start;
+                  _depositSliderEndValue = values.end;
+                  _depositMinTextFieldController.text = values.start.toInt().toString();
+                  _depositMaxTextFieldController.text = values.end.toInt().toString();
+                });
+              },
             ),
-            divisions: (_monthlyMax - _monthlyMin)~/10,
-            // values: RangeValues(double.parse(_monthlyMinTextFieldController.text), double.parse(_monthlyMinTextFieldController.text)),
-            onChanged: (values) {
-              setState(() {
-                _monthlySliderStartValue = values.start;
-                _monthlySliderEndValue = values.end;
-                _monthlyMinTextFieldController.text = values.start.toInt().toString();
-                _monthlyMaxTextFieldController.text = values.end.toInt().toString();
-              });
-            },
-          ),
-          Padding(
-            padding: EdgeInsets.fromLTRB(20, 5, 20, 5),
-            child : Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(_monthlyMin.toString()),
-                Text(_monthlyMax.toString())
+            Padding(
+              padding: EdgeInsets.fromLTRB(20, 5, 20, 5),
+              child : Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(_depositMin.toString()),
+                  Text(_depositMax.toString()),
+                ],
+              ),
+            ),
+            Row(
+              children :[
+                Flexible(
+                  child: TextField(
+                    readOnly: true,
+                    // inputFormatters: [FilteringTextInputFormatter.allow('')],
+                    controller: _depositMinTextFieldController,
+                    decoration: InputDecoration(
+                        hintText: '0 ~ 1000',
+                        labelText: "최소 보증금"),
+                  ),
+                ),
+                Flexible(
+                  child:TextField(
+                    readOnly: true,
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                    controller: _depositMaxTextFieldController,
+                    decoration: InputDecoration(
+                        hintText: '0 ~ 1000',
+                        labelText: "최대 보증금"),
+                  ),
+                ),
               ],
             ),
-          ),
-
-          Row(
-            children :[
-              Flexible(
-                child: TextField(
-                  readOnly: true,
-                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                  controller: _monthlyMinTextFieldController,
-                  decoration: InputDecoration(
-                    // border: InputBorder.none,
-                      hintText: '0 ~ 300',
-                      labelText: "최소 월세"),
-                  // onChanged: (value){
-                  //   setState((){
-                  //     double newVal = double.parse(_monthlyMinTextFieldController.text);
-                  //     if(newVal >= _monthlyMin && newVal <= _monthlyMax && newVal >= double.parse(_monthlyMinTextFieldController.text)) {
-                  //       _monthlyMinTextFieldController.text = newVal.toString();
-                  //       _monthlySliderStartValue = newVal;
-                  //     }
-                  //   });
-                  // },
-                ),
-              ),
-              Flexible(
-                child : TextField(
-                  readOnly: true,
-                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                  controller: _monthlyMaxTextFieldController,
-                  decoration: InputDecoration(
-                    // border: InputBorder.none,
-                      hintText: '0 ~ 300',
-                      labelText: "최대 월세")
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height : 10),
-          Text("태그 필터",
-            style: Theme.of(context).textTheme.headline5,
-          ),
-          IconButton(
-            color: Colors.blue,
-            onPressed: _openFilterDialog,
-            // style: ButtonStyle(
-            //   backgroundColor: MaterialStateProperty.all(Colors.blue),
-            // ),
-            icon: Icon(Icons.add,
-              color: Colors.blue,
-            ), // TODO : better looking
-          ),
-          Expanded(
-            child: GridView.builder(
-              // crossAxisCount : 4,
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 5, //1 개의 행에 보여줄 item 개수
-                childAspectRatio: 4 / 1, //item 의 가로 1, 세로 2 의 비율
-                mainAxisSpacing: 5, //수평 Padding
-                crossAxisSpacing: 5, //수직 Padding
-              ),
-              itemBuilder: (context, index) {
-                return Container(
-                  decoration: BoxDecoration(
-                    color: Colors.cyan,
-                    borderRadius:
-                    BorderRadius.all(Radius.circular(10.0)),
-                  ),
-                  child: Center(child: Text(selectedTagList![index])),
-                );
-              },
-              // separatorBuilder: (context, index) => const Divider(),
-              itemCount: selectedTagList!.length,
+            SizedBox(height : 10),
+            Text("월세",
+              style: Theme.of(context).textTheme.headline5,
             ),
-          ),
-        ],
+            RangeSlider(
+              min: _monthlyMin.toDouble(),
+              max: _monthlyMax.toDouble(),
+              values: RangeValues(_monthlySliderStartValue, _monthlySliderEndValue),
+              labels: RangeLabels(
+                _monthlySliderStartValue.toString(),
+                _monthlySliderEndValue.toString(),
+              ),
+              divisions: (_monthlyMax - _monthlyMin)~/10,
+              // values: RangeValues(double.parse(_monthlyMinTextFieldController.text), double.parse(_monthlyMinTextFieldController.text)),
+              onChanged: (values) {
+                setState(() {
+                  _monthlySliderStartValue = values.start;
+                  _monthlySliderEndValue = values.end;
+                  _monthlyMinTextFieldController.text = values.start.toInt().toString();
+                  _monthlyMaxTextFieldController.text = values.end.toInt().toString();
+                });
+              },
+            ),
+            Padding(
+              padding: EdgeInsets.fromLTRB(20, 5, 20, 5),
+              child : Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(_monthlyMin.toString()),
+                  Text(_monthlyMax.toString())
+                ],
+              ),
+            ),
+
+            Row(
+              children :[
+                Flexible(
+                  child: TextField(
+                    readOnly: true,
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                    controller: _monthlyMinTextFieldController,
+                    decoration: InputDecoration(
+                      // border: InputBorder.none,
+                        hintText: '0 ~ 300',
+                        labelText: "최소 월세"),
+                    // onChanged: (value){
+                    //   setState((){
+                    //     double newVal = double.parse(_monthlyMinTextFieldController.text);
+                    //     if(newVal >= _monthlyMin && newVal <= _monthlyMax && newVal >= double.parse(_monthlyMinTextFieldController.text)) {
+                    //       _monthlyMinTextFieldController.text = newVal.toString();
+                    //       _monthlySliderStartValue = newVal;
+                    //     }
+                    //   });
+                    // },
+                  ),
+                ),
+                Flexible(
+                  child : TextField(
+                      readOnly: true,
+                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                      controller: _monthlyMaxTextFieldController,
+                      decoration: InputDecoration(
+                        // border: InputBorder.none,
+                          hintText: '0 ~ 300',
+                          labelText: "최대 월세")
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height : 10),
+            Text("태그 필터",
+              style: Theme.of(context).textTheme.headline5,
+            ),
+            IconButton(
+              color: Colors.blue,
+              onPressed: _openFilterDialog,
+              // style: ButtonStyle(
+              //   backgroundColor: MaterialStateProperty.all(Colors.blue),
+              // ),
+              icon: Icon(Icons.add,
+                color: Colors.blue,
+              ), // TODO : better looking
+            ),
+            Expanded(
+              child: GridView.builder(
+                // crossAxisCount : 4,
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 5, //1 개의 행에 보여줄 item 개수
+                  childAspectRatio: 4 / 1, //item 의 가로 1, 세로 2 의 비율
+                  mainAxisSpacing: 5, //수평 Padding
+                  crossAxisSpacing: 5, //수직 Padding
+                ),
+                itemBuilder: (context, index) {
+                  return Container(
+                    decoration: BoxDecoration(
+                      color: Colors.cyan,
+                      borderRadius:
+                      BorderRadius.all(Radius.circular(10.0)),
+                    ),
+                    child: Center(child: Text(selectedTagList![index])),
+                  );
+                },
+                // separatorBuilder: (context, index) => const Divider(),
+                itemCount: selectedTagList!.length,
+              ),
+            ),
+          ],
+        ),
       ),
+
     );
   }
 }
