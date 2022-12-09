@@ -24,24 +24,24 @@ class _MessagePageState extends State<MessagePage> {
 
     final _messageController = TextEditingController();
 
-    MessageSession messageSession = ModalRoute.of(context)!.settings.arguments as MessageSession ;
+    DocumentSnapshot messageSession = ModalRoute.of(context)!.settings.arguments as DocumentSnapshot ;
 
      return Scaffold(
         appBar: AppBar(
             leading : IconButton(
               onPressed: () async {
-                await updateMSViewCount(messageSession.msid, _len);
+                await updateMSViewCount(messageSession["msid"], _len);
                 Navigator.pushNamed(context, '/home', arguments: 2); // 2: messageSession index
               },
               icon: Icon(Icons.arrow_back_ios),
             ),
-            title: Text(messageSession.sessionName)
+            title: Text(messageSession["sessionName"])
         ),
         body: Column(
             children :[
               Expanded(
                   child : StreamBuilder(
-                    stream : getMessageStream(messageSession.msid),
+                    stream : getMessageStream(messageSession["msid"]),
                     builder : (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot){
                       if(snapshot.connectionState == ConnectionState.waiting){
                         return const Center(
@@ -127,13 +127,13 @@ class _MessagePageState extends State<MessagePage> {
                       TextButton(
                         child : Text("submit"),
                         onPressed: () async {
-                          await addMessage(messageSession.msid, uid, _messageController.text);
+                          await addMessage(messageSession["msid"], uid, _messageController.text);
                           // increaseTotalMessageDB(messageSession.msid, 1);
                           // updateMSViewCount(messageSession.msid, _len);
                           _messageController.clear();
                           // setState(() async {
-                            await increaseTotalMessageDB(messageSession.msid, 1);
-                            await updateMSViewCount(messageSession.msid, _len);
+                            await increaseTotalMessageDB(messageSession["msid"], 1);
+                            await updateMSViewCount(messageSession["msid"], _len);
                           // });
                         },
                       ),

@@ -15,8 +15,8 @@ class MessageSessionPage {
   // Widget build(BuildContext context) {
 
   Widget getMessageSessionPage() {
-    Future<List<MessageSession>> futureMessageSessions = getMessageMutipleSessionsbyuid(user!.uid);
 
+    CollectionReference futureMessageSessions = FirebaseFirestore.instance.collection("messageSessions");
     return SafeArea(
         child: Container(
           alignment: Alignment.center,
@@ -25,28 +25,26 @@ class MessageSessionPage {
             children: [
               SizedBox(height: 10,),
               Expanded(
-                child: FutureBuilder<List<MessageSession>>(
-                  future: futureMessageSessions,
+                child: StreamBuilder<QuerySnapshot> (
+                  stream: futureMessageSessions.where('users', arrayContains: user?.uid).snapshots(),
                   builder: (context, snapshot){
-                    int len = snapshot.data == null ?  0 : snapshot.data!.length;
-                    print("length : $len");
-
-                    List<MessageSession>? messageSessions = len == 0 ? [] : snapshot.data!;
+                    int len = snapshot.data == null ? 0 : snapshot.data!.docs.length;
+                    List messageSessions = snapshot.data == null ? [] : snapshot.data!.docs;
 
                     return ListView.builder(
                       itemCount: len,
                       itemBuilder: (BuildContext context, int idx) {
 
-                        String messageSessionProfileImage = messageSessions[idx].profileImage[0];
-                        for(int i = 0; i < messageSessions[idx].users.length; i++){
-                          if(messageSessions[idx].users[i] != getUid()) messageSessionProfileImage = messageSessions[idx].profileImage[i];
+                        String messageSessionProfileImage = messageSessions[idx]["profileImage"][0];
+                        for(int i = 0; i < messageSessions[idx]["users"].length; i++){
+                          if(messageSessions[idx]["users"] != getUid()) messageSessionProfileImage = messageSessions[idx]["profileImage"][i];
                         }
                         print("Selected image : $messageSessionProfileImage");
                         return ListTile(
                             leading: AspectRatio(
                               aspectRatio: 1/1,
                               child : FutureBuilder(
-                                future : getDiffMSViewCount(messageSessions[idx].msid, getUid()),
+                                future : getDiffMSViewCount(messageSessions[idx]["msid"], getUid()),
                                 builder: (context, snapshot){
                                   if(snapshot.hasData && snapshot.data! > 0 ){
                                     // print("snapshot has data :  ${snapshot.data.toString()}");
@@ -64,11 +62,11 @@ class MessageSessionPage {
                             title: InkWell(
                               onTap: () {
                                   Navigator.pushReplacementNamed(context, '/messagePage', arguments: messageSessions[idx]).then((_) async {
-                                    MessageSession newMessageSession = await getMessageSession(messageSessions[idx].msid);
-                                    await updateMSViewCount(messageSessions[idx].msid, newMessageSession.messages.length);
+                                    // MessageSession newMessageSession = await getMessageSession(messageSessions[idx].msid);
+                                    // await updateMSViewCount(messageSessions[idx].msid, newMessageSession.messages.length);
                                   });
                               },
-                              child :Text(messageSessions[idx].sessionName),
+                              child :Text(messageSessions[idx]["sessionName"]),
                             )
                           );
                         }
