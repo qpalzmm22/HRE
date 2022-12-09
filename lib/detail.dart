@@ -56,14 +56,6 @@ class _DetailPageState extends State<DetailPage> {
     Icon(Icons.chair), Icon(Icons.wifi), Icon(Icons.wifi),
   ];
 
-  static List<String> _options = [
-    "sink", "wifi", "bed", "gas_stove",
-    "refrigerator", "airconditioner", "closet", "washing_machine",
-    "chair", "shoe_closet", "veranda"
-  ];
-
-  List<Card> availableOptionCards = [];
-
   @override
   Widget build(BuildContext context) {
     House house = ModalRoute.of(context)!.settings.arguments as House;
@@ -74,19 +66,6 @@ class _DetailPageState extends State<DetailPage> {
           .where((element) => element.documentId == house.documentId)
           .isNotEmpty,
     );
-    for(int i = 0; i < house.optionList.length; i++){
-      if(house.optionList[i]) {
-        availableOptionCards.add(Card(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              optionIconList[i],//Icon(Icons.wifi),
-              Text(_options[i]),
-            ],
-          ),
-        ));
-      }
-    }
 
     Widget buildFloatActionButton()  {
 
@@ -308,23 +287,9 @@ class _DetailPageState extends State<DetailPage> {
           const Divider(height: 10,),
           Padding(
             padding: EdgeInsets.only(left:30, right:30),
-            child: availableOptionCards.length != 0 ?
+            child: house.tags.length != 0 ?
               Text("Available Options") : Text("No Option Available"),
           ),
-          // SizedBox(
-          //   height: 100,
-          //   child : ListView.builder(
-          //       scrollDirection: Axis.horizontal,
-          //       padding: EdgeInsets.all(8),
-          //       itemCount: availableOptionCards.length,
-          //       itemBuilder: (context, idx ){
-          //         return Container(
-          //           width: 100,
-          //           child : availableOptionCards[idx]
-          //       );
-          //     }
-          //   )
-          // ),
           Expanded(
             child: GridView.builder(
               padding: EdgeInsets.only(left:30, right:30),
