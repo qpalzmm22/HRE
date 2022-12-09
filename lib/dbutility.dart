@@ -323,32 +323,32 @@ Stream<QuerySnapshot<Map<String,dynamic>>> getMessageSessionStreambyuid(String u
 
 
 
-Future<List<MessageSession>> getMessageMutipleSessionsbyuid(String uid) async {
-
-  List<MessageSession> messageSessions = [];
-  await FirebaseFirestore.instance
-      .collection('messageSessions')
-      .where('users', arrayContains: uid)
-      .orderBy('timestamp', descending: true)
-      .get()
-      .then((snapshots) async {
-        for (var doc in snapshots.docs) {
-          messageSessions.add(MessageSession(
-              users: List<String>.from(doc['users']),
-              usersString: doc['usersString'],
-              recentMessage: doc['recentMessage'],
-              messages: await getMessages(doc['msid']),
-              msid: doc['msid'],
-              profileImage: List<String>.from(doc['profileImage']),
-              timestamp: doc['timestamp'],
-              sessionName: doc['sessionName'],
-          ));
-        }
-    });
-
-  print("ins : ${messageSessions.length}");
-  return messageSessions;
-}
+// Future<List<MessageSession>> getMessageMutipleSessionsbyuid(String uid) async {
+//
+//   List<MessageSession> messageSessions = [];
+//   await FirebaseFirestore.instance
+//       .collection('messageSessions')
+//       .where('users', arrayContains: uid)
+//       .orderBy('timestamp', descending: true)
+//       .get()
+//       .then((snapshots) async {
+//         for (var doc in snapshots.docs) {
+//           messageSessions.add(MessageSession(
+//               users: List<String>.from(doc['users']),
+//               usersString: doc['usersString'],
+//               recentMessage: doc['recentMessage'],
+//               messages: await getMessages(doc['msid']),
+//               msid: doc['msid'],
+//               profileImage: List<String>.from(doc['profileImage']),
+//               timestamp: doc['timestamp'],
+//               sessionName: doc['sessionName'],
+//           ));
+//         }
+//     });
+//
+//   print("ins : ${messageSessions.length}");
+//   return messageSessions;
+// }
 
 Future<bool> isMessageSessionExist(List<String> uids) async {
   uids.sort();
