@@ -46,10 +46,16 @@ class _EditPageState extends State<EditPage> {
   final _houseDescriptionController = TextEditingController();
   final _houseAddressController = TextEditingController();
 
+
+  bool isRoadAdressUpdated = false;
+
   String postCode = '-';
   String roadAddress = '-';
   double kakaoLatitude = 0.0;
   double kakaoLongitude = 0.0;
+
+  bool isTagUpdated = false;
+  List<String> selectedTagList = [];
 
   static List<String> _options = [
     "sink",
@@ -84,16 +90,18 @@ class _EditPageState extends State<EditPage> {
     _houseDepositController.text = house.deposit.toString();
     _houseMonthlyController.text = house.monthlyPay.toString();
     _houseDescriptionController.text = house.description;
-    _houseAddressController.text = house.address;
+    _houseAddressController.text = isRoadAdressUpdated ? _houseAddressController.text : house.address;
 
-    options_value = house.optionList;
+    options_value =  house.optionList;
 
     // postCode = house.;
-    roadAddress = '-';
-    kakaoLatitude = house.location.latitude;
-    kakaoLongitude = house.location.longitude;
 
-    List<String> selectedTagList = house.tags;
+
+    roadAddress = isRoadAdressUpdated ? roadAddress : house.address;
+    kakaoLatitude = isRoadAdressUpdated ? kakaoLatitude : house.location.latitude;
+    kakaoLongitude = isRoadAdressUpdated ? kakaoLongitude : house.location.longitude ;
+
+    selectedTagList = isTagUpdated ?  selectedTagList : house.tags ;
 
     Future<void> _openFilterDialog() async {
       await FilterListDialog.display<String>(
@@ -116,6 +124,7 @@ class _EditPageState extends State<EditPage> {
 
         onApplyButtonClick: (list) {
           setState(() {
+            isTagUpdated = true;
             selectedTagList = List.from(list!);
           });
           Navigator.pop(context);
@@ -127,7 +136,7 @@ class _EditPageState extends State<EditPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "매물 등록",
+          "수정",
         ),
         actions: [
           TextButton(
@@ -223,15 +232,16 @@ class _EditPageState extends State<EditPage> {
                                 callback: (Kpostal result) {
                                   print(result);
                                   setState(() {
+                                    isRoadAdressUpdated = true;
                                     roadAddress = result.address;
                                     kakaoLatitude = result.kakaoLatitude as double;
                                     kakaoLongitude = result.kakaoLongitude as double;
+                                    _houseAddressController.text = roadAddress.toString();
                                   });
                                 },
                               ),
                             ),
                           );
-                          _houseAddressController.text = roadAddress.toString();
                         },
                         style: ButtonStyle(
                             backgroundColor:

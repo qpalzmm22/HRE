@@ -50,7 +50,7 @@ class _SearchPage extends State<SearchPage> {
   double _monthlySliderEndValue = 50.0;
 
   final double _depositMin = 0.0;
-  final double _depositMax = 1000.0;
+  final double _depositMax = 10000.0;
   final double _monthlyMin = 0.0;
   final double _monthlyMax = 300.0;
 
@@ -153,10 +153,10 @@ class _SearchPage extends State<SearchPage> {
               max: _depositMax,
               values: RangeValues(_depositSliderStartValue, _depositSliderEndValue),
               labels: RangeLabels(
-                _depositSliderStartValue.toString(),
-                _depositSliderEndValue.toString(),
+                _depositSliderStartValue.toInt().toString(),
+                _depositSliderEndValue.toInt().toString(),
               ),
-              divisions: (_depositMax - _depositMin)~/10,
+              divisions: (_depositMax - _depositMin)~/100,
               // values: RangeValues(double.tryParse((_depositMinTextFieldController.text), double.parse(_depositMaxTextFieldController.text)),
               onChanged: (values) {
                 setState(() {
@@ -172,8 +172,8 @@ class _SearchPage extends State<SearchPage> {
               child : Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(_depositMin.toString()),
-                  Text(_depositMax.toString()),
+                  Text("${_depositMin.toInt().toString()} 만원"),
+                  Text("${_depositMax.toInt().toString()} 만원"),
                 ],
               ),
             ),
@@ -185,7 +185,7 @@ class _SearchPage extends State<SearchPage> {
                     // inputFormatters: [FilteringTextInputFormatter.allow('')],
                     controller: _depositMinTextFieldController,
                     decoration: InputDecoration(
-                        hintText: '0 ~ 1000',
+                        hintText: '0 ~ 10000',
                         labelText: "최소 보증금"),
                   ),
                 ),
@@ -195,7 +195,7 @@ class _SearchPage extends State<SearchPage> {
                     inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                     controller: _depositMaxTextFieldController,
                     decoration: InputDecoration(
-                        hintText: '0 ~ 1000',
+                        hintText: '0 ~ 10000',
                         labelText: "최대 보증금"),
                   ),
                 ),
@@ -210,8 +210,8 @@ class _SearchPage extends State<SearchPage> {
               max: _monthlyMax.toDouble(),
               values: RangeValues(_monthlySliderStartValue, _monthlySliderEndValue),
               labels: RangeLabels(
-                _monthlySliderStartValue.toString(),
-                _monthlySliderEndValue.toString(),
+                _monthlySliderStartValue.toInt().toString(),
+                _monthlySliderEndValue.toInt().toString(),
               ),
               divisions: (_monthlyMax - _monthlyMin)~/10,
               // values: RangeValues(double.parse(_monthlyMinTextFieldController.text), double.parse(_monthlyMinTextFieldController.text)),
@@ -229,8 +229,8 @@ class _SearchPage extends State<SearchPage> {
               child : Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(_monthlyMin.toString()),
-                  Text(_monthlyMax.toString())
+                  Text("${_monthlyMin.toInt().toString()} 만원"),
+                  Text("${_monthlyMax.toInt().toString()} 만원"),
                 ],
               ),
             ),
