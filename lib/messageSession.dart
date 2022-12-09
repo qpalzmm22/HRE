@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:badges/badges.dart';
 import 'dart:async';
 
@@ -20,7 +20,7 @@ class MessageSessionPage {
     return SafeArea(
         child: Container(
           alignment: Alignment.center,
-          padding: const EdgeInsets.symmetric(horizontal: 30.0),
+          padding: const EdgeInsets.symmetric(horizontal: 20.0),
           child: Column(
             children: [
               SizedBox(height: 10,),
@@ -37,10 +37,11 @@ class MessageSessionPage {
 
                         String messageSessionProfileImage = messageSessions[idx]["profileImage"][0];
                         for(int i = 0; i < messageSessions[idx]["users"].length; i++){
-                          if(messageSessions[idx]["users"] != getUid()) messageSessionProfileImage = messageSessions[idx]["profileImage"][i];
+                          if(messageSessions[idx]["users"][i] != getUid()) messageSessionProfileImage = messageSessions[idx]["profileImage"][i];
                         }
                         print("Selected image : $messageSessionProfileImage");
                         return ListTile(
+                            contentPadding: EdgeInsets.symmetric(vertical: 5,),
                             leading: AspectRatio(
                               aspectRatio: 1/1,
                               child : FutureBuilder(
@@ -54,7 +55,9 @@ class MessageSessionPage {
                                     );
                                   } else {
                                     // print("snapshot doesn't data :  ${snapshot.data.toString()}");
-                                    return Image.network(messageSessionProfileImage);
+                                    return Image.network(messageSessionProfileImage,
+                                    fit: BoxFit.fitHeight,
+                                    );
                                   }
                               }),
                               // child: Image.network(messageSessionProfileImage),
@@ -66,8 +69,25 @@ class MessageSessionPage {
                                     // await updateMSViewCount(messageSessions[idx].msid, newMessageSession.messages.length);
                                   });
                               },
-                              child :Text(messageSessions[idx]["sessionName"]),
-                            )
+                              child : Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(messageSessions[idx]["sessionName"]),
+                                  Text(messageSessions[idx]["recentMessage"],
+                                    maxLines: 1,
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      color: Colors.grey
+                                    ),
+                                  )
+                                ],
+                              )
+                            ),
+                          trailing: Text(DateFormat("MM월 d일").format(DateTime.fromMillisecondsSinceEpoch((messageSessions[idx]["timestamp"] as Timestamp).millisecondsSinceEpoch)),
+                          style: TextStyle(
+                            fontSize: 12,
+                          ),),
                           );
                         }
                     );

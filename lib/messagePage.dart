@@ -76,7 +76,6 @@ class _MessagePageState extends State<MessagePage> {
 
                                 String str_TimeSent = DateFormat("hh:mm:ss yyyy-MM-dd").format(DateTime.fromMillisecondsSinceEpoch(message.timestamp.millisecondsSinceEpoch));
 
-
                                 return Padding(
                                     padding : EdgeInsets.all(10),
                                     child : ClipPath(

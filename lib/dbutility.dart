@@ -386,7 +386,6 @@ Future<String> getMessageSessionIDbyuids(List<String> uids) async {
   return msid;
 }
 
-
 Future<MessageSession> getMessageSession(String msid) async {
   print("get Message Session for $msid");
 
@@ -621,3 +620,18 @@ class Content {
 }
 
 
+void navigateToMessagePage(BuildContext context, List<String> participants) async {
+  CollectionReference collectionReference = FirebaseFirestore.instance.collection("messageSessions");
+  QuerySnapshot querySnapshot = await collectionReference.where("usersString", isEqualTo: participants.toString()).get();
+  List<DocumentSnapshot> documentSnapshot = querySnapshot.docs;
+
+  if(documentSnapshot.length == 0){
+    await makeMessageSession(participants);
+    querySnapshot = await collectionReference.where("usersString", isEqualTo: participants.toString()).get();
+    documentSnapshot = querySnapshot.docs;
+  }
+
+  Navigator.pushNamed(context, "/messagePage",
+      arguments: documentSnapshot[0]);
+
+}

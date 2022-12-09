@@ -110,20 +110,11 @@ class _DetailPageState extends State<DetailPage> {
                           IconButton(
                               onPressed: () async {
                                 String uid = getUid();
-
                                 List<String> participants = [owner.uid, uid];
+                                participants.sort();
 
-                                String msid = "";
-                                await isMessageSessionExist(participants)
-                                    ? msid = await getMessageSessionIDbyuids(
-                                    participants)
-                                    : msid =
-                                await makeMessageSession(participants);
+                                navigateToMessagePage(context, participants);
 
-                                MessageSession messageSession =
-                                await getMessageSession(msid);
-                                print("i sent : ${messageSession.messages.length}");
-                                Navigator.pushNamed(context, '/messagePage', arguments: messageSession);
                               },
                               icon: const Icon(Icons.message))
                         ],
