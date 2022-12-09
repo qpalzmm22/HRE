@@ -88,10 +88,18 @@ class _SearchPage extends State<SearchPage> {
       },
 
       onApplyButtonClick: (list) {
-        setState(() {
-          selectedTagList = List.from(list!);
-        });
-        Navigator.pop(context);
+        if(list!.length <= 10) {
+          setState(() {
+            selectedTagList = List.from(list!);
+          });
+          Navigator.pop(context);
+        } else {
+          const snackBar = SnackBar(
+            backgroundColor: Colors.red,
+            content: Text('태그를 10개 이하로 선택해주세요.'),
+          );
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        }
       },
     );
   }
@@ -99,6 +107,11 @@ class _SearchPage extends State<SearchPage> {
   @override
   Widget build(BuildContext context) {
     // var mytheme = Theme.of(context);
+
+
+    // Find the ScaffoldMessenger in the widget tree
+    // and use it to show a SnackBar.
+
 
     return Scaffold(
       appBar: AppBar(
