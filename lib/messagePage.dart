@@ -47,11 +47,7 @@ class _MessagePageState extends State<MessagePage> {
                         return const Center(
                             child: Center(child: CircularProgressIndicator()));
                       } else{
-                        // int len = snapshot.data == null ?  0 : snapshot.data!.f;
-                        // print("length : $len");
-                        // List<MessageSession>? messageSessions = len == 0 ? [] : snapshot.data!;
 
-                        print("snapshot data exist? ${snapshot.data}");
                         var len = snapshot.data!.docs.length;
                         _len = len;
                         if(snapshot.hasData == true){ // not working..
