@@ -253,7 +253,6 @@ class _HomePageState extends State<HomePage> {
                 Navigator.pop(context);
                 Navigator.pushReplacementNamed(context, '/');
                 await FirebaseAuth.instance.signOut();
-                
               },
             ),
           ],
