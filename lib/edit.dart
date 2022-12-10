@@ -9,8 +9,6 @@ import 'package:horizontal_card_pager/card_item.dart';
 import 'package:horizontal_card_pager/horizontal_card_pager.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:getwidget/getwidget.dart';
 import 'package:kpostal/kpostal.dart';
 import 'appState.dart';
 import 'dbutility.dart';
@@ -230,7 +228,6 @@ class _EditPageState extends State<EditPage> {
                                 kakaoKey: 'cabdb067deb0d93614b6e47dff96ada3',
                                 useLocalServer: false,
                                 callback: (Kpostal result) {
-                                  print(result);
                                   setState(() {
                                     isRoadAdressUpdated = true;
                                     roadAddress = result.address;

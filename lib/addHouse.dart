@@ -252,7 +252,6 @@ class _AddHousePageState extends State<AddHousePage> {
                               kakaoKey: 'cabdb067deb0d93614b6e47dff96ada3',
                               useLocalServer: false,
                               callback: (Kpostal result) {
-                                print(result);
                                 setState(() {
                                   roadAddress = result.address;
                                   kakaoLatitude =
