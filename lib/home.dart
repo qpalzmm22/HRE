@@ -255,9 +255,10 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
               onTap: () async {
-                await FirebaseAuth.instance.signOut();
                 Navigator.pop(context);
                 Navigator.pushReplacementNamed(context, '/');
+                await FirebaseAuth.instance.signOut();
+
               },
             ),
           ],
